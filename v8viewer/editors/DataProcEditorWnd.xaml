@@ -1,0 +1,72 @@
+﻿<Window x:Class="V8Reader.Editors.DataProcEditorWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v8r="clr-namespace:V8Reader.Core"
+        Title="Внешняя обработка" Height="467" Width="371" Loaded="Window_Loaded" Icon="/v8viewer;component/Resources/epf_icon.ico">
+    <Grid Margin="5" TextOptions.TextFormattingMode="Display">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="215*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="249*" />
+        </Grid.ColumnDefinitions>
+        
+        <Label Content="Имя:" Grid.Row="0" VerticalAlignment="Center"/>
+        <TextBox x:Name="txtName" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"/>
+
+        <Label Content="Синоним:" Grid.Row="1" VerticalAlignment="Center"/>
+        <TextBox x:Name="txtSynonym" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"/>
+
+        <Label Content="Комментарий:" Grid.Row="2" VerticalAlignment="Center"/>
+        <TextBox x:Name="txtComment" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"/>
+
+        <GroupBox Grid.Row="3" Grid.ColumnSpan="2" Header="Элементы">
+            <TreeView x:Name="twElements">
+                <TreeView.Resources>
+                    <v8r:IconTypeConverter x:Key="IconConverter"/>
+                    <ContextMenu x:Key="treePopup" x:Name="ItemPopup" TextOptions.TextFormattingMode="Display">
+                        <MenuItem x:Name="mnuOpen" Header="Открыть" MenuItem.Click="mnuOpen_Click"></MenuItem>
+                        <MenuItem x:Name="mnuHelp" Header="Справочная информация" MenuItem.Click="mnuHelp_Click"></MenuItem>
+                    </ContextMenu>
+                </TreeView.Resources>
+                
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <EventSetter Event="MouseDoubleClick" Handler="twElements_MouseDoubleClick" />
+                        <EventSetter Event="MouseRightButtonUp" Handler="twElements_RightMouseUp"></EventSetter>
+                        <Setter Property="ContextMenu" Value="{StaticResource treePopup}"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding ChildItems}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding Icon, Converter={StaticResource IconConverter}}"/>
+                            <TextBlock Text="{Binding Text}" Margin="3,0,0,0"/>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </GroupBox>
+        
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="btnActions" VerticalAlignment="Center" Width="91" Content="Действия" Click="btnActions_Click" MouseRightButtonUp="btnActions_MouseRightButtonUp">
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="btnActionsPopup" TextOptions.TextFormattingMode="Display">
+                        <MenuItem Header="Модуль объекта" Click="btnObjectModule_Click"></MenuItem>
+                        <MenuItem Header="Настройки программы..." Click="MenuItem_Click"></MenuItem>
+                        <MenuItem Header="Сравнить с файлом..." Click="mnuCompareTo_Click" ></MenuItem>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+            <!--Button Name="btnObjectModule" Content="Модуль объекта" VerticalAlignment="Center" Click="btnObjectModule_Click"></Button-->
+            <Button Name="btnHelp" Content="Справка" VerticalAlignment="Center" Click="btnHelp_Click" Margin="4,0,0,0" Width="91" />
+        </StackPanel>
+        
+    </Grid>
+</Window>

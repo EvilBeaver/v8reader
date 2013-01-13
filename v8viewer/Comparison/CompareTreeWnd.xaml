@@ -1,0 +1,58 @@
+﻿<Window x:Name="CompareTree" x:Class="V8Reader.Comparison.CompareTreeWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v8r="clr-namespace:V8Reader.Core"
+        xmlns:v8rc="clr-namespace:V8Reader.Controls"
+        Title="Сравнение файлов" Height="358" Width="564" TextOptions.TextFormattingMode="Display">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <v8rc:TreeListView x:Name="twTree">
+            <v8rc:TreeListView.Resources>
+                <v8r:IconTypeConverter x:Key="IconConverter"/>
+
+                <StackPanel x:Key="GridCell" x:Shared="false" Orientation="Horizontal">
+                    <v8rc:TreeListViewExpander/>
+                    <Image Source="{Binding Object.Icon, Converter={StaticResource IconConverter}}" RenderOptions.BitmapScalingMode="NearestNeighbor" Height="16" Width="16" Margin="3,0,3,0"/>
+                    <TextBlock Text="{Binding}"/>
+                </StackPanel>
+
+            </v8rc:TreeListView.Resources>
+            
+            <v8rc:TreeListView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Items}" />
+            </v8rc:TreeListView.ItemTemplate>
+            
+            <v8rc:TreeListView.Columns>
+                <GridViewColumn Header="Первый файл" Width="240">
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate DataType="v8r:ComparisonItem">
+                            <Border Padding="0,1" DataContext="{Binding Left}" Child="{StaticResource GridCell}"></Border>
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                    <GridViewColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Margin="3,4" Text="{Binding}" Width="{Binding Column.ActualWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}}" />
+                        </DataTemplate>
+                    </GridViewColumn.HeaderTemplate>
+                </GridViewColumn>
+                <GridViewColumn Header="Второй файл" Width="240">
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="1,0,0,0" BorderBrush="#FFB4B0B0" Padding="0,1" DataContext="{Binding Right}" Child="{StaticResource GridCell}"></Border>
+                        </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                    <GridViewColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Margin="0,4" Text="{Binding}" Width="{Binding Column.ActualWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}}" />
+                        </DataTemplate>
+                    </GridViewColumn.HeaderTemplate>
+                </GridViewColumn>
+            </v8rc:TreeListView.Columns>
+        </v8rc:TreeListView>
+        
+    </Grid>
+</Window>

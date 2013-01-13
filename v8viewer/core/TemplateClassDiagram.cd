@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="V8Reader.MDTemplate">
+    <Position X="6.75" Y="1.25" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="V8Reader.MDTemplate.TemplateKind" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>core\MDTemplate.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAhAAAQAAAQAAAAIAAAAAIAAAAQACAEAAAA=</HashCode>
+      <FileName>core\MDTemplate.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="V8Reader.TemplateDocument" Collapsed="true">
+    <Position X="2" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAAAAAAAAAAIAAAAAAAAABQAAACAAAA=</HashCode>
+      <FileName>core\TemplateDocument.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="V8Reader.PersistedTemplateStub">
+    <Position X="2" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>core\PersistedTemplateStub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="V8Reader.FWOpenableDocument">
+    <Position X="2" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAQAAAAAAAAAQAAAAAAQA=</HashCode>
+      <FileName>core\TemplateDocument.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="V8Reader.BinaryDataDocument">
+    <Position X="4.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAQAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>core\BinaryDataDocument.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="V8Reader.HTMLTemplate">
+    <Position X="4.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>core\HTMLTemplate.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

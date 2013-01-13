@@ -1,0 +1,8 @@
+﻿<Window x:Class="V8Reader.Editors.BinaryTemplateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Двоичные данные" Height="154" Width="356" ShowInTaskbar="False" WindowStyle="ToolWindow">
+    <Grid TextOptions.TextFormattingMode="Display">
+        <Button Name="btnSaveAs" Margin="30" Content="Сохранить как..." Click="btnSaveAs_Click" />
+    </Grid>
+</Window>

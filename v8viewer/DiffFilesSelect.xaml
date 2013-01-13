@@ -1,0 +1,38 @@
+﻿<Window x:Class="V8Reader.DiffFilesSelect"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Выбор файлов для сравнения" Height="129" Width="404" WindowStyle="ToolWindow" ShowInTaskbar="False" TextOptions.TextFormattingMode="Display">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="228*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Row="0" Grid.Column="0" Content="Первый файл:"/>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="tbFirstFile" Margin="3"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="Обзор..." Margin="3" Padding="7,0" x:Name="btnBrowseFirst" Click="btnBrowseFirst_Click"/>
+
+            <Label Grid.Row="1" Grid.Column="0" Content="Второй файл:"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="tbSecondFile" Margin="3"/>
+            <Button Grid.Row="1" Grid.Column="2" Content="Обзор..." Margin="3" Padding="7,0" x:Name="btnBrowseSecond" Click="btnBrowseSecond_Click"/>
+
+        </Grid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+            <Button x:Name="btnOK" Content="ОК"  Width="81" IsDefault="True" Margin="0,0,4,0" Height="21" VerticalAlignment="Top" Click="btnOK_Click"/>
+            <Button x:Name="btnCancel" Content="Отмена" Width="81" IsCancel="True"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

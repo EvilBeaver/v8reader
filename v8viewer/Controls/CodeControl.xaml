@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="V8Reader.Controls.CodeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fctb="clr-namespace:FastColoredTextBoxNS;assembly=FastColoredTextBox"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" GotFocus="UserControl_GotFocus" Focusable="True" IsTabStop="True">
+    <Grid>
+        <WindowsFormsHost HorizontalAlignment="Stretch" Margin="0" x:Name="WFHost" VerticalAlignment="Stretch" Grid.Row="1">
+            <fctb:FastColoredTextBox x:Name="codeTextBox" BorderStyle="FixedSingle" TabLength="4" ForeColor="Blue" Font="Courier New, 10" TextChanged="FastColoredTextBox_TextChanged"></fctb:FastColoredTextBox>
+        </WindowsFormsHost>
+    </Grid>
+</UserControl>

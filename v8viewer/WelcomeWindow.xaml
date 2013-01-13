@@ -1,0 +1,58 @@
+﻿<Window x:Class="V8Reader.WelcomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Просмотр внешних модулей 1С:Предприятие 8" Width="487" Closing="Window_Closing" Loaded="Window_Loaded" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignHeight="363" SizeToContent="Height" Icon="/v8viewer;component/Resources/epf_icon.ico">
+    <Grid TextOptions.TextFormattingMode="Display">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.2,0.9" StartPoint="0,0">
+                <GradientStop Color="#FFDFF6F8" Offset="0" />
+                <GradientStop Color="White" Offset="1" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <TextBlock Margin="10,5,7,7" Grid.Row="0" FontSize="28" Foreground="#FF0070A0" Text="V8 Viewer" TextOptions.TextFormattingMode="Ideal"/>
+
+        <StackPanel Margin="10,5,7,7" Grid.Row="1">
+            <TextBlock TextWrapping="Wrap" MaxWidth="600" HorizontalAlignment="Left">
+                <Run>Данная утилита предназначена для просмотра и сравнения файлов внешних модулей 1С:Предприятие 8, таких, как внешние отчеты и внешние обработки.</Run>
+                <LineBreak/>
+                <LineBreak/>
+                
+                <Run>Основной режим использования - запуск из командной строки. При запуске без параметров отображается окно, в котором можно задать</Run>
+                <Hyperlink Click="Hyperlink_Click">настройки.</Hyperlink>
+                <LineBreak/>
+                <LineBreak/>
+                
+                <Run FontWeight="Bold">Параметры командной строки:</Run>
+                <LineBreak/>
+                
+                &lt;v8reader.exe file.epf&gt; - открыть файл внешней обработки
+                <LineBreak/>
+                &lt;v8reader.exe -diff file1.epf file2.epf&gt; - сравнение 2-х файлов
+                <LineBreak/>
+                <LineBreak/>
+                
+                <Run FontWeight="Bold" FontStyle="Italic">Подсказка:</Run>
+                <LineBreak/>
+                <Run FontStyle="Italic">Для открытия файлов внешних обработок двойным щелчком в Проводнике Windows достаточно назначить типу файла *.epf данное приложение.</Run>
+                
+            </TextBlock>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8">
+                <Button x:Name="btnOpen" Height="32" Click="btnOpen_Click">Открыть...</Button>
+                <Button x:Name="btnSettings" Height="32" Margin="5,0,0,0" Click="btnSettings_Click">Настройки...</Button>
+            </StackPanel>
+
+        </StackPanel>
+
+        
+
+        <CheckBox Name="ShowOnStartup" Grid.Row="3" VerticalAlignment="Bottom" Margin="10,5" IsChecked="True" Content="Отображать данное окно при запуске без параметров"></CheckBox>
+
+    </Grid>
+</Window>
