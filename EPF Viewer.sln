@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unpack", "unpack\unpack.vcxproj", "{0046E8BF-0B39-46FF-A8E7-D21DE4DDAF62}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "v8viewer", "v8viewer\v8viewer.csproj", "{27606112-A83A-4902-8A68-A143BC4F765C}"
@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "v8viewer", "v8viewer\v8view
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastColoredTextBox", "FastColoredTextBox\FastColoredTextBox.csproj", "{6DD14A85-CCFC-4774-BD26-0F5772512319}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnpackTester", "UnpackTester\UnpackTester.csproj", "{6153749F-B523-4B6F-BA8B-B5E9E5F12575}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +60,18 @@ Global
 		{6DD14A85-CCFC-4774-BD26-0F5772512319}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6DD14A85-CCFC-4774-BD26-0F5772512319}.Release|Win32.ActiveCfg = Release|Any CPU
 		{6DD14A85-CCFC-4774-BD26-0F5772512319}.Release|x86.ActiveCfg = Release|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Release|Win32.ActiveCfg = Release|Any CPU
+		{6153749F-B523-4B6F-BA8B-B5E9E5F12575}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
