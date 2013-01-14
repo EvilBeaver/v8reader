@@ -278,8 +278,10 @@ namespace CFReader
         {
             using (var DataStream = handle.Container.GetDataStream(handle))
             {
-                stBlockHeader blockHeader = Helpers.ReadStruct<stBlockHeader>(DataStream);
-                if (blockHeader.Check())
+                var strReader = new BinaryReader(DataStream);
+                UInt32 signature = strReader.ReadUInt32();
+
+                if (signature == 0x7fffffff)
                 {
                     // Это правильный заголовок блока, значит, данные - несжатый cf-файл.
                     return new V8ContainerElement(handle);
