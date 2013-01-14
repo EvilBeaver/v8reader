@@ -3,36 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using CFReader;
 
 namespace V8Reader.Core
 {
     class MDFileItem
     {
-        public MDFileItem(String FullPath)
+        public MDFileItem(CFReader.IImageLister imgLister, string itemName)
         {
-            
-            FileName = FullPath;
-            ShortName = Path.GetFileName(FullPath);
 
-            if (IsDirectory(FullPath))
+            try
             {
-                ElemType = ElementType.Directory;
+                var handle = imgLister.GetItem(itemName);
+                m_DataElement = handle.GetElement();
             }
-            else if (File.Exists(FullPath))
-            {
-                ElemType = ElementType.File;
-            }
-            else
+            catch (V8ItemNotFoundException)
             {
                 throw new FileNotFoundException();
             }
 
+            if (m_DataElement is CFReader.IImageLister)
+            {
+                ElemType = ElementType.Directory;
+            }
+            else
+            {
+                ElemType = ElementType.File;
+            }
+            
         }
 
-        public String FileName { get; private set; }
         public String Name 
         { 
-            get { return ShortName; } 
+            get { return m_DataElement.Name; } 
         }
         
         public ElementType ElemType { get; private set; }
@@ -43,33 +46,11 @@ namespace V8Reader.Core
             Directory
         }
 
-        private bool IsDirectory(String Path)
-        {
-            if(Directory.Exists(Path))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public IEnumerable<String> ListContents()
-        {
-            if (ElemType == ElementType.Directory)
-            {
-                return Directory.EnumerateFileSystemEntries(FileName);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-        }
-
-        public StreamReader GetStream()
+        public Stream GetStream()
         {
             if (ElemType == ElementType.File)
             {
-                return new StreamReader(FileName);
+                return m_DataElement.GetDataStream();
             }
             else
             {
@@ -82,10 +63,8 @@ namespace V8Reader.Core
         {
             if (ElemType == ElementType.File)
             {
-                using (StreamReader rd = new StreamReader(FileName))
-                {
-                    return rd.ReadToEnd();
-                }
+                var reader = new StreamReader(GetStream());
+                return reader.ReadToEnd();
             }
             else
             {
@@ -94,12 +73,23 @@ namespace V8Reader.Core
 
         }
 
-        public MDFileItem GetElement(String Name)
+        public MDFileItem GetElement(String itemName)
         {
 
             if (ElemType == ElementType.Directory)
             {
-                return new MDFileItem(FileName + "\\" + Name);
+
+                var imgLister = (CFReader.IImageLister)m_DataElement;
+
+                try
+                {
+                    return new MDFileItem(imgLister, itemName);
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new FileNotFoundException();
+                }
+
             }
             else
             {
@@ -107,7 +97,7 @@ namespace V8Reader.Core
             }
         }
 
-        private String ShortName;
+        private CFReader.V8DataElement m_DataElement;
 
     }
 }

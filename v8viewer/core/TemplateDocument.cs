@@ -74,8 +74,8 @@ namespace V8Reader.Core
                 String Result = System.IO.Path.GetTempPath() + FWOpenableName;
                 
                 try
-                {   
-                    SourceStream = new System.IO.FileStream(FileElement.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+                {
+                    SourceStream = FileElement.GetStream();//new System.IO.FileStream(FileElement.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
                     DestStream = new System.IO.FileStream(Result, System.IO.FileMode.OpenOrCreate);
 
                     SourceStream.CopyTo(DestStream);

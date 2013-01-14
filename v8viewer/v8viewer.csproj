@@ -257,6 +257,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CFReader\CFReader.csproj">
+      <Project>{a14946cd-6619-45d8-b83b-03fdd445732e}</Project>
+      <Name>CFReader</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FastColoredTextBox\FastColoredTextBox.csproj">
       <Project>{6DD14A85-CCFC-4774-BD26-0F5772512319}</Project>
       <Name>FastColoredTextBox</Name>

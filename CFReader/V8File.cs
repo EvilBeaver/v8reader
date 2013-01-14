@@ -5,7 +5,7 @@ using System.IO.MemoryMappedFiles;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace V8Unpack
+namespace CFReader
 {
 
     public class V8File : IDisposable
@@ -294,7 +294,7 @@ namespace V8Unpack
 
     }
 
-    public class V8ContainerElement : V8DataElement
+    public class V8ContainerElement : V8DataElement, IImageLister
     {
         internal V8ContainerElement(V8ItemHandle handle)
             : base(handle)
@@ -303,13 +303,25 @@ namespace V8Unpack
             m_FoldedImage = new V8Image(m_ParentContainer.GetDataStream(handle));
         }
 
-        public IImageLister GetLister()
-        {
-            return m_FoldedImage;
-        }
-
         private V8Image m_FoldedImage;
         private V8Image m_ParentContainer;
+
+        #region IImageLister Members
+
+        public IEnumerable<V8ItemHandle> Items
+        {
+            get 
+            {
+                return m_FoldedImage.Items;
+            }
+        }
+
+        public V8ItemHandle GetItem(string ItemName)
+        {
+            return m_FoldedImage.GetItem(ItemName);
+        }
+
+        #endregion
     }
 
     public interface IImageLister
