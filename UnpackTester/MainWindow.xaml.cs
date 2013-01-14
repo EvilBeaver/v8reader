@@ -40,7 +40,11 @@ namespace UnpackTester
         {
             using (V8Unpack.V8File file = new V8Unpack.V8File(FilePath.Text))
             {
-                var pages = file.GetLister().Items;
+                var lister   = file.GetLister();
+                var rootItem = lister.GetItem("root");
+
+                var reader = new System.IO.StreamReader(rootItem.GetElement().GetDataStream());
+                var data = reader.ReadToEnd();
             }
         }
     }
