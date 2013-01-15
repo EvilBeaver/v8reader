@@ -12,7 +12,8 @@ namespace CFReader
     {
         public V8File(string FileName)
         {
-            mmFile = MemoryMappedFile.CreateFromFile(FileName, FileMode.Open, null, 0, MemoryMappedFileAccess.Read);
+            var fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+            mmFile = MemoryMappedFile.CreateFromFile(fs, null, 0, MemoryMappedFileAccess.Read, null, HandleInheritability.None, false);
             FileImage = new V8CompressedImage(mmFile.CreateViewStream(0, 0, MemoryMappedFileAccess.Read));
         }
 
@@ -34,9 +35,9 @@ namespace CFReader
 
         private void Cleanup()
         {
-            if (FileImage != null)
+            if (mmFile != null)
             {
-                lock (FileImage)
+                lock (mmFile)
                 {
                     mmFile.Dispose();
                     FileImage = null;
@@ -79,94 +80,142 @@ namespace CFReader
             m_ItemsMap = new Dictionary<string, V8ItemHandle>();
 
             int startAddr = stFileHeader.Size;
-            while (startAddr <= m_Mem.Length)
+
+            stElemAddr[] toc = ReadTableOfContents(startAddr);
+
+            unsafe
             {
-                stBlockHeader blockHdr = MemReadStruct<stBlockHeader>(startAddr);
-
-                if (!blockHdr.Check())
+                for (int i = 0; i < toc.Length; i++)
                 {
-                    throw new V8WrongFileException();
-                }
+                    var tocItem = toc[i];
 
-                // read block data
-
-                unsafe
-                {
-
-                    int dataSize = (int)Helpers.FromHexStr((sbyte*)blockHdr.page_size_hex);
-                    int NextPageAddr = (int)Helpers.FromHexStr((sbyte*)blockHdr.next_page_addr_hex);
-
-                    stElemAddr tocItem;
-                    int tocStart = startAddr + stBlockHeader.Size;
-                    int bytesRead = 0;
-                    do
+                    stBlockHeader itemHdr = MemReadStruct<stBlockHeader>((int)tocItem.elem_header_addr);
+                    if (!itemHdr.Check())
                     {
-                        tocItem = MemReadStruct<stElemAddr>(tocStart);
-
-                        if (tocItem.fffffff != 0x7fffffff)
-                        {
-                            break; // это не данные оглавления
-                        }
-
-                        tocStart += stElemAddr.Size;
-                        bytesRead += stElemAddr.Size;
-
-                        stBlockHeader itemHdr = MemReadStruct<stBlockHeader>((int)tocItem.elem_header_addr);
-
-                        int titleSize = (int)Helpers.FromHexStr((sbyte*)itemHdr.data_size_hex);
-                        int titleDelta = (int)stBlockHeader.Size + stElemHeaderPrefix.Size;
-                        int nameSize = titleSize - stElemHeaderPrefix.Size - 4;
-
-                        byte[] arr = new byte[nameSize];
-                        MemReadFrom((int)tocItem.elem_header_addr + titleDelta, nameSize, ref arr);
-                        
-                        string itemName;
-                        fixed (byte* ptr = arr)
-                        {
-                            itemName = new string((sbyte*)ptr, 0, (int)nameSize, Encoding.Unicode);
-                        }
-
-                        V8ItemHandle itemHandle = new V8ItemHandle();
-                        itemHandle.Container = this;
-                        itemHandle.Name = itemName;
-
-                        if (tocItem.elem_data_addr != 0x7fffffff)
-                        {
-                            // длина тела данных
-                            itemHdr = MemReadStruct<stBlockHeader>((int)tocItem.elem_data_addr);
-                            if (!itemHdr.Check())
-                            {
-                                throw new V8WrongFileException();
-                            }
-
-                            uint BodySize = Helpers.FromHexStr((sbyte*)itemHdr.data_size_hex);
-
-                            itemHandle.Offset = tocItem.elem_data_addr + stBlockHeader.Size;
-                            itemHandle.Length = BodySize;
-
-                        }
-                        else
-                        {
-                            itemHandle.Offset = 0;
-                            itemHandle.Length = 0;
-                        }
-
-                        m_ItemsMap.Add(itemName, itemHandle);
-
-                    }
-                    while (tocItem.fffffff == 0x7fffffff && bytesRead < dataSize);
-
-                    if (NextPageAddr == 0x7fffffff)
-                    {
-                        break;
+                        throw new V8WrongFileException();
                     }
 
-                    startAddr = NextPageAddr;
+                    int titleSize = (int)Helpers.FromHexStr((sbyte*)itemHdr.data_size_hex);
+                    int titleDelta = (int)stBlockHeader.Size + stElemHeaderPrefix.Size;
+                    int nameSize = titleSize - stElemHeaderPrefix.Size - 4;
+
+                    byte[] arr = new byte[nameSize];
+                    MemReadFrom((int)tocItem.elem_header_addr + titleDelta, nameSize, ref arr);
+
+                    string itemName;
+                    fixed (byte* ptr = arr)
+                    {
+                        itemName = new string((sbyte*)ptr, 0, (int)nameSize, Encoding.Unicode);
+                    }
+
+                    V8ItemHandle itemHandle = new V8ItemHandle();
+                    itemHandle.Container = this;
+                    itemHandle.Name = itemName;
+
+                    if (tocItem.elem_data_addr != 0x7fffffff)
+                    {
+                        // длина тела данных
+                        itemHdr = MemReadStruct<stBlockHeader>((int)tocItem.elem_data_addr);
+                        if (!itemHdr.Check())
+                        {
+                            throw new V8WrongFileException();
+                        }
+
+                        uint BodySize = Helpers.FromHexStr((sbyte*)itemHdr.data_size_hex);
+
+                        itemHandle.Offset = tocItem.elem_data_addr;
+                        itemHandle.Length = BodySize;
+
+                    }
+                    else
+                    {
+                        itemHandle.Offset = 0;
+                        itemHandle.Length = 0;
+                    }
+
+                    m_ItemsMap.Add(itemName, itemHandle);
 
                 }
             }
+
         }
 
+        private stElemAddr[] ReadTableOfContents(int startAddr)
+        {
+
+            byte[] buffer = ReadChunkedBlock(startAddr);
+            stElemAddr[] TOC = new stElemAddr[buffer.Length / stElemAddr.Size];
+
+            var BufferStream = new MemoryStream(buffer);
+            for (int i = 0; i < TOC.Length; i++)
+            {
+                TOC[i] = Helpers.ReadStruct<stElemAddr>(BufferStream);
+            }
+
+            return TOC;
+
+        }
+
+        private byte[] ReadChunkedBlock(int startAddr)
+        {
+            var pageAddr = startAddr;
+
+            var blockHdr = MemReadStruct<stBlockHeader>(pageAddr);
+            if (!blockHdr.Check())
+            {
+                throw new V8WrongFileException();
+            }
+
+            int dataSize = 0;
+            int pageSize = 0;
+            int NextPage = 0;
+
+            unsafe
+            {
+                dataSize = (int)Helpers.FromHexStr((sbyte*)blockHdr.data_size_hex);
+                pageSize = (int)Helpers.FromHexStr((sbyte*)blockHdr.page_size_hex);
+                NextPage = (int)Helpers.FromHexStr((sbyte*)blockHdr.next_page_addr_hex);
+
+            }
+            
+            if (dataSize == 0)
+                return null;
+
+            int bytesRead = 0;
+            int readPtr = pageAddr + stBlockHeader.Size;
+
+            byte[] readBuffer = new byte[dataSize];
+            int bufferOffset = 0;
+
+            unsafe
+            {
+                while (bytesRead < dataSize)
+                {
+                    int tail = dataSize - bytesRead;
+                    int readSize = (tail < pageSize) ? tail : pageSize;
+
+                    m_Mem.Seek(readPtr, SeekOrigin.Begin);
+                    m_Mem.Read(readBuffer, bufferOffset, readSize);
+
+                    bytesRead += readSize;
+                    bufferOffset += readSize;
+
+                    if (NextPage != 0x7fffffff)
+                    {
+                        readPtr = NextPage + stBlockHeader.Size;
+
+                        blockHdr = MemReadStruct<stBlockHeader>(NextPage);
+                        pageSize = (int)Helpers.FromHexStr((sbyte*)blockHdr.page_size_hex);
+                        NextPage = (int)Helpers.FromHexStr((sbyte*)blockHdr.next_page_addr_hex);
+
+                    }
+
+                }
+            }
+
+            return readBuffer;
+
+        }
 
         public IEnumerable<V8ItemHandle> Items
         {
@@ -211,8 +260,7 @@ namespace CFReader
             if (Handle.Length == 0)
                 return new MemoryStream();
 
-            byte[] buffer = new byte[Handle.Length];
-            MemReadFrom((int)Handle.Offset, (int)Handle.Length, ref buffer);
+            byte[] buffer = ReadChunkedBlock((int)Handle.Offset);
 
             var ItemStream = new MemoryStream(buffer);
 
@@ -238,10 +286,10 @@ namespace CFReader
                 using (var DeflateStream = new System.IO.Compression.DeflateStream(ReadStream, System.IO.Compression.CompressionMode.Decompress))
                 {
                     DeflateStream.CopyTo(resultStream);
-                    resultStream.Position = 0;
                 }
             }
 
+            resultStream.Position = 0;
             return resultStream;
 
         }
