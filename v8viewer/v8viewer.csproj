@@ -119,6 +119,7 @@
       <DependentUpon>StartupWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\FileAssociator.cs" />
+    <Compile Include="Utils\FormSettings.cs" />
     <Compile Include="Utils\MiscUtils.cs" />
     <Compile Include="WelcomeWindow.xaml.cs">
       <DependentUpon>WelcomeWindow.xaml</DependentUpon>

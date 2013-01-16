@@ -32,6 +32,7 @@ namespace V8Reader.Editors
         public CodeEditor()
         {
             InitializeComponent();
+            Utils.FormsSettingsManager.Register(this, "CodeEditor");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

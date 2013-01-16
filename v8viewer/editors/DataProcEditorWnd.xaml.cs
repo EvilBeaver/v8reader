@@ -23,6 +23,7 @@ namespace V8Reader.Editors
         internal DataProcEditorWnd(MDDataProcessor EditedObject)
         {
             InitializeComponent();
+            Utils.FormsSettingsManager.Register(this, "DataProcessor");
             m_Object = (MDDataProcessor)EditedObject;
         }
 
@@ -46,24 +47,21 @@ namespace V8Reader.Editors
         {
             // module search
 
-            var frmEditor = new CodeEditor();
+            string module = "";
 
             try
             {
-                frmEditor.codeTextBox.Text = m_Object.ObjectModule;
-                frmEditor.Title = "Модуль объекта: " + m_Object.Name;
-                //frmEditor.Owner = this;
+                module = m_Object.ObjectModule;
             }
             catch (MDModuleTextNotProvided)
             {
                 MessageBox.Show(this, "Модуль объекта отсутствует", m_Object.Name, MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            catch (Exception exc)
-            {
-                DefaultErrHandling(exc);
-            }
-
+            
+            var frmEditor = new CodeEditor();
+            frmEditor.codeTextBox.Text = module;
+            frmEditor.Title = "Модуль объекта: " + m_Object.Name;
             frmEditor.Show();
 
         }

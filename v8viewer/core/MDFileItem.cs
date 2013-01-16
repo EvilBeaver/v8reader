@@ -63,8 +63,10 @@ namespace V8Reader.Core
         {
             if (ElemType == ElementType.File)
             {
-                var reader = new StreamReader(GetStream());
-                return reader.ReadToEnd();
+                using (var reader = new StreamReader(GetStream()))
+                {
+                    return reader.ReadToEnd();
+                }
             }
             else
             {

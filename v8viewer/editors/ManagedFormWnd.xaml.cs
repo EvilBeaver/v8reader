@@ -23,6 +23,7 @@ namespace V8Reader.Editors
         internal ManagedFormWnd(MDManagedForm frm)
         {
             InitializeComponent();
+            Utils.FormsSettingsManager.Register(this, "ManagedForm");
             m_EditedForm = frm;
         }
 

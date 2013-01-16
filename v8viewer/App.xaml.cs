@@ -22,7 +22,16 @@ namespace V8Reader
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-        
+
+            try
+            {
+                Utils.FormsSettingsManager.Store();
+            }
+            catch
+            {
+
+            }
+
         }
         
     }
@@ -51,6 +60,8 @@ namespace V8Reader
                 {
                     App WPFApp = new App();
                     var DefaultWindow = new StartupWindow();
+                    WPFApp.MainWindow = DefaultWindow;
+                    WPFApp.ShutdownMode = ShutdownMode.OnMainWindowClose;
                     WPFApp.Run(DefaultWindow);
                 });
 
@@ -93,6 +104,11 @@ namespace V8Reader
                     using (Processor = MDDataProcessor.Create(FileName))
                     {
                         ICustomEditor editor = Processor.GetEditor();
+                        editor.EditComplete += (s, e) =>
+                        {
+                            WPFApp.Shutdown();
+                        };
+
                         editor.Edit();
                         WPFApp.Run();
                     }
@@ -109,6 +125,8 @@ namespace V8Reader
                     var CompareTree = Comparator.Perform();
                     var TreeWnd = new CompareTreeWnd();
                     TreeWnd.PrintResult(CompareTree);
+                    WPFApp.MainWindow = TreeWnd;
+                    WPFApp.ShutdownMode = ShutdownMode.OnMainWindowClose;
                     WPFApp.Run(TreeWnd);
                 });
             }
