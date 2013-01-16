@@ -59,7 +59,7 @@ namespace V8Reader.Comparison
         #endregion
     }
 
-    class ComparisonPerformer
+    class ComparisonPerformer : IComparisonPerformer
     {
         public ComparisonPerformer(IMDTreeItem Left, IMDTreeItem Right)
         {
@@ -115,52 +115,23 @@ namespace V8Reader.Comparison
                 var LeftItems = from item in Left.ChildItems orderby item.Key, item.Text select item;
                 var RightItems = from item in Right.ChildItems orderby item.Key, item.Text select item;
 
-                var LeftWalker = LeftItems.GetEnumerator();
-                var RightWalker = RightItems.GetEnumerator();
+                var LeftList = LeftItems.ToArray<IMDTreeItem>();
+                var RightList = RightItems.ToArray<IMDTreeItem>();
 
-                if (LeftItems.Count<IMDTreeItem>() != 0)
+                int rightIdx = 0;
+                bool WalkRight = true;
+
+                for (int i = 0; i < LeftList.Length; i++)
                 {
-                    
-                    bool WalkRight = true;
-
-                    while (LeftWalker.MoveNext())
+                    if (rightIdx < RightList.Length)
                     {
-                        
-                        if (WalkRight)
-                        {
-                            if (RightWalker.MoveNext())
-                            {
-                                var LeftObj = LeftWalker.Current;
-                                var RightObj = RightWalker.Current;
+                        var LeftObj = LeftList[i];
+                        var RightObj = RightList[rightIdx];
 
-                                if (LeftObj.Key == RightObj.Key)
-                                {
-                                    // это один и тот же объект.
-                                    AddAndFillNewNode(LeftObj, RightObj, node);
-                                    // дальнейший траверс в штатном режиме
-                                    WalkRight = true;
-                                }
-                                else
-                                {
-                                    // это разные объекты
-                                    // значит, левый объект точно отсутствует справа
-                                    AddAndFillNewNode(LeftObj, null, node);
-                                    // при следующей итерации правый объект не двигаем.
-                                    WalkRight = false;
-
-                                }
-
-                            }
-                            else
-                            {
-                                // справа элементы закончились
-                                AddAndFillNewNode(LeftWalker.Current, null, node);
-                            }
-                        }
-                        else if (LeftWalker.Current.Key == RightWalker.Current.Key)
+                        if (ItsASameObjects(LeftObj, RightObj))
                         {
                             // это один и тот же объект.
-                            AddAndFillNewNode(LeftWalker.Current, RightWalker.Current, node);
+                            AddAndFillNewNode(LeftObj, RightObj, node);
                             // дальнейший траверс в штатном режиме
                             WalkRight = true;
                         }
@@ -168,32 +139,29 @@ namespace V8Reader.Comparison
                         {
                             // это разные объекты
                             // значит, левый объект точно отсутствует справа
-                            AddAndFillNewNode(LeftWalker.Current, null, node);
+                            AddAndFillNewNode(LeftObj, null, node);
                             // при следующей итерации правый объект не двигаем.
                             WalkRight = false;
-                        }
 
+                        }
                     }
-                    // слева элементов больше нет
-
-                    if (RightWalker.Current != null)
+                    else
                     {
-                        AddAndFillNewNode(null, RightWalker.Current, node);
-                    
-                        while (RightWalker.MoveNext())
-                        {
-                            AddAndFillNewNode(null, RightWalker.Current, node);
-                        }
+                        // справа элементы закончились
+                        AddAndFillNewNode(LeftList[i], null, node);
+                    }
+
+                    if (WalkRight)
+                    {
+                        rightIdx++;
                     }
 
                 }
-                else
+
+                // Слева элементов больше нет
+                for (int i = rightIdx; i < RightList.Length; i++)
                 {
-                    // слева элементов нет
-                    while (RightWalker.MoveNext())
-                    {
-                        AddAndFillNewNode(null, RightWalker.Current, node);
-                    }
+                    AddAndFillNewNode(null, RightList[i], node);
                 }
 
             }
@@ -229,6 +197,18 @@ namespace V8Reader.Comparison
 
             }
 
+        }
+
+        private bool ItsASameObjects(IMDTreeItem left, IMDTreeItem right)
+        {
+            if (m_CurrentMode == MatchingMode.ByID)
+            {
+                return left.Key == right.Key;
+            }
+            else
+            {
+                return left.Text == right.Text;
+            }
         }
 
         private void AddAndFillNewNode(IMDTreeItem Left, IMDTreeItem Right, ComparisonItem ParentNode)
@@ -403,7 +383,7 @@ namespace V8Reader.Comparison
         }
     }
 
-    class FileComparisonPerformer : IDisposable
+    class FileComparisonPerformer : IComparisonPerformer, IDisposable
     {
 
         public FileComparisonPerformer(string LeftFile, string RightFile)
@@ -446,5 +426,14 @@ namespace V8Reader.Comparison
 
         #endregion
     }
+
+    interface IComparisonPerformer
+	{
+        ComparisonResult Perform();
+
+        ComparisonResult Perform(ComparisonPerformer.MatchingMode Mode);
+	}
+    
+    
 
 }

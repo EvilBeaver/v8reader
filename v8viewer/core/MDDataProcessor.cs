@@ -106,7 +106,7 @@ namespace V8Reader.Core
                 }
                 else
                 {
-                    throw new MDModuleTextNotProvided(); // Модуль зашифрован или не поставляется
+                    return DirElem.ReadAll(); // если модуль зашифрован, то будет нечитаемый текст
                 }
             }
         }

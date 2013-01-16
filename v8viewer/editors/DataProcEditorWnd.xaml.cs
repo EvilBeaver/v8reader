@@ -47,13 +47,9 @@ namespace V8Reader.Editors
         {
             // module search
 
-            string module = "";
+            string module = m_Object.ObjectModule;
 
-            try
-            {
-                module = m_Object.ObjectModule;
-            }
-            catch (MDModuleTextNotProvided)
+            if(module == null)
             {
                 MessageBox.Show(this, "Модуль объекта отсутствует", m_Object.Name, MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
@@ -205,9 +201,8 @@ namespace V8Reader.Editors
                 Comparison.ComparisonPerformer Performer 
                     = new Comparison.ComparisonPerformer((IMDTreeItem)m_Object, (IMDTreeItem)proc);
 
-                var result = Performer.Perform();
                 var diffWnd = new Comparison.CompareTreeWnd();
-                diffWnd.PrintResult(result);
+                diffWnd.PrintResult(Performer);
                 diffWnd.Owner = this;
                 diffWnd.Show();
 

@@ -25,13 +25,41 @@ namespace V8Reader.Comparison
             Utils.FormsSettingsManager.Register(this, "ComparisonTree");
         }
 
-        internal void PrintResult(ComparisonResult Result)
+        internal void PrintResult(IComparisonPerformer Performer)
+        {
+            m_Engine = Performer;
+
+            PrintResultInternal();
+
+        }
+
+        private void PrintResultInternal()
         {
             twTree.Items.Clear();
 
-            twTree.Items.Add(Result);
+            ComparisonPerformer.MatchingMode mode;
+            if ((bool)chkMatchNames.IsChecked)
+            {
+                mode = ComparisonPerformer.MatchingMode.ByName;
+            }
+            else
+            {
+                mode = ComparisonPerformer.MatchingMode.ByID;
+            }
 
+            var Result = m_Engine.Perform(mode);
+            twTree.Items.Add(Result);
         }
+
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (m_Engine != null)
+            {
+                PrintResultInternal();
+            }
+        }
+
+        IComparisonPerformer m_Engine;
 
     }
 

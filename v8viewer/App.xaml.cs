@@ -122,9 +122,8 @@ namespace V8Reader
                 SafeMessageLoop(() =>
                 {
                     App WPFApp = new App();
-                    var CompareTree = Comparator.Perform();
                     var TreeWnd = new CompareTreeWnd();
-                    TreeWnd.PrintResult(CompareTree);
+                    TreeWnd.PrintResult(Comparator);
                     WPFApp.MainWindow = TreeWnd;
                     WPFApp.ShutdownMode = ShutdownMode.OnMainWindowClose;
                     WPFApp.Run(TreeWnd);

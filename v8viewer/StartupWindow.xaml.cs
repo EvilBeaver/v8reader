@@ -58,23 +58,26 @@ namespace V8Reader
                 string file1 = selector.FirstFile;
                 string file2 = selector.SecondFile;
 
+
+                FileComparisonPerformer Comparator = null;
                 try
                 {
-                    using (FileComparisonPerformer Comparator = new FileComparisonPerformer(file1, file2))
-                    {
-                        var CompareTree = Comparator.Perform();
-                        var TreeWnd = new CompareTreeWnd();
+                    Comparator = new FileComparisonPerformer(file1, file2);
+                    
+                    var TreeWnd = new CompareTreeWnd();
 
-                        TreeWnd.PrintResult(CompareTree);
-                        TreeWnd.Show();
-                    }
+                    TreeWnd.PrintResult(Comparator);
+                    TreeWnd.Show();
+                    
                 }
                 catch (System.IO.FileNotFoundException exc)
                 {
+                    if (Comparator != null) Comparator.Dispose();
                     MessageBox.Show(exc.ToString(), "Неверное имя файла", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
                 catch (Exception exc)
                 {
+                    if (Comparator != null) Comparator.Dispose();
                     Utils.UIHelper.DefaultErrHandling(exc);
                 }
 

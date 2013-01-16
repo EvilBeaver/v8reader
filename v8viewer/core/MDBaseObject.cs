@@ -399,11 +399,6 @@ namespace V8Reader.Core
         }
     }
 
-    class MDModuleTextNotProvided : Exception
-    {
-        public MDModuleTextNotProvided() : base("Module text is not provided") { }
-    }
-
 #endregion
 
 }
