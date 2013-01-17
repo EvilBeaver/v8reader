@@ -69,7 +69,7 @@ namespace V8Reader.Comparison
 
         public ComparisonResult Perform()
         {
-            return Perform(MatchingMode.ByID);
+            return Perform(MatchingMode.ByName);
         }
 
         public ComparisonResult Perform(MatchingMode Mode)
@@ -107,7 +107,7 @@ namespace V8Reader.Comparison
             if (Left is IComparableItem)
             {
                 // Разница определяется самим объектом
-                node.IsDiffer = ((IComparableItem)Left).CompareTo(Right);
+                node.IsDiffer = !((IComparableItem)Left).CompareTo(Right);
             }
             else if (Left is MDObjectsCollection<MDBaseObject> || Left is StaticTreeNode)
             {
@@ -273,13 +273,11 @@ namespace V8Reader.Comparison
             foreach (PropDef propDef in Left.Properties.Values)
             {
 
-                var LeftValComparable = GetAsComparable(propDef.Value);
-
                 object RightVal = null;
                 if (Right != null)
                     RightVal = Right.GetValue(propDef.Key);
 
-                bool diff = LeftValComparable.CompareTo(RightVal);
+                bool diff = !propDef.CompareTo(RightVal);
                 result = result && diff;
 
                 var newNode = new ComparisonItem(propDef.Value, RightVal, propDef.Name);
@@ -289,22 +287,10 @@ namespace V8Reader.Comparison
 
             }
 
+            parentNode.IsDiffer = result;
             PropStub.IsDiffer = result;
             
             return PropStub;
-
-        }
-
-        private IComparableItem GetAsComparable(object Value)
-        {
-            if (Value is IComparableItem)
-            {
-                return (IComparableItem)Value;
-            }
-            else
-            {
-                return new ComparableHelperWrapper(Value, new BasicComparator());
-            }
 
         }
 

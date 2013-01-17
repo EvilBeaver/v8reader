@@ -19,7 +19,7 @@ namespace V8Reader.Editors
     /// <summary>
     /// Логика взаимодействия для CodeEditor.xaml
     /// </summary>
-    public partial class CodeEditor : Window
+    public partial class CodeEditorWnd : Window
     {
 
         //styles
@@ -29,7 +29,7 @@ namespace V8Reader.Editors
         TextStyle StringStyle = new TextStyle(System.Drawing.Brushes.Black, null, System.Drawing.FontStyle.Regular);
         TextStyle PreprocStyle = new TextStyle(System.Drawing.Brushes.Brown, null, System.Drawing.FontStyle.Regular);
 
-        public CodeEditor()
+        public CodeEditorWnd()
         {
             InitializeComponent();
             Utils.FormsSettingsManager.Register(this, "CodeEditor");

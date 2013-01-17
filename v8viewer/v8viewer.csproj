@@ -82,6 +82,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Comparison\ValueConverters.cs" />
+    <Compile Include="Core\IValueVisualizer.cs" />
+    <Compile Include="Core\V8ModuleProcessor.cs" />
     <Compile Include="Editors\BinaryTemplateWindow.xaml.cs">
       <DependentUpon>BinaryTemplateWindow.xaml</DependentUpon>
     </Compile>
@@ -91,8 +94,8 @@
     <Compile Include="Controls\CodeControl.xaml.cs">
       <DependentUpon>CodeControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Editors\CodeEditor.xaml.cs">
-      <DependentUpon>CodeEditor.xaml</DependentUpon>
+    <Compile Include="Editors\CodeEditorWnd.xaml.cs">
+      <DependentUpon>CodeEditorWnd.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\TreeListView.cs" />
     <Compile Include="Core\BinaryDataDocument.cs" />
@@ -104,6 +107,7 @@
     <Compile Include="Editors\DataProcEditor.cs" />
     <Compile Include="Editors\FileWorkshopEditor.cs" />
     <Compile Include="Editors\ManagedFormEditor.cs" />
+    <Compile Include="Editors\ModuleEditor.cs" />
     <Compile Include="Editors\OrdinaryFormEditor.cs" />
     <Compile Include="Core\HTMLTemplate.cs" />
     <Compile Include="Core\IMDPropertyProvider.cs" />
@@ -139,7 +143,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Editors\CodeEditor.xaml">
+    <Page Include="Editors\CodeEditorWnd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -25,7 +25,7 @@ namespace V8Reader.Core
 
         public bool IsDisposed()
         {
-            return m_Disposed;
+            return m_FileReader == null;
         }
 
         public void Dispose()
@@ -42,7 +42,7 @@ namespace V8Reader.Core
 
                 m_FileReader.Dispose();
 
-                m_Disposed = true;
+                m_FileReader = null;
             }
         }
 
@@ -51,7 +51,6 @@ namespace V8Reader.Core
             DisposeImpl(false);
         }
 
-        private bool m_Disposed;
         private CFReader.V8File m_FileReader;
 
     }

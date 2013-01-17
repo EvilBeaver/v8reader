@@ -61,6 +61,36 @@ namespace V8Reader.Comparison
 
         IComparisonPerformer m_Engine;
 
+        private void twTree_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            
+        }
+
+        private void Label_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Label && ((Label)sender).Content is ComparisonSide)
+            {
+
+                var cmpSide = ((Label)sender).Content as ComparisonSide;
+                var editable = cmpSide.Object as Editors.IEditable;
+
+                if (editable != null)
+                {
+                    var editor = editable.GetEditor();
+
+                    Action showAction = () =>
+                        {
+                            editor.Edit(this);
+                        };
+
+                    Dispatcher.BeginInvoke(showAction);
+
+                    e.Handled = true;
+                }
+
+            }
+        }
+
     }
 
 

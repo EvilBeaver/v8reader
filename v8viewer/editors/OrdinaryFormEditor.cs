@@ -20,7 +20,7 @@ namespace V8Reader.Editors
 
         public void Edit(System.Windows.Window Owner)
         {
-            var frm = new CodeEditor();
+            var frm = new CodeEditorWnd();
 
             frm.Title = m_EditedForm.Name + ": Модуль формы";
             frm.Owner = Owner;
