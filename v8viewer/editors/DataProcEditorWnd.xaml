@@ -59,6 +59,8 @@
                 <Button.ContextMenu>
                     <ContextMenu x:Name="btnActionsPopup" TextOptions.TextFormattingMode="Display">
                         <MenuItem Header="Модуль объекта" Click="btnObjectModule_Click"></MenuItem>
+                        <MenuItem Header="Справочная информация" Click="btnHelp_Click"></MenuItem>
+                        <Separator/>
                         <MenuItem Header="Настройки программы..." Click="MenuItem_Click"></MenuItem>
                         <MenuItem Header="Сравнить с файлом..." Click="mnuCompareTo_Click" ></MenuItem>
                     </ContextMenu>
