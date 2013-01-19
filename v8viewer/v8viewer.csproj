@@ -131,6 +131,10 @@
     <Compile Include="DiffFilesSelect.xaml.cs">
       <DependentUpon>DiffFilesSelect.xaml</DependentUpon>
     </Compile>
+    <Page Include="Comparison\CompareTreeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Editors\BinaryTemplateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
