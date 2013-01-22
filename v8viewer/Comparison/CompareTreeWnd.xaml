@@ -2,22 +2,19 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:v8r="clr-namespace:V8Reader.Core"
-        xmlns:v8rc="clr-namespace:V8Reader.Controls"
         xmlns:cmp="clr-namespace:V8Reader.Comparison"
         Title="Сравнение файлов" Height="358" Width="564" TextOptions.TextFormattingMode="Display" Icon="/v8viewer;component/Resources/Diff.png">
     <Window.Resources>
         
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="CompareTreeView.xaml" />
+                <ResourceDictionary Source="DiffTreeStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <ContextMenu x:Key="treePopup" x:Name="ItemPopup" TextOptions.TextFormattingMode="Display" x:Shared="false">
                 <MenuItem x:Name="mnuOpen" Header="Открыть" MenuItem.Click="mnuOpen_Click"></MenuItem>
                 <MenuItem x:Name="mnuHelp" Header="Справочная информация" MenuItem.Click="mnuHelp_Click"></MenuItem>
             </ContextMenu>
-
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
         </ResourceDictionary>
 
@@ -28,15 +25,70 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TreeView x:Name="twTree" Style="{StaticResource CompareTree}">
+        <Grid Grid.IsSharedSizeScope="True">
+
+            <Grid.Resources>
+                <cmp:TreeIndentConverter x:Key="IndentConverter"/>
+                <v8r:IconTypeConverter x:Key="IconConverter"/>
+            </Grid.Resources>
             
-            <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Items}">
-                    <TextBlock Text="{Binding Left.Presentation}"/>
-                </HierarchicalDataTemplate>
-            </TreeView.ItemTemplate>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             
-        </TreeView>
+            <Border Grid.Row="0" Background="{StaticResource btnFaceBrush}" BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="10" SharedSizeGroup="LeftColumn"/>
+                        <ColumnDefinition Width="Auto" MinWidth="10" SharedSizeGroup="RightColumn"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="Первый файл" Margin="4,2,6,2" Grid.Column="0"/>
+                    <GridSplitter Style="{StaticResource colSplitterStyle}" Grid.Column="0"/>
+
+                    <TextBlock Text="Второй файл" Margin="4,2,6,2" Grid.Column="1"/>
+                    <GridSplitter Style="{StaticResource colSplitterStyle}" Grid.Column="1"/>
+
+                </Grid>
+            </Border>
+            <TreeView Grid.Row="1" x:Name="twTree" Style="{StaticResource DiffTreeStyle}">
+
+                <TreeView.Resources>
+                    <StackPanel x:Key="CellTemplate" Orientation="Horizontal" x:Shared="False">
+                        <FrameworkElement Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TreeViewItem}, Converter={StaticResource IndentConverter}}"/>
+                        <ToggleButton Style="{StaticResource TreeToggleButton}"/>
+                        <Image Source="{Binding Object.Icon, Converter={StaticResource IconConverter}}"/>
+                        <Label Padding="0" Content="{Binding Presentation}"></Label>
+                    </StackPanel>
+                </TreeView.Resources>
+                
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150*" SharedSizeGroup="LeftColumn"/>
+                                <ColumnDefinition Width="150*" SharedSizeGroup="RightColumn"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <Border DataContext="{Binding Left}" Grid.Column="0" Child="{StaticResource CellTemplate}"
+                                    BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="0,0,1,0">
+                                
+                            </Border>
+
+                            <Border DataContext="{Binding Right}" Grid.Column="1" Child="{StaticResource CellTemplate}">
+                                
+                            </Border>
+
+                        </Grid>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+
+            </TreeView>
+
+        </Grid>
         
         <!-- нижняя панель -->
         <Border Grid.Row="1" BorderBrush="#FF9E9E9E" BorderThickness="0,1,0,0">
