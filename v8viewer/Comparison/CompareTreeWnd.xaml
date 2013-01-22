@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:v8r="clr-namespace:V8Reader.Core"
         xmlns:cmp="clr-namespace:V8Reader.Comparison"
-        Title="Сравнение файлов" Height="358" Width="564" TextOptions.TextFormattingMode="Display" Icon="/v8viewer;component/Resources/Diff.png">
+        Title="Сравнение файлов" Height="358" Width="564" TextOptions.TextFormattingMode="Display" Icon="/v8viewer;component/Resources/Diff.png" Loaded="CompareTree_Loaded">
     <Window.Resources>
         
         <ResourceDictionary>
@@ -16,6 +16,10 @@
                 <MenuItem x:Name="mnuHelp" Header="Справочная информация" MenuItem.Click="mnuHelp_Click"></MenuItem>
             </ContextMenu>
 
+            <SolidColorBrush x:Key="AddedColorBrush">#C0DCC0</SolidColorBrush>
+            <SolidColorBrush x:Key="DeletedColorBrush">#FFE4C4</SolidColorBrush>
+            <SolidColorBrush x:Key="ModifiedColorBrush">#CEFBFF</SolidColorBrush>
+            
         </ResourceDictionary>
 
     </Window.Resources>
@@ -38,7 +42,7 @@
             </Grid.RowDefinitions>
             
             <Border Grid.Row="0" Background="{StaticResource btnFaceBrush}" BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="1">
-                <Grid>
+                <Grid Name="HeaderGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" MinWidth="10" SharedSizeGroup="LeftColumn"/>
                         <ColumnDefinition Width="Auto" MinWidth="10" SharedSizeGroup="RightColumn"/>
@@ -56,12 +60,18 @@
             <TreeView Grid.Row="1" x:Name="twTree" Style="{StaticResource DiffTreeStyle}">
 
                 <TreeView.Resources>
+                    
                     <StackPanel x:Key="CellTemplate" Orientation="Horizontal" x:Shared="False">
                         <FrameworkElement Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TreeViewItem}, Converter={StaticResource IndentConverter}}"/>
                         <ToggleButton Style="{StaticResource TreeToggleButton}"/>
                         <Image Source="{Binding Object.Icon, Converter={StaticResource IconConverter}}" 
-                               Stretch="None" UseLayoutRounding="True"/>
-                        <Label Padding="2" Content="{Binding Presentation}"></Label>
+                               Stretch="None" UseLayoutRounding="True"
+                               RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                        <Label Padding="2" Content="{Binding Presentation}" 
+                               MouseDoubleClick="Label_MouseDoubleClick_1" 
+                               MouseRightButtonUp="twElements_RightMouseUp" 
+                               Tag="{Binding Object}"
+                               ContextMenu="{StaticResource treePopup}"></Label>
                     </StackPanel>
                     
                     <cmp:ComparisonStatusConverter x:Key="StatusConverter"/>
@@ -88,23 +98,21 @@
                             </Border>
 
                         </Grid>
-
+                        
                         <HierarchicalDataTemplate.Triggers>
                             <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Added">
-                                <Setter TargetName="LeftSide" Property="Background" Value="#FFFDE7E7"></Setter>
-                                <Setter TargetName="RightSide" Property="Background" Value="#FF6ECBA9"></Setter>
+                                <Setter TargetName="RightSide" Property="Background" Value="{StaticResource AddedColorBrush}"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Deleted">
-                                <Setter TargetName="RightSide" Property="Background" Value="#FF6ECBA9"></Setter>
-                                <Setter TargetName="LeftSide" Property="Background" Value="#FFFDE7E7"></Setter>
+                                <Setter TargetName="LeftSide" Property="Background" Value="{StaticResource DeletedColorBrush}"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Modified">
-                                <Setter TargetName="RightSide" Property="Background" Value="#FFCEFBFF"></Setter>
-                                <Setter TargetName="LeftSide" Property="Background" Value="#FFCEFBFF"></Setter>
+                                <Setter TargetName="LeftSide" Property="Background" Value="{StaticResource ModifiedColorBrush}"></Setter>
+                                <Setter TargetName="RightSide" Property="Background" Value="{StaticResource ModifiedColorBrush}"></Setter>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TreeViewItem}}" Value="true">
-                                <Setter TargetName="RightSide" Property="Background" Value="{x:Null}"></Setter>
                                 <Setter TargetName="LeftSide" Property="Background" Value="{x:Null}"></Setter>
+                                <Setter TargetName="RightSide" Property="Background" Value="{x:Null}"></Setter>
                             </DataTrigger>
                         </HierarchicalDataTemplate.Triggers>
 
@@ -120,10 +128,27 @@
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
             
-                <StackPanel HorizontalAlignment="Right">
-                    <CheckBox x:Name="chkMatchNames" Content="Сопоставлять объекты по именам" IsChecked="True"/>
+                <StackPanel Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal">
+                    
+                    <Border Width="20" Height="20" BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="1"/>
+                    <TextBlock Margin="3,0" VerticalAlignment="Center">Совпадающие</TextBlock>
+                    
+                    <Border Width="20" Height="20" Background="{StaticResource ModifiedColorBrush}" BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="1"/>
+                    <TextBlock Margin="3,0" VerticalAlignment="Center">Различающиеся</TextBlock>
+
+                    <Border Width="20" Height="20" Background="{StaticResource DeletedColorBrush}" BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="1"/>
+                    <TextBlock Margin="3,0" VerticalAlignment="Center">В первой</TextBlock>
+
+                    <Border Width="20" Height="20" Background="{StaticResource AddedColorBrush}" BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="1"/>
+                    <TextBlock Margin="3,0" VerticalAlignment="Center">Во второй</TextBlock>
+
+                </StackPanel>
+                
+                <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                    <CheckBox x:Name="chkMatchNames" Content="Сопоставлять объекты по именам" IsChecked="True" Margin="3"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
                         <Button x:Name="btnRefresh" Padding="5,2" Click="btnRefresh_Click">Обновить</Button>
                     </StackPanel>

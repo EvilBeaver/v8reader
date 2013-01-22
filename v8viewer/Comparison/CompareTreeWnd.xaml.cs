@@ -36,14 +36,6 @@ namespace V8Reader.Comparison
         private void PrintResultInternal()
         {
 
-            //TreeViewItem twi = new TreeViewItem();
-            //twi.Header = "Hello";
-
-            //if (twi.Template != null)
-            //{
-            //    string str = System.Windows.Markup.XamlWriter.Save(twi.Template);
-            //}
-
             twTree.Items.Clear();
 
             ComparisonPerformer.MatchingMode mode;
@@ -184,6 +176,13 @@ namespace V8Reader.Comparison
 
                 e.Handled = true;
             }
+
+        }
+
+        private void CompareTree_Loaded(object sender, RoutedEventArgs e)
+        {
+            var twItem = (TreeViewItem)twTree.ItemContainerGenerator.ContainerFromIndex(0);
+            twItem.IsExpanded = true;
 
         }
 

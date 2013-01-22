@@ -201,13 +201,20 @@ namespace V8Reader.Comparison
 
         private bool ItsASameObjects(IMDTreeItem left, IMDTreeItem right)
         {
-            if (m_CurrentMode == MatchingMode.ByID)
+            if (left.GetType() == right.GetType())
             {
-                return left.Key == right.Key;
+                if (m_CurrentMode == MatchingMode.ByID)
+                {
+                    return left.Key == right.Key;
+                }
+                else
+                {
+                    return left.Text == right.Text;
+                }
             }
             else
             {
-                return left.Text == right.Text;
+                return false;
             }
         }
 
