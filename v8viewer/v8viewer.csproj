@@ -97,7 +97,6 @@
     <Compile Include="Editors\CodeEditorWnd.xaml.cs">
       <DependentUpon>CodeEditorWnd.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TreeListView.cs" />
     <Compile Include="Core\BinaryDataDocument.cs" />
     <Compile Include="Comparison\CompareEngine.cs" />
     <Compile Include="Core\HTMLDocument.cs" />
@@ -131,6 +130,10 @@
     <Compile Include="DiffFilesSelect.xaml.cs">
       <DependentUpon>DiffFilesSelect.xaml</DependentUpon>
     </Compile>
+    <Page Include="Comparison\DiffTreeStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Editors\BinaryTemplateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -146,10 +149,6 @@
     <Page Include="Editors\CodeEditorWnd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Editors\DataProcEditorWnd.xaml">
       <SubType>Designer</SubType>

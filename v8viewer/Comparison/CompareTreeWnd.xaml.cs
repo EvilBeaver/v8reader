@@ -35,6 +35,15 @@ namespace V8Reader.Comparison
 
         private void PrintResultInternal()
         {
+
+            //TreeViewItem twi = new TreeViewItem();
+            //twi.Header = "Hello";
+
+            //if (twi.Template != null)
+            //{
+            //    string str = System.Windows.Markup.XamlWriter.Save(twi.Template);
+            //}
+
             twTree.Items.Clear();
 
             ComparisonPerformer.MatchingMode mode;

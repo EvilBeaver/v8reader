@@ -5,39 +5,49 @@ using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Controls;
 
 namespace V8Reader.Comparison
 {
-    
-    [ValueConversion(typeof(ComparisonItem), typeof(Visibility))]
-    class ItemBackgroundVisibility : IValueConverter
+
+    public class TreeIndentConverter : IValueConverter
     {
+        public const double Indentation = 10;
+
+        #region IValueConverter Members
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            ComparisonItem Item = value as ComparisonItem;
-            Controls.TreeListView tw = parameter as Controls.TreeListView;
-
-            if (Item == null || tw == null)
+            //If the value is null, don't return anything
+            if (value == null) return null;
+            //Convert the item to a double
+            if (targetType == typeof(double) && typeof(DependencyObject).IsAssignableFrom(value.GetType()))
             {
-                return null;
+                //Cast the item as a DependencyObject
+                DependencyObject Element = value as DependencyObject;
+                //Create a level counter with value set to -1
+                int Level = -1;
+                //Move up the visual tree and count the number of TreeViewItem's.
+                for (; Element != null; Element = VisualTreeHelper.GetParent(Element))
+                    //Check whether the current elemeent is a TreeViewItem
+                    if (typeof(TreeViewItem).IsAssignableFrom(Element.GetType()))
+                        //Increase the level counter
+                        Level++;
+                //Return the indentation as a double
+                return Indentation * Level;
             }
-
-            if (tw.SelectedItem == Item)
-            {
-                return Visibility.Collapsed;
-            }
-            else
-            {
-                return Visibility.Visible;
-            }
+            //Type conversion is not supported
+            throw new NotSupportedException(
+                string.Format("Cannot convert from <{0}> to <{1}> using <TreeListViewConverter>.",
+                value.GetType(), targetType));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("This method is not supported.");
         }
 
+        #endregion
     }
 
 }
