@@ -326,7 +326,30 @@ namespace V8Reader.Comparison
         public ComparisonSide Left { get; private set; }
         public ComparisonSide Right { get; private set; }
         public List<ComparisonItem> Items { get { return m_Items; } }
-        
+
+        public ComparisonStatus Status
+        {
+            get
+            {
+                if (Left.Object == null && Right.Object != null)
+                {
+                    return ComparisonStatus.Added;
+                }
+                else if (Left.Object != null && Right.Object == null)
+                {
+                    return ComparisonStatus.Deleted;
+                }
+                else if (Left.Object != null && Right.Object != null && IsDiffer)
+                {
+                    return ComparisonStatus.Modified;
+                }
+                else
+                {
+                    return ComparisonStatus.Match;
+                }
+            }
+        }
+
         public bool IsDiffer { get; set; }
 
         public ComparisonItem AddStaticNode(string name)
@@ -340,6 +363,14 @@ namespace V8Reader.Comparison
         }
 
         private List<ComparisonItem> m_Items;
+    }
+
+    enum ComparisonStatus
+    {
+        Match,
+        Modified,
+        Added,
+        Deleted
     }
 
     class ComparisonSide

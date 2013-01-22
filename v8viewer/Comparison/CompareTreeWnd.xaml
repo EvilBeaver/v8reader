@@ -59,30 +59,55 @@
                     <StackPanel x:Key="CellTemplate" Orientation="Horizontal" x:Shared="False">
                         <FrameworkElement Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TreeViewItem}, Converter={StaticResource IndentConverter}}"/>
                         <ToggleButton Style="{StaticResource TreeToggleButton}"/>
-                        <Image Source="{Binding Object.Icon, Converter={StaticResource IconConverter}}"/>
-                        <Label Padding="0" Content="{Binding Presentation}"></Label>
+                        <Image Source="{Binding Object.Icon, Converter={StaticResource IconConverter}}" 
+                               Stretch="None" UseLayoutRounding="True"/>
+                        <Label Padding="2" Content="{Binding Presentation}"></Label>
                     </StackPanel>
+                    
+                    <cmp:ComparisonStatusConverter x:Key="StatusConverter"/>
+                    
                 </TreeView.Resources>
                 
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+                        
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150*" SharedSizeGroup="LeftColumn"/>
-                                <ColumnDefinition Width="150*" SharedSizeGroup="RightColumn"/>
+                                <ColumnDefinition SharedSizeGroup="LeftColumn"/>
+                                <ColumnDefinition SharedSizeGroup="RightColumn"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             
-                            <Border DataContext="{Binding Left}" Grid.Column="0" Child="{StaticResource CellTemplate}"
+                            <Border Name="LeftSide" DataContext="{Binding Left}" Grid.Column="0" Child="{StaticResource CellTemplate}"
                                     BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="0,0,1,0">
                                 
                             </Border>
 
-                            <Border DataContext="{Binding Right}" Grid.Column="1" Child="{StaticResource CellTemplate}">
+                            <Border Name="RightSide" DataContext="{Binding Right}" Grid.Column="1" Child="{StaticResource CellTemplate}">
                                 
                             </Border>
 
                         </Grid>
+
+                        <HierarchicalDataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Added">
+                                <Setter TargetName="LeftSide" Property="Background" Value="#FFFDE7E7"></Setter>
+                                <Setter TargetName="RightSide" Property="Background" Value="#FF6ECBA9"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Deleted">
+                                <Setter TargetName="RightSide" Property="Background" Value="#FF6ECBA9"></Setter>
+                                <Setter TargetName="LeftSide" Property="Background" Value="#FFFDE7E7"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Modified">
+                                <Setter TargetName="RightSide" Property="Background" Value="#FFCEFBFF"></Setter>
+                                <Setter TargetName="LeftSide" Property="Background" Value="#FFCEFBFF"></Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TreeViewItem}}" Value="true">
+                                <Setter TargetName="RightSide" Property="Background" Value="{x:Null}"></Setter>
+                                <Setter TargetName="LeftSide" Property="Background" Value="{x:Null}"></Setter>
+                            </DataTrigger>
+                        </HierarchicalDataTemplate.Triggers>
+
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
 

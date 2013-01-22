@@ -4,11 +4,7 @@
         xmlns:v8r="clr-namespace:V8Reader.Core"
         xmlns:v8rc="clr-namespace:V8Reader.Controls"
         Title="ManagedForm" Height="360" Width="515" Loaded="Window_Loaded">
-    
-    <Window.Resources>
-        <ResourceDictionary Source="/v8viewer;component/Controls/Themes/Generic.xaml"></ResourceDictionary>
-    </Window.Resources>
-    
+  
     <Grid TextOptions.TextFormattingMode="Display">
         
         <Grid.Resources>

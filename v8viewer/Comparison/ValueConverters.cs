@@ -10,11 +10,9 @@ using System.Windows.Controls;
 namespace V8Reader.Comparison
 {
 
-    public class TreeIndentConverter : IValueConverter
+    class TreeIndentConverter : IValueConverter
     {
         public const double Indentation = 10;
-
-        #region IValueConverter Members
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -45,6 +43,43 @@ namespace V8Reader.Comparison
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotSupportedException("This method is not supported.");
+        }
+
+    }
+
+    [ValueConversion(typeof(string), typeof(ComparisonStatus))]
+    class ComparisonStatusConverter : IValueConverter
+    {
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+
+            if (value.GetType() == typeof(ComparisonStatus))
+            {
+                return (ComparisonStatus) value;
+            }
+
+            var stringVal = value as string;
+            if (stringVal == null)
+                return null;
+
+            ComparisonStatus result;
+            if (System.Enum.TryParse<ComparisonStatus>(stringVal, true, out result))
+            {
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+            
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
