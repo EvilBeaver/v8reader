@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:v8r="clr-namespace:V8Reader.Core"
         xmlns:cmp="clr-namespace:V8Reader.Comparison"
-        Title="Сравнение файлов" Height="358" Width="564" TextOptions.TextFormattingMode="Display" Icon="/v8viewer;component/Resources/Diff.png" Loaded="CompareTree_Loaded">
+        Title="Сравнение файлов" Height="358" Width="564" TextOptions.TextFormattingMode="Display" Icon="/v8viewer;component/Resources/Diff.png" Loaded="CompareTree_Loaded" ContentRendered="CompareTree_ContentRendered">
     <Window.Resources>
         
         <ResourceDictionary>
@@ -44,9 +44,9 @@
             <Border Grid.Row="0" Background="{StaticResource btnFaceBrush}" BorderBrush="{StaticResource btnBorderBrush}" BorderThickness="1">
                 <Grid Name="HeaderGrid">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="10" SharedSizeGroup="LeftColumn"/>
-                        <ColumnDefinition Width="Auto" MinWidth="10" SharedSizeGroup="RightColumn"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="170" MinWidth="10" SharedSizeGroup="LeftColumn"/>
+                        <ColumnDefinition Width="170" MinWidth="10" SharedSizeGroup="RightColumn"/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock Text="Первый файл" Margin="4,2,6,2" Grid.Column="0"/>
@@ -129,6 +129,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
             
                 <StackPanel Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Left" Orientation="Horizontal">
@@ -147,12 +148,26 @@
 
                 </StackPanel>
                 
-                <StackPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                    <CheckBox x:Name="chkMatchNames" Content="Сопоставлять объекты по именам" IsChecked="True" Margin="3"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-                        <Button x:Name="btnRefresh" Padding="5,2" Click="btnRefresh_Click">Обновить</Button>
-                    </StackPanel>
+                <Grid Grid.Row="1" Margin="0,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="32*"/>
+                        <ColumnDefinition Width="29*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Фильтр:" Grid.Column="0" Margin="0,3"/>
+                    <ComboBox x:Name="FilterCombo" IsReadOnly="True" Grid.Column="1" Margin="0,3" SelectedIndex="0" VerticalContentAlignment="Center">
+                        <ComboBoxItem>Отображать только изменения</ComboBoxItem>
+                        <ComboBoxItem>Нет фильтра</ComboBoxItem>
+                    </ComboBox>
+                    <CheckBox x:Name="chkMatchNames" Content="Сопоставлять объекты по именам" IsChecked="True" Margin="5,3" Grid.Column="2" VerticalAlignment="Center"/>
+                </Grid>
+
+                
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0" Height="23">
+                    <Button x:Name="btnRefresh" Click="btnRefresh_Click" Width="100">Обновить</Button>
+                    <Button Margin="5,0,0,0" Width="100">Закрыть</Button>
                 </StackPanel>
+                
             
             </Grid>
         </Border>

@@ -186,6 +186,13 @@ namespace V8Reader.Comparison
 
         }
 
+        private void CompareTree_ContentRendered(object sender, EventArgs e)
+        {
+            double percent = Math.Round(HeaderGrid.ActualWidth * 35 / 100, 2);
+            HeaderGrid.ColumnDefinitions[0].Width = new GridLength(percent, GridUnitType.Pixel);
+            HeaderGrid.ColumnDefinitions[1].Width = new GridLength(percent, GridUnitType.Pixel);
+        }
+
     }
 
 

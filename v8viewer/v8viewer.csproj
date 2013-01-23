@@ -84,7 +84,6 @@
     </ApplicationDefinition>
     <Compile Include="Comparison\ValueConverters.cs" />
     <Compile Include="Core\IValueVisualizer.cs" />
-    <Compile Include="Core\V8ModuleProcessor.cs" />
     <Compile Include="Editors\BinaryTemplateWindow.xaml.cs">
       <DependentUpon>BinaryTemplateWindow.xaml</DependentUpon>
     </Compile>
@@ -106,7 +105,6 @@
     <Compile Include="Editors\DataProcEditor.cs" />
     <Compile Include="Editors\FileWorkshopEditor.cs" />
     <Compile Include="Editors\ManagedFormEditor.cs" />
-    <Compile Include="Editors\ModuleEditor.cs" />
     <Compile Include="Editors\OrdinaryFormEditor.cs" />
     <Compile Include="Core\HTMLTemplate.cs" />
     <Compile Include="Core\IMDPropertyProvider.cs" />
@@ -218,6 +216,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="Comparison\ComparisonDiag.cd" />
     <None Include="Core\TemplateClassDiagram.cd" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
