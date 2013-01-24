@@ -226,6 +226,14 @@ namespace V8Reader.Core
 
         }
 
+        public IEnumerable<UICommand> Commands
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         #endregion
 
         #region IEditable implementation

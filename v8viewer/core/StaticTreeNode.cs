@@ -50,6 +50,14 @@ namespace V8Reader.Core
             get { return m_Children; }
         }
 
+        public IEnumerable<UICommand> Commands
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         private String m_Name;
         private AbstractImage m_Icon;
         private IEnumerable<IMDTreeItem> m_Children;

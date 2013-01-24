@@ -287,7 +287,15 @@ namespace V8Reader.Core
         {
             get { return null; }
         }
-        
+
+        public IEnumerable<UICommand> Commands
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         #endregion
 
         #region IComparableItem Members
