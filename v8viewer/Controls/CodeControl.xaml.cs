@@ -11,8 +11,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Text.RegularExpressions;
-using FastColoredTextBoxNS;
+using System.Xml;
+using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.AvalonEdit.Search;
+
+using System.Windows.Threading;
 
 namespace V8Reader.Controls
 {
@@ -23,63 +29,100 @@ namespace V8Reader.Controls
     {
         public CodeControl()
         {
+            var Res = Application.GetResourceStream(new Uri("pack://application:,,,/v8viewer;component/controls/1CV8Syntax.xshd", UriKind.Absolute));
+
+            IHighlightingDefinition v8Highlighting;
+
+            using (var s = Res.Stream)
+            {
+                using (XmlReader reader = new XmlTextReader(s))
+                {
+                    v8Highlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.
+                        HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                }
+            }
+
+            HighlightingManager.Instance.RegisterHighlighting("1CV8", new string[] { ".v8m" }, v8Highlighting);
+
             InitializeComponent();
+
+            editor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(editor.TextArea));
+            editor.ShowLineNumbers = true;
+
+            //DispatcherTimer foldingUpdateTimer = new DispatcherTimer();
+            //foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
+            //foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
+            //foldingUpdateTimer.Start();
+
+        }
+
+        void foldingUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            ((DispatcherTimer)sender).Stop();
         }
 
         public String Text 
         { 
             get 
-            { 
-                return codeTextBox.Text; 
+            {
+                return editor.Text; 
             }
             set
             {
-                codeTextBox.Text = value;
+                editor.Text = value;
             }
         }
 
-        private void FastColoredTextBox_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
-        {
-
-            //clear style of changed range
-            e.ChangedRange.ClearStyle(KeywordStyle, CommentStyle, NumbersStyle, StringStyle);
-
-            //comment highlighting
-            e.ChangedRange.SetStyle(CommentStyle, @"//.*$", RegexOptions.Multiline);
-
-            //preprocessor highlighting
-            e.ChangedRange.SetStyle(PreprocStyle, @"\#.*$", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(PreprocStyle, @"&.*$", RegexOptions.Multiline);
-
-            //string highlighting
-            e.ChangedRange.SetStyle(StringStyle, @"""""|@""""|''|@"".*?""|(?<!@)(?<range>"".*?[^\\]"")|'.*?[^\\]'");
-
-            //number highlighting
-            e.ChangedRange.SetStyle(NumbersStyle, @"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b");
-
-            //keyword highlighting
-            e.ChangedRange.SetStyle(KeywordStyle, @"\b(Процедура|КонецПроцедуры|Функция|КонецФункции|Если|Тогда|ИначеЕсли|Иначе|КонецЕсли|Для|Пока|Каждого|По|Из|Цикл|КонецЦикла|Прервать|Продолжить|Возврат|Попытка|Исключение|КонецПопытки|ВызватьИсключение|Истина|Ложь|Лев|Прав|Сред|СокрЛ|СокрП|СокрЛП|Дата|Булево|Строка|Число|Новый|Перем|Экспорт)\b");
-            e.ChangedRange.SetStyle(KeywordStyle, @"[\(|\)|,|;|.|+|-|*|\/|%|=|<|>]");
-
-            //clear folding markers
-            e.ChangedRange.ClearFoldingMarkers();
-            //set folding markers
-            e.ChangedRange.SetFoldingMarkers("Процедура", "КонецПроцедуры", RegexOptions.IgnoreCase);
-            e.ChangedRange.SetFoldingMarkers("Функция", "КонецФункции", RegexOptions.IgnoreCase);
-
-        }
-
-        //styles
-        TextStyle KeywordStyle = new TextStyle(System.Drawing.Brushes.Red, null, System.Drawing.FontStyle.Regular);
-        TextStyle NumbersStyle = new TextStyle(System.Drawing.Brushes.Magenta, null, System.Drawing.FontStyle.Regular);
-        TextStyle CommentStyle = new TextStyle(System.Drawing.Brushes.Green, null, System.Drawing.FontStyle.Regular);
-        TextStyle StringStyle = new TextStyle(System.Drawing.Brushes.Black, null, System.Drawing.FontStyle.Regular);
-        TextStyle PreprocStyle = new TextStyle(System.Drawing.Brushes.Brown, null, System.Drawing.FontStyle.Regular);
-
-        private void UserControl_GotFocus(object sender, RoutedEventArgs e)
-        {
-            Keyboard.Focus(WFHost);
-        }
+        
 
     }
+
+    class V8ModuleFoldingStrategy : AbstractFoldingStrategy
+	{
+		
+        public V8ModuleFoldingStrategy()
+		{
+			
+		}
+		
+		/// <summary>
+		/// Create <see cref="NewFolding"/>s for the specified document.
+		/// </summary>
+		public override IEnumerable<NewFolding> CreateNewFoldings(TextDocument document, out int firstErrorOffset)
+		{
+			firstErrorOffset = -1;
+			return CreateNewFoldings(document);
+		}
+		
+		/// <summary>
+		/// Create <see cref="NewFolding"/>s for the specified document.
+		/// </summary>
+		public IEnumerable<NewFolding> CreateNewFoldings(ITextSource document)
+		{
+			List<NewFolding> newFoldings = new List<NewFolding>();
+			
+            //Stack<int> startOffsets = new Stack<int>();
+            //int lastNewLineOffset = 0;
+            //char openingBrace = this.OpeningBrace;
+            //char closingBrace = this.ClosingBrace;
+            //for (int i = 0; i < document.TextLength; i++) {
+            //    char c = document.GetCharAt(i);
+            //    if (c == openingBrace) {
+            //        startOffsets.Push(i);
+            //    } else if (c == closingBrace && startOffsets.Count > 0) {
+            //        int startOffset = startOffsets.Pop();
+            //        // don't fold if opening and closing brace are on the same line
+            //        if (startOffset < lastNewLineOffset) {
+            //            newFoldings.Add(new NewFolding(startOffset, i + 1));
+            //        }
+            //    } else if (c == '\n' || c == '\r') {
+            //        lastNewLineOffset = i + 1;
+            //    }
+            //}
+            //newFoldings.Sort((a,b) => a.StartOffset.CompareTo(b.StartOffset));
+
+			return newFoldings;
+		}
+	}
+
 }

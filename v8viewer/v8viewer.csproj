@@ -84,6 +84,7 @@
     </ApplicationDefinition>
     <Compile Include="Comparison\ValueConverters.cs" />
     <Compile Include="Core\IValueVisualizer.cs" />
+    <Compile Include="Core\V8Module.cs" />
     <Compile Include="Editors\BinaryTemplateWindow.xaml.cs">
       <DependentUpon>BinaryTemplateWindow.xaml</DependentUpon>
     </Compile>
@@ -217,6 +218,9 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Comparison\ComparisonDiag.cd" />
+    <Resource Include="Controls\1CV8Syntax.xshd">
+      <SubType>Designer</SubType>
+    </Resource>
     <None Include="Core\TemplateClassDiagram.cd" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -255,10 +259,9 @@
       <Project>{a14946cd-6619-45d8-b83b-03fdd445732e}</Project>
       <Name>CFReader</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FastColoredTextBox\FastColoredTextBox.csproj">
-      <Project>{6DD14A85-CCFC-4774-BD26-0F5772512319}</Project>
-      <Name>FastColoredTextBox</Name>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+    <ProjectReference Include="..\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6c55b776-26d4-4db3-a6ab-87e783b2f3d1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
