@@ -375,7 +375,15 @@ namespace V8Reader.Core
         {
             get { return Attributes; }
         }
-        
+
+        public IEnumerable<UICommand> Commands
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         #endregion
 
         protected override void DeclareProperties()

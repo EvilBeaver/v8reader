@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace V8Reader.Core
 {
@@ -21,24 +22,28 @@ namespace V8Reader.Core
 
     class UICommand
     {
-        public UICommand(object Source, CommandCallback CallbackMethod, object CallbackParam)
+
+        public UICommand(string Name, IMDTreeItem srcObject, Action Callback)
         {
-            m_Object = Source;
-            m_CallbackMethod = CallbackMethod;
-            m_CallbackParam = CallbackParam;
+            Text = Name;
+            m_Source = srcObject;
+            m_LogicImpl = Callback;
         }
 
-        public void Execute()
+        public string Text { get; set; }
+
+        public void Execute(Window parentWindow)
         {
-            m_CallbackMethod(m_Object, m_CallbackParam);
+            m_LogicImpl();
         }
 
-        private object m_Object;
-        private object m_CallbackParam;
-        private CommandCallback m_CallbackMethod;
+        public override string ToString()
+        {
+            return Text;
+        }
 
-        public delegate void CommandCallback(object sender, object parameter);
-
+        private IMDTreeItem m_Source;
+        private Action m_LogicImpl;
     }
 
 }

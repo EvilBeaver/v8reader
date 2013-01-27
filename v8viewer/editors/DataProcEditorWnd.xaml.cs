@@ -102,55 +102,57 @@ namespace V8Reader.Editors
             TreeViewItem twSender = sender as TreeViewItem;
             if (twSender != null)
             {
-                twSender.IsSelected = true;
-
-                Dictionary<String, bool> visibilityMask = new Dictionary<string, bool>();
-
-                visibilityMask.Add("mnuOpen", twSender.Header is IEditable);
-                visibilityMask.Add("mnuHelp", twSender.Header is MDForm);
-
-                int visibleItems = SetFormMenusVisibility(twSender.ContextMenu, visibilityMask);
-
-                if (visibleItems > 0)
+                
+                var TreeItem = twSender.Header as IMDTreeItem;
+                if (TreeItem == null)
                 {
-                    twSender.ContextMenu.Tag = twSender.Header;
-                    twSender.ContextMenu.IsOpen = true;
+                    return;
                 }
 
+                twSender.IsSelected = true;
                 e.Handled = true;
+
+                var Commands = TreeItem.Commands;
+                ShowCommandsPopup(Commands);
+
 
             }
 
         }
 
-        private int SetFormMenusVisibility(ContextMenu mnu, Dictionary<String, bool> visibilityMask)
+        private void ShowCommandsPopup(IEnumerable<UICommand> Commands)
         {
-            int visibleCount = 0;
-            foreach (MenuItem item in mnu.Items)
+            if (Commands == null)
             {
+                return;
+            }
 
-                bool Visible, hasValue;
-                hasValue = visibilityMask.TryGetValue(item.Name, out Visible);
-                if (!hasValue)
+            var Menu = new ContextMenu();
+            TextOptions.SetTextFormattingMode(Menu, TextFormattingMode.Display);
+
+            foreach (var Command in Commands)
+            {
+                MenuItem item = new MenuItem();
+                item.Header = Command;
+
+                item.Click += (s, e) => 
                 {
-                    Visible = item.IsVisible;
-                }
+                    try
+                    {
+                        Command.Execute(this);
+                    }
+                    catch (Exception exc)
+                    {
+                        DefaultErrHandling(exc);
+                    }
+                };
 
-                System.Windows.Visibility vis;
-                if (Visible)
-                {
-                    vis = System.Windows.Visibility.Visible;
-                    visibleCount++;
-                }
-                else
-                    vis = System.Windows.Visibility.Collapsed;
-
-                item.Visibility = vis;
+                Menu.Items.Add(item);
 
             }
 
-            return visibleCount;
-            
+            Menu.IsOpen = true;
+
         }
 
         private void btnHelp_Click(object sender, RoutedEventArgs e)

@@ -56,6 +56,8 @@ namespace V8Reader.Core
 
         protected MDReader m_Reader;
 
+        #region IMDTree Implementation
+
         public String Key
         {
             get { return ID; }
@@ -80,6 +82,25 @@ namespace V8Reader.Core
         {
             get { return null; }
         }
+
+        public IEnumerable<UICommand> Commands
+        {
+            get
+            {
+                List<UICommand> cmdList = new List<UICommand>();
+
+                cmdList.Add(new UICommand("Открыть", this, new Action(() =>
+                {
+                    var editor = ((Editors.IEditable)this).GetEditor();
+                    editor.Edit();
+
+                })));
+
+                return cmdList;
+            }
+        }
+
+        #endregion
 
         protected TemplateDocument m_Document;
 

@@ -29,17 +29,16 @@
             <TreeView x:Name="twElements">
                 <TreeView.Resources>
                     <v8r:IconTypeConverter x:Key="IconConverter"/>
-                    <ContextMenu x:Key="treePopup" x:Name="ItemPopup" TextOptions.TextFormattingMode="Display">
+                    <!--ContextMenu x:Key="treePopup" x:Name="ItemPopup" TextOptions.TextFormattingMode="Display">
                         <MenuItem x:Name="mnuOpen" Header="Открыть" MenuItem.Click="mnuOpen_Click"></MenuItem>
                         <MenuItem x:Name="mnuHelp" Header="Справочная информация" MenuItem.Click="mnuHelp_Click"></MenuItem>
-                    </ContextMenu>
+                    </ContextMenu-->
                 </TreeView.Resources>
                 
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <EventSetter Event="MouseDoubleClick" Handler="twElements_MouseDoubleClick" />
                         <EventSetter Event="MouseRightButtonUp" Handler="twElements_RightMouseUp"></EventSetter>
-                        <Setter Property="ContextMenu" Value="{StaticResource treePopup}"/>
                     </Style>
                 </TreeView.ItemContainerStyle>
 
@@ -55,7 +54,7 @@
         </GroupBox>
         
         <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="btnActions" VerticalAlignment="Center" Width="91" Content="Действия" Click="btnActions_Click" MouseRightButtonUp="btnActions_MouseRightButtonUp">
+            <Button x:Name="btnActions" VerticalAlignment="Center" Width="91" Click="btnActions_Click" MouseRightButtonUp="btnActions_MouseRightButtonUp">
                 <Button.ContextMenu>
                     <ContextMenu x:Name="btnActionsPopup" TextOptions.TextFormattingMode="Display">
                         <MenuItem Header="Модуль объекта" Click="btnObjectModule_Click"></MenuItem>
@@ -65,6 +64,31 @@
                         <MenuItem Header="Сравнить с файлом..." Click="mnuCompareTo_Click" ></MenuItem>
                     </ContextMenu>
                 </Button.ContextMenu>
+                
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Действия</TextBlock>
+                        <Path Fill="Black" Stroke="#FF989898" Margin="1,0,0,0">
+                        <Path.Data>
+                        <PathGeometry>
+                            <PathGeometry.Figures>
+                                <PathFigureCollection>
+                                    <PathFigure IsFilled="True" StartPoint="4 6" IsClosed="True">
+                                        <PathFigure.Segments>
+                                            <PathSegmentCollection>
+                                                <LineSegment Point="10 6"/>
+                                                <LineSegment Point="7 10"/>
+                                            </PathSegmentCollection>
+                                        </PathFigure.Segments>
+                                    </PathFigure>
+                                </PathFigureCollection>
+                            </PathGeometry.Figures>
+                        </PathGeometry>
+                        </Path.Data>
+                        </Path>
+                    </StackPanel>
+                </Button.Content>
+                
             </Button>
             <!--Button Name="btnObjectModule" Content="Модуль объекта" VerticalAlignment="Center" Click="btnObjectModule_Click"></Button-->
             <Button Name="btnHelp" Content="Справка" VerticalAlignment="Center" Click="btnHelp_Click" Margin="4,0,0,0" Width="91" />
