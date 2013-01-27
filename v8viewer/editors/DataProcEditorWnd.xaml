@@ -29,19 +29,9 @@
             <TreeView x:Name="twElements">
                 <TreeView.Resources>
                     <v8r:IconTypeConverter x:Key="IconConverter"/>
-                    <!--ContextMenu x:Key="treePopup" x:Name="ItemPopup" TextOptions.TextFormattingMode="Display">
-                        <MenuItem x:Name="mnuOpen" Header="Открыть" MenuItem.Click="mnuOpen_Click"></MenuItem>
-                        <MenuItem x:Name="mnuHelp" Header="Справочная информация" MenuItem.Click="mnuHelp_Click"></MenuItem>
-                    </ContextMenu-->
+                 
                 </TreeView.Resources>
                 
-                <TreeView.ItemContainerStyle>
-                    <Style TargetType="{x:Type TreeViewItem}">
-                        <EventSetter Event="MouseDoubleClick" Handler="twElements_MouseDoubleClick" />
-                        <EventSetter Event="MouseRightButtonUp" Handler="twElements_RightMouseUp"></EventSetter>
-                    </Style>
-                </TreeView.ItemContainerStyle>
-
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding ChildItems}">
                         <StackPanel Orientation="Horizontal">

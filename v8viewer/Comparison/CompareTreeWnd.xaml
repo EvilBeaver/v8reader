@@ -11,11 +11,6 @@
                 <ResourceDictionary Source="DiffTreeStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <ContextMenu x:Key="treePopup" x:Name="ItemPopup" TextOptions.TextFormattingMode="Display" x:Shared="false">
-                <MenuItem x:Name="mnuOpen" Header="Открыть" MenuItem.Click="mnuOpen_Click"></MenuItem>
-                <MenuItem x:Name="mnuHelp" Header="Справочная информация" MenuItem.Click="mnuHelp_Click"></MenuItem>
-            </ContextMenu>
-
             <SolidColorBrush x:Key="AddedColorBrush">#C0DCC0</SolidColorBrush>
             <SolidColorBrush x:Key="DeletedColorBrush">#FFE4C4</SolidColorBrush>
             <SolidColorBrush x:Key="ModifiedColorBrush">#CEFBFF</SolidColorBrush>
@@ -67,11 +62,7 @@
                         <Image Source="{Binding Object.Icon, Converter={StaticResource IconConverter}}" 
                                Stretch="None" UseLayoutRounding="True"
                                RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-                        <Label Padding="2" Content="{Binding Presentation}" 
-                               MouseDoubleClick="Label_MouseDoubleClick_1" 
-                               MouseRightButtonUp="twElements_RightMouseUp" 
-                               Tag="{Binding Object}"
-                               ContextMenu="{StaticResource treePopup}"></Label>
+                        <Label Padding="2" Content="{Binding Presentation}" Tag="{Binding Object}"></Label>
                     </StackPanel>
                     
                     <cmp:ComparisonStatusConverter x:Key="StatusConverter"/>
@@ -115,10 +106,16 @@
                                 <Setter TargetName="RightSide" Property="Background" Value="{x:Null}"></Setter>
                             </DataTrigger>
                         </HierarchicalDataTemplate.Triggers>
-
+                        
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
 
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem" BasedOn="{StaticResource DiffTreeItemStyle}">
+                        <EventSetter Event="MouseRightButtonUp" Handler="TreeViewItem_MouseRightButtonUp"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+                
             </TreeView>
 
         </Grid>
