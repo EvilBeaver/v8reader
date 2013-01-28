@@ -40,6 +40,14 @@
                         </StackPanel>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
+                
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem">
+                        <EventSetter Event="MouseRightButtonUp" Handler="twElements_RightMouseUp"/>
+                        <EventSetter Event="MouseDoubleClick" Handler="twElements_MouseDoubleClick"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+                
             </TreeView>
         </GroupBox>
         
@@ -58,16 +66,16 @@
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>Действия</TextBlock>
-                        <Path Fill="Black" Stroke="#FF989898" Margin="1,0,0,0">
+                        <Path Fill="Black" Stroke="#FF989898">
                         <Path.Data>
                         <PathGeometry>
                             <PathGeometry.Figures>
                                 <PathFigureCollection>
-                                    <PathFigure IsFilled="True" StartPoint="4 6" IsClosed="True">
+                                    <PathFigure IsFilled="True" StartPoint="10 6" IsClosed="True">
                                         <PathFigure.Segments>
                                             <PathSegmentCollection>
-                                                <LineSegment Point="10 6"/>
-                                                <LineSegment Point="7 10"/>
+                                                <LineSegment Point="15 6"/>
+                                                <LineSegment Point="12.5 10.5"/>
                                             </PathSegmentCollection>
                                         </PathFigure.Segments>
                                     </PathFigure>
