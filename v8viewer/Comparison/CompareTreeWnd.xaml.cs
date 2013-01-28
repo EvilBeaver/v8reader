@@ -62,7 +62,7 @@ namespace V8Reader.Comparison
 
         IComparisonPerformer m_Engine;
 
-        
+        private List<UICommand> RClickCommands;
 
         private void CompareTree_Loaded(object sender, RoutedEventArgs e)
         {
@@ -78,9 +78,85 @@ namespace V8Reader.Comparison
             HeaderGrid.ColumnDefinitions[1].Width = new GridLength(percent, GridUnitType.Pixel);
         }
 
+        private void TreeViewItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ((TreeViewItem)sender).IsSelected = true;
+            e.Handled = true;
+        }
+
         private void TreeViewItem_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            var twSender = ((TreeViewItem)sender).IsSelected = true;
+            var cmpItem = ((TreeViewItem)sender).Header as ComparisonItem;
+
+            SetItemCommands(cmpItem);
+            ShowCommandsPopup(RClickCommands);
+            e.Handled = true;
+
+        }
+
+        private void SetItemCommands(ComparisonItem CurrentItem)
+        {
+            if (RClickCommands == null)
+            {
+                RClickCommands = new List<UICommand>();
+            }
+
+
+            
+        }
+
+        private void ShowCommandsPopup(List<UICommand> Commands)
+        {
+            if (Commands == null || Commands.Count == 0)
+            {
+                return;
+            }
+
+            var Menu = new ContextMenu();
+            TextOptions.SetTextFormattingMode(Menu, TextFormattingMode.Display);
+
+            foreach (var Command in Commands)
+            {
+                MenuItem item = new MenuItem();
+                item.Header = Command;
+
+                item.Click += (s, e) =>
+                {
+                    try
+                    {
+                        Command.Execute(this);
+                    }
+                    catch (Exception exc)
+                    {
+                        Utils.UIHelper.DefaultErrHandling(exc);
+                    }
+                };
+
+                Menu.Items.Add(item);
+
+            }
+
+            Menu.IsOpen = true;
+
+        }
+
+        private void Label_MouseRightButtonUp_1(object sender, MouseButtonEventArgs e)
+        {
+
+            RClickCommands = new List<UICommand>();
+
+            var TreeObject = ((Label)sender).Tag as IMDTreeItem;
+            if (TreeObject != null && TreeObject.Commands != null)
+            {
+                RClickCommands.AddRange(TreeObject.Commands);
+            }
+            
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
 
     }
