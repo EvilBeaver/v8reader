@@ -288,13 +288,6 @@ namespace V8Reader.Core
             get { return null; }
         }
 
-        public IEnumerable<UICommand> Commands
-        {
-            get
-            {
-                return null;
-            }
-        }
 
         #endregion
 
@@ -308,6 +301,11 @@ namespace V8Reader.Core
 
             return m_RawContent.ToString() == Attrib.m_RawContent.ToString();
 
+        }
+
+        public Comparison.DiffViewer GetDifferenceViewer(object Comparand)
+        {
+            return null;
         }
 
         #endregion
@@ -374,14 +372,6 @@ namespace V8Reader.Core
         public IEnumerable<IMDTreeItem> ChildItems
         {
             get { return Attributes; }
-        }
-
-        public IEnumerable<UICommand> Commands
-        {
-            get
-            {
-                return null;
-            }
         }
 
         #endregion

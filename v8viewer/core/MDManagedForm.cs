@@ -174,14 +174,6 @@ namespace V8Reader.Core
             get { return m_ChildItems; }
         }
 
-        public IEnumerable<UICommand> Commands
-        {
-            get
-            {
-                return null;
-            }
-        }
-
         #endregion
     }
 
@@ -673,14 +665,6 @@ namespace V8Reader.Core
             get 
             {
                 return m_ChildItems;
-            }
-        }
-
-        public IEnumerable<UICommand> Commands
-        {
-            get
-            {
-                return null;
             }
         }
 

@@ -101,8 +101,11 @@ namespace V8Reader.Comparison
                 RClickCommands = new List<UICommand>();
             }
 
+            if (CurrentItem.Left != null && CurrentItem.Left.Object is PropDef)
+            {
 
-            
+            }
+
         }
 
         private void ShowCommandsPopup(List<UICommand> Commands)
@@ -145,7 +148,7 @@ namespace V8Reader.Comparison
 
             RClickCommands = new List<UICommand>();
 
-            var TreeObject = ((Label)sender).Tag as IMDTreeItem;
+            var TreeObject = ((Label)sender).Tag as ICommandProvider;
             if (TreeObject != null && TreeObject.Commands != null)
             {
                 RClickCommands.AddRange(TreeObject.Commands);

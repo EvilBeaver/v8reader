@@ -5,7 +5,7 @@ using System.Text;
 
 namespace V8Reader.Core
 {
-    abstract class MDForm : MDBaseObject, IMDTreeItem, Editors.IEditable
+    abstract class MDForm : MDBaseObject, IMDTreeItem, ICommandProvider, Editors.IEditable
     {
         public enum FormKind
         {

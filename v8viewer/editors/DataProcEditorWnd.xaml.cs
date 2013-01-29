@@ -103,7 +103,7 @@ namespace V8Reader.Editors
             if (twSender != null)
             {
                 
-                var TreeItem = twSender.Header as IMDTreeItem;
+                var TreeItem = twSender.Header as ICommandProvider;
                 if (TreeItem == null)
                 {
                     return;

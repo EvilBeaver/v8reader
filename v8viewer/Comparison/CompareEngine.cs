@@ -10,6 +10,7 @@ namespace V8Reader.Comparison
     interface IComparableItem
     {
         bool CompareTo(object Comparand);
+        DiffViewer GetDifferenceViewer(object Comparand);
     }
 
     interface IComparator
@@ -49,11 +50,16 @@ namespace V8Reader.Comparison
         private object m_Value;
         private IComparator m_Comparator;
 
-        #region IComparableProperty Members
+        #region IComparableItem Members
 
         public bool CompareTo(object Comparand)
         {
             return m_Comparator.CompareObjects(Value, Comparand);
+        }
+
+        public DiffViewer GetDifferenceViewer(object Comparand)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -281,13 +287,18 @@ namespace V8Reader.Comparison
             {
 
                 object RightVal = null;
+                PropDef RightProperty = null;
+
                 if (Right != null)
+                {
                     RightVal = Right.GetValue(propDef.Key);
+                    RightProperty = Right.Properties[propDef.Key];
+                }
 
                 bool diff = !propDef.CompareTo(RightVal);
                 result = result && diff;
 
-                var newNode = new ComparisonItem(propDef.Value, RightVal, propDef.Name);
+                var newNode = new ComparisonItem(propDef, RightProperty, propDef.Name);
                 newNode.IsDiffer = diff;
 
                 PropStub.Items.Add(newNode);

@@ -16,34 +16,6 @@ namespace V8Reader.Core
         bool HasChildren();
         IEnumerable<IMDTreeItem> ChildItems { get; }
 
-        IEnumerable<UICommand> Commands { get; }
-
-    }
-
-    class UICommand
-    {
-
-        public UICommand(string Name, IMDTreeItem srcObject, Action Callback)
-        {
-            Text = Name;
-            m_Source = srcObject;
-            m_LogicImpl = Callback;
-        }
-
-        public string Text { get; set; }
-
-        public void Execute(Window parentWindow)
-        {
-            m_LogicImpl();
-        }
-
-        public override string ToString()
-        {
-            return Text;
-        }
-
-        private IMDTreeItem m_Source;
-        private Action m_LogicImpl;
     }
 
 }

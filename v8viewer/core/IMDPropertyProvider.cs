@@ -77,6 +77,11 @@ namespace V8Reader.Core
 
         }
 
+        public Comparison.DiffViewer GetDifferenceViewer(object Comparand)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 
