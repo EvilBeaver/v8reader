@@ -15,7 +15,7 @@ namespace V8Reader.Core
     class UICommand
     {
 
-        public UICommand(string Name, IMDTreeItem srcObject, Action Callback)
+        public UICommand(string Name, object srcObject, Action Callback)
         {
             Text = Name;
             m_Source = srcObject;
@@ -34,7 +34,7 @@ namespace V8Reader.Core
             return Text;
         }
 
-        private IMDTreeItem m_Source;
+        private object m_Source;
         private Action m_LogicImpl;
     }
 

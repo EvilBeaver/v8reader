@@ -73,7 +73,7 @@ namespace V8Reader.Core
                 }
             }
 
-            return m_Comparator.CompareObjects(this, Comparand);
+            return m_Comparator.CompareObjects(Value, Comparand);
 
         }
 
