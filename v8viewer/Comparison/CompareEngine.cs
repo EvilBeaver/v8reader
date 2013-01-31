@@ -331,19 +331,50 @@ namespace V8Reader.Comparison
         {
             Left = new ComparisonSide();
             Right = new ComparisonSide();
-            m_Items = new List<ComparisonItem>();
+            m_Items = new ItemsCollection(this);
         }
 
         public ComparisonItem(object left, object right, string name)
         {
             Left = new ComparisonSide() { Object = left, Presentation = name };
             Right = new ComparisonSide { Object = right, Presentation = name };
-            m_Items = new List<ComparisonItem>();
+            m_Items = new ItemsCollection(this);
         }
 
         public ComparisonSide Left { get; private set; }
         public ComparisonSide Right { get; private set; }
-        public List<ComparisonItem> Items { get { return m_Items; } }
+        public IList<ComparisonItem> Items { get { return m_Items; } }
+        public ComparisonItem Parent { get; private set; }
+        public ResultNodeType NodeType 
+        {
+            get
+            {
+                var checkSide = Left == null ? Right : Left;
+                if (checkSide == null)
+                {
+                    return ResultNodeType.FakeNode;
+                }
+                else
+                {
+                    if (checkSide.Object is MDObjectsCollection<MDBaseObject> || checkSide.Object is StaticTreeNode)
+                    {
+                        return ResultNodeType.ObjectsCollection;
+                    }
+                    else if (checkSide.Object is MDBaseObject)
+                    {
+                        return ResultNodeType.Object;
+                    }
+                    else if (checkSide.Object is PropDef)
+                    {
+                        return ResultNodeType.PropertyDef;
+                    }
+                    else
+                    {
+                        return ResultNodeType.FakeNode;
+                    }
+                }
+            }
+        }
 
         public ComparisonStatus Status
         {
@@ -380,7 +411,118 @@ namespace V8Reader.Comparison
             return newNode;
         }
 
-        private List<ComparisonItem> m_Items;
+        private ItemsCollection m_Items;
+
+        private class ItemsCollection : IList<ComparisonItem>
+        {
+            public ItemsCollection(ComparisonItem parent)
+            {
+                m_Parent = parent;
+            }
+
+            private ComparisonItem m_Parent;
+            private List<ComparisonItem> m_Items = new List<ComparisonItem>();
+
+            #region IList<ComparisonItem> Members
+
+            public int IndexOf(ComparisonItem item)
+            {
+                return m_Items.IndexOf(item);
+            }
+
+            public void Insert(int index, ComparisonItem item)
+            {
+                item.Parent = m_Parent;
+                m_Items.Insert(index, item);
+            }
+
+            public void RemoveAt(int index)
+            {
+                m_Items.RemoveAt(index);
+            }
+
+            public ComparisonItem this[int index]
+            {
+                get
+                {
+                    return m_Items[index];
+                }
+                set
+                {
+                    value.Parent = m_Parent;
+                    m_Items[index] = value;
+                }
+            }
+
+            #endregion
+
+            #region ICollection<ComparisonItem> Members
+
+            public void Add(ComparisonItem item)
+            {
+                item.Parent = m_Parent;
+                m_Items.Add(item);
+            }
+
+            public void Clear()
+            {
+                m_Items.Clear();
+            }
+
+            public bool Contains(ComparisonItem item)
+            {
+                return m_Items.Contains(item);
+            }
+
+            public void CopyTo(ComparisonItem[] array, int arrayIndex)
+            {
+                m_Items.CopyTo(array, arrayIndex);
+            }
+
+            public int Count
+            {
+                get { return m_Items.Count; }
+            }
+
+            public bool IsReadOnly
+            {
+                get { return false; }
+            }
+
+            public bool Remove(ComparisonItem item)
+            {
+                return m_Items.Remove(item);
+            }
+
+            #endregion
+
+            #region IEnumerable<ComparisonItem> Members
+
+            public IEnumerator<ComparisonItem> GetEnumerator()
+            {
+                return m_Items.GetEnumerator();
+            }
+
+            #endregion
+
+            #region IEnumerable Members
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return m_Items.GetEnumerator();
+            }
+
+            #endregion
+        }
+
+    }
+
+    enum ResultNodeType
+    {
+        Object,
+        ObjectsCollection,
+        PropertyDef,
+        FakeNode        
     }
 
     enum ComparisonStatus
