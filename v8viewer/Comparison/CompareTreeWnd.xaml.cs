@@ -62,8 +62,6 @@ namespace V8Reader.Comparison
 
         IComparisonPerformer m_Engine;
 
-        private List<UICommand> RClickCommands;
-
         private void CompareTree_Loaded(object sender, RoutedEventArgs e)
         {
             var twItem = (TreeViewItem)twTree.ItemContainerGenerator.ContainerFromIndex(0);
@@ -73,7 +71,7 @@ namespace V8Reader.Comparison
 
         private void CompareTree_ContentRendered(object sender, EventArgs e)
         {
-            double percent = Math.Round(HeaderGrid.ActualWidth * 35 / 100, 2);
+            double percent = Math.Round(HeaderGrid.ActualWidth * 40 / 100, 2);
             HeaderGrid.ColumnDefinitions[0].Width = new GridLength(percent, GridUnitType.Pixel);
             HeaderGrid.ColumnDefinitions[1].Width = new GridLength(percent, GridUnitType.Pixel);
         }
@@ -82,33 +80,6 @@ namespace V8Reader.Comparison
         {
             ((TreeViewItem)sender).IsSelected = true;
             e.Handled = true;
-        }
-
-        private void TreeViewItem_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            var cmpItem = ((TreeViewItem)sender).Header as ComparisonItem;
-
-            SetItemCommands(cmpItem);
-            ShowCommandsPopup(RClickCommands);
-            RClickCommands = null;
-            e.Handled = true;
-
-        }
-
-        private void SetItemCommands(ComparisonItem CurrentItem)
-        {
-            if (RClickCommands == null)
-            {
-                RClickCommands = new List<UICommand>();
-            }
-
-            if (CurrentItem.Left != null && CurrentItem.Left.Object is PropDef)
-            {
-                RClickCommands.Add(
-                    new UICommand("Prop command", CurrentItem, new Action(() => { })));
-                
-            }
-
         }
 
         private void ShowCommandsPopup(List<UICommand> Commands)
@@ -146,19 +117,83 @@ namespace V8Reader.Comparison
 
         }
 
+        private void GatherUICommands(ComparisonItem cmpItem, List<UICommand> RClickCommands, bool IsLeftSourced)
+        {
+            if (cmpItem == null || cmpItem.NodeType == ResultNodeType.ObjectsCollection)
+            {
+                return;
+            }
+
+            if (cmpItem.NodeType == ResultNodeType.FakeNode)
+            {
+                GatherUICommands(cmpItem.Parent, RClickCommands, IsLeftSourced);
+                return;
+            }
+
+            // gathering treeitem commands
+            object srcObject = (IsLeftSourced) ? cmpItem.Left.Object : cmpItem.Right.Object;
+
+            if (cmpItem.NodeType == ResultNodeType.PropertyDef)
+            {
+                if (srcObject != null)
+                {
+                    var PropDef = (PropDef)srcObject;
+                    AddProviderCommands(PropDef as ICommandProvider, RClickCommands);
+                    GatherUICommands(cmpItem.Parent, RClickCommands, IsLeftSourced);
+                }
+            }
+            else if (cmpItem.NodeType == ResultNodeType.Object)
+            {
+                var Provider = srcObject as ICommandProvider;
+                AddProviderCommands(Provider, RClickCommands);
+            }
+
+        }
+
+        private void AddProviderCommands(ICommandProvider Provider, List<UICommand> RClickCommands)
+        {
+            if (Provider != null && Provider.Commands != null)
+            {
+                RClickCommands.AddRange(Provider.Commands);
+            }
+        }
+
         private void Label_MouseRightButtonUp_1(object sender, MouseButtonEventArgs e)
         {
 
-            RClickCommands = new List<UICommand>();
-
-            var LabelContentObject = ((Label)sender).Tag;
-
-            var TreeObject = LabelContentObject as ICommandProvider;
-            if (TreeObject != null && TreeObject.Commands != null)
-            {
-                RClickCommands.AddRange(TreeObject.Commands);
-            }
+            List<UICommand> RClickCommands = new List<UICommand>();
             
+            var LabelContentObject = ((Label)sender).Tag;
+            
+            Border sideHolder = Utils.UIHelper.FindLogicalParent<Border>((Label)sender);
+            bool isLeft;
+            if (sideHolder.Name == "LeftSide")
+            {
+                isLeft = true;
+            }
+            else if (sideHolder.Name == "RightSide")
+            {
+                isLeft = false;
+            }
+            else
+            {
+                var TreeObject = LabelContentObject as ICommandProvider;
+                if (TreeObject != null && TreeObject.Commands != null)
+                {
+                    RClickCommands.AddRange(TreeObject.Commands);
+                }
+
+                return;
+            }
+
+            TreeViewItem twItem = Utils.UIHelper.FindVisualParent<TreeViewItem>(sideHolder);
+            if (twItem != null && twItem.Header is ComparisonItem)
+            {
+                var cmpItem = (ComparisonItem)twItem.Header;
+                GatherUICommands(cmpItem, RClickCommands, isLeft);
+            }
+
+            ShowCommandsPopup(RClickCommands);
 
         }
 

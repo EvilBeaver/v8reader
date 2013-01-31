@@ -62,7 +62,7 @@
                         <Image Source="{Binding Object.Icon, Converter={StaticResource IconConverter}}" 
                                Stretch="None" UseLayoutRounding="True"
                                RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-                        <Label Padding="2" Content="{Binding Presentation}" Tag="{Binding Object}" MouseRightButtonUp="Label_MouseRightButtonUp_1"></Label>
+                        <Label Padding="2" Content="{Binding Presentation}" Tag="{Binding Object}" HorizontalAlignment="Stretch" MouseRightButtonUp="Label_MouseRightButtonUp_1"></Label>
                     </StackPanel>
                     
                     <cmp:ComparisonStatusConverter x:Key="StatusConverter"/>
@@ -114,7 +114,6 @@
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="TreeViewItem" BasedOn="{StaticResource DiffTreeItemStyle}">
                         <EventSetter Event="MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
-                        <EventSetter Event="MouseRightButtonUp" Handler="TreeViewItem_MouseRightButtonUp"/>
                     </Style>
                 </TreeView.ItemContainerStyle>
                 

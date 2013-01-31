@@ -281,7 +281,7 @@ namespace V8Reader.Comparison
         {
             var PropStub = parentNode.AddStaticNode("Свойства");
             
-            bool result = true;
+            bool HasDifference = false;
 
             foreach (PropDef propDef in Left.Properties.Values)
             {
@@ -295,18 +295,18 @@ namespace V8Reader.Comparison
                     RightProperty = Right.Properties[propDef.Key];
                 }
 
-                bool diff = !propDef.CompareTo(RightVal);
-                result = result && diff;
+                bool childDifference = !propDef.CompareTo(RightVal);
+                HasDifference = HasDifference || childDifference;
 
                 var newNode = new ComparisonItem(propDef, RightProperty, propDef.Name);
-                newNode.IsDiffer = diff;
+                newNode.IsDiffer = childDifference;
 
                 PropStub.Items.Add(newNode);
 
             }
 
-            parentNode.IsDiffer = result;
-            PropStub.IsDiffer = result;
+            parentNode.IsDiffer = HasDifference;
+            PropStub.IsDiffer = HasDifference;
             
             return PropStub;
 
@@ -349,7 +349,7 @@ namespace V8Reader.Comparison
         {
             get
             {
-                var checkSide = Left == null ? Right : Left;
+                var checkSide = Left.Object == null ? Right : Left;
                 if (checkSide == null)
                 {
                     return ResultNodeType.FakeNode;
@@ -388,7 +388,7 @@ namespace V8Reader.Comparison
                 {
                     return ComparisonStatus.Deleted;
                 }
-                else if (Left.Object != null && Right.Object != null && IsDiffer)
+                else if (IsDiffer)
                 {
                     return ComparisonStatus.Modified;
                 }
