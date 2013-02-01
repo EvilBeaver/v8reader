@@ -10,6 +10,7 @@ namespace V8Reader.Comparison
     interface IComparableItem
     {
         bool CompareTo(object Comparand);
+        DiffViewer GetDifferenceViewer(object Comparand);
     }
 
     interface IComparator
@@ -49,11 +50,16 @@ namespace V8Reader.Comparison
         private object m_Value;
         private IComparator m_Comparator;
 
-        #region IComparableProperty Members
+        #region IComparableItem Members
 
         public bool CompareTo(object Comparand)
         {
             return m_Comparator.CompareObjects(Value, Comparand);
+        }
+
+        public DiffViewer GetDifferenceViewer(object Comparand)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -275,27 +281,32 @@ namespace V8Reader.Comparison
         {
             var PropStub = parentNode.AddStaticNode("Свойства");
             
-            bool result = true;
+            bool HasDifference = false;
 
             foreach (PropDef propDef in Left.Properties.Values)
             {
 
                 object RightVal = null;
+                PropDef RightProperty = null;
+
                 if (Right != null)
+                {
                     RightVal = Right.GetValue(propDef.Key);
+                    RightProperty = Right.Properties[propDef.Key];
+                }
 
-                bool diff = !propDef.CompareTo(RightVal);
-                result = result && diff;
+                bool childDifference = !propDef.CompareTo(RightVal);
+                HasDifference = HasDifference || childDifference;
 
-                var newNode = new ComparisonItem(propDef.Value, RightVal, propDef.Name);
-                newNode.IsDiffer = diff;
+                var newNode = new ComparisonItem(propDef, RightProperty, propDef.Name);
+                newNode.IsDiffer = childDifference;
 
                 PropStub.Items.Add(newNode);
 
             }
 
-            parentNode.IsDiffer = result;
-            PropStub.IsDiffer = result;
+            parentNode.IsDiffer = HasDifference;
+            PropStub.IsDiffer = HasDifference;
             
             return PropStub;
 
@@ -320,19 +331,50 @@ namespace V8Reader.Comparison
         {
             Left = new ComparisonSide();
             Right = new ComparisonSide();
-            m_Items = new List<ComparisonItem>();
+            m_Items = new ItemsCollection(this);
         }
 
         public ComparisonItem(object left, object right, string name)
         {
             Left = new ComparisonSide() { Object = left, Presentation = name };
             Right = new ComparisonSide { Object = right, Presentation = name };
-            m_Items = new List<ComparisonItem>();
+            m_Items = new ItemsCollection(this);
         }
 
         public ComparisonSide Left { get; private set; }
         public ComparisonSide Right { get; private set; }
-        public List<ComparisonItem> Items { get { return m_Items; } }
+        public IList<ComparisonItem> Items { get { return m_Items; } }
+        public ComparisonItem Parent { get; private set; }
+        public ResultNodeType NodeType 
+        {
+            get
+            {
+                var checkSide = Left.Object == null ? Right : Left;
+                if (checkSide == null)
+                {
+                    return ResultNodeType.FakeNode;
+                }
+                else
+                {
+                    if (checkSide.Object is MDObjectsCollection<MDBaseObject> || checkSide.Object is StaticTreeNode)
+                    {
+                        return ResultNodeType.ObjectsCollection;
+                    }
+                    else if (checkSide.Object is MDBaseObject)
+                    {
+                        return ResultNodeType.Object;
+                    }
+                    else if (checkSide.Object is PropDef)
+                    {
+                        return ResultNodeType.PropertyDef;
+                    }
+                    else
+                    {
+                        return ResultNodeType.FakeNode;
+                    }
+                }
+            }
+        }
 
         public ComparisonStatus Status
         {
@@ -346,7 +388,7 @@ namespace V8Reader.Comparison
                 {
                     return ComparisonStatus.Deleted;
                 }
-                else if (Left.Object != null && Right.Object != null && IsDiffer)
+                else if (IsDiffer)
                 {
                     return ComparisonStatus.Modified;
                 }
@@ -369,7 +411,118 @@ namespace V8Reader.Comparison
             return newNode;
         }
 
-        private List<ComparisonItem> m_Items;
+        private ItemsCollection m_Items;
+
+        private class ItemsCollection : IList<ComparisonItem>
+        {
+            public ItemsCollection(ComparisonItem parent)
+            {
+                m_Parent = parent;
+            }
+
+            private ComparisonItem m_Parent;
+            private List<ComparisonItem> m_Items = new List<ComparisonItem>();
+
+            #region IList<ComparisonItem> Members
+
+            public int IndexOf(ComparisonItem item)
+            {
+                return m_Items.IndexOf(item);
+            }
+
+            public void Insert(int index, ComparisonItem item)
+            {
+                item.Parent = m_Parent;
+                m_Items.Insert(index, item);
+            }
+
+            public void RemoveAt(int index)
+            {
+                m_Items.RemoveAt(index);
+            }
+
+            public ComparisonItem this[int index]
+            {
+                get
+                {
+                    return m_Items[index];
+                }
+                set
+                {
+                    value.Parent = m_Parent;
+                    m_Items[index] = value;
+                }
+            }
+
+            #endregion
+
+            #region ICollection<ComparisonItem> Members
+
+            public void Add(ComparisonItem item)
+            {
+                item.Parent = m_Parent;
+                m_Items.Add(item);
+            }
+
+            public void Clear()
+            {
+                m_Items.Clear();
+            }
+
+            public bool Contains(ComparisonItem item)
+            {
+                return m_Items.Contains(item);
+            }
+
+            public void CopyTo(ComparisonItem[] array, int arrayIndex)
+            {
+                m_Items.CopyTo(array, arrayIndex);
+            }
+
+            public int Count
+            {
+                get { return m_Items.Count; }
+            }
+
+            public bool IsReadOnly
+            {
+                get { return false; }
+            }
+
+            public bool Remove(ComparisonItem item)
+            {
+                return m_Items.Remove(item);
+            }
+
+            #endregion
+
+            #region IEnumerable<ComparisonItem> Members
+
+            public IEnumerator<ComparisonItem> GetEnumerator()
+            {
+                return m_Items.GetEnumerator();
+            }
+
+            #endregion
+
+            #region IEnumerable Members
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return m_Items.GetEnumerator();
+            }
+
+            #endregion
+        }
+
+    }
+
+    enum ResultNodeType
+    {
+        Object,
+        ObjectsCollection,
+        PropertyDef,
+        FakeNode        
     }
 
     enum ComparisonStatus

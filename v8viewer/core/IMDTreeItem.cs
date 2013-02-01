@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace V8Reader.Core
 {
@@ -11,9 +12,10 @@ namespace V8Reader.Core
         String Key { get; }
         String Text { get; }
         AbstractImage Icon { get; }
-
+        
         bool HasChildren();
         IEnumerable<IMDTreeItem> ChildItems { get; }
 
     }
+
 }

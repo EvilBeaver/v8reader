@@ -7,7 +7,7 @@ using V8Reader.Editors;
 
 namespace V8Reader.Core
 {
-    class MDManagedForm : MDForm, IMDTreeItem, IEditable
+    class MDManagedForm : MDForm, IMDTreeItem
     {
         public MDManagedForm(String ObjID, MDReader Reader) : base(ObjID, Reader) 
         {
@@ -59,7 +59,7 @@ namespace V8Reader.Core
             }
         }
 
-        public ICustomEditor GetEditor()
+        public override ICustomEditor GetEditor()
         {
             return new Editors.ManagedFormEditor(this);
         }

@@ -287,7 +287,8 @@ namespace V8Reader.Core
         {
             get { return null; }
         }
-        
+
+
         #endregion
 
         #region IComparableItem Members
@@ -300,6 +301,11 @@ namespace V8Reader.Core
 
             return m_RawContent.ToString() == Attrib.m_RawContent.ToString();
 
+        }
+
+        public Comparison.DiffViewer GetDifferenceViewer(object Comparand)
+        {
+            return null;
         }
 
         #endregion
@@ -367,7 +373,7 @@ namespace V8Reader.Core
         {
             get { return Attributes; }
         }
-        
+
         #endregion
 
         protected override void DeclareProperties()

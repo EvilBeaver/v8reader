@@ -451,7 +451,6 @@ namespace CFReader
             
         }
 
-        public const int DecompressChunk = 16384;
     }
 
     ////////////////////////////////////////////////////////////////

@@ -6,7 +6,7 @@ using V8Reader.Editors;
 
 namespace V8Reader.Core
 {
-    partial class MDDataProcessor : MDBaseObject, IMDTreeItem, IDisposable, IEditable
+    partial class MDDataProcessor : MDBaseObject, IMDTreeItem, IDisposable, IEditable, ICommandProvider
     {
 
         private MDDataProcessor(MDReader Reader) : base()
@@ -224,6 +224,14 @@ namespace V8Reader.Core
                 return m_StaticChildren;
             }
 
+        }
+
+        public IEnumerable<UICommand> Commands
+        {
+            get
+            {
+                return null;
+            }
         }
 
         #endregion

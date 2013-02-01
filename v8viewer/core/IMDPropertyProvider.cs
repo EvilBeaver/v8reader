@@ -73,8 +73,13 @@ namespace V8Reader.Core
                 }
             }
 
-            return m_Comparator.CompareObjects(this, Comparand);
+            return m_Comparator.CompareObjects(Value, Comparand);
 
+        }
+
+        public Comparison.DiffViewer GetDifferenceViewer(object Comparand)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -6,11 +6,11 @@ using V8Reader.Editors;
 
 namespace V8Reader.Core
 {
-    class MDOrdinaryForm : MDForm, IMDTreeItem, IEditable
+    class MDOrdinaryForm : MDForm, IMDTreeItem
     {
         public MDOrdinaryForm(String ObjID, MDReader Reader) : base(ObjID, Reader) { }
 
-        public ICustomEditor GetEditor()
+        public override ICustomEditor GetEditor()
         {
             return new Editors.OrdinaryFormEditor(this);
         }

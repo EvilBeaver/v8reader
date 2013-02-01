@@ -5,7 +5,7 @@ using System.Text;
 
 namespace V8Reader.Core
 {
-    abstract class MDForm : MDBaseObject, IMDTreeItem
+    abstract class MDForm : MDBaseObject, IMDTreeItem, ICommandProvider, Editors.IEditable
     {
         public enum FormKind
         {
@@ -125,9 +125,44 @@ namespace V8Reader.Core
             get { return null; }
         }
 
+        public virtual IEnumerable<UICommand> Commands
+        {
+            get
+            {
+                List<UICommand> cmdList = new List<UICommand>();
+
+                cmdList.Add(new UICommand("Открыть", this, new Action(()=>
+                    {
+                        var editor = ((Editors.IEditable)this).GetEditor();
+                        editor.Edit();
+
+                    })));
+
+                cmdList.Add(new UICommand("Справочная информация", this, new Action(() =>
+                {
+                    if (!Help.IsEmpty)
+                    {
+                        String Path = Help.Location;
+                        System.Diagnostics.Process.Start(Path);
+                        
+                    }
+
+                })));
+
+                return cmdList;
+            }
+        }
+
         #endregion
 
-        
+        #region IEditable Members
+
+        public virtual Editors.ICustomEditor GetEditor()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 
     internal enum FormElementClass
