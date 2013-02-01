@@ -9,32 +9,26 @@ namespace V8Reader.Core
     {
         public static IList<V8ModulePart> ParseParts(string Text)
         {
+            return null;
+        }
 
-            using (var Reader = new System.IO.StringReader(Text))
-            {
+        private static bool BlockCanHaveComments(BlockType blockType)
+        {
+            return (blockType == BlockType.Function
+                || blockType == BlockType.Procedure
+                || blockType == BlockType.CompilerDirective
+                || blockType == BlockType.OutOfMethod);
+            
+        }
 
-                bool blockIsOpen = false;
-                ParserBlock currentBlock = new ParserBlock();
+        private static void CloseBlock(ParserBlock Block, IList<V8ModulePart> Parts)
+        {
+            
+        }
 
-                string currentLine = Reader.ReadLine();
-
-                while (currentLine != null)
-                {
-                    string TrimmedLine = currentLine.Trim();
-
-                    if (blockIsOpen)
-                    {
-
-                    }
-                    else
-                    {
-                        blockIsOpen = SwitchReaderContext(currentLine, ref currentBlock);
-                    }
-
-                }
-
-            }
-
+        private static void AddLineToBlock(ParserBlock currentBlock,string currentLine)
+        {
+ 	        currentBlock.AppendLine(currentLine);
         }
 
         static private Nullable<ParserBlock> OpenBlockForLine(string DocumentLine)
@@ -118,16 +112,22 @@ namespace V8Reader.Core
             private StringBuilder Builder;
             public string title;
 
-            public ParserBlock()
-            {
-                Builder = new StringBuilder();
-                type = BlockType.OutOfMethod;
-                title = String.Empty;
-            }
-
             public void Append(string line)
             {
                 Builder.Append(line);
+            }
+
+            public void AppendLine(string line)
+            {
+                Builder.AppendLine(line);
+            }
+
+            public string Content
+            {
+                get
+                {
+                    return Builder.ToString();
+                }
             }
 
         }
@@ -150,20 +150,20 @@ namespace V8Reader.Core
         {
             Title = title;
             Content = content;
+            RuntimeContext = V8RuntimeContextType.Default;
         }
         
         public V8RuntimeContextType RuntimeContext { get; set; }
         public V8ModulePartClass PartClass { get; set; }
+
         public string Content { get; set; }
         public string Title { get; private set; }
-
-        public IList<V8ModulePart> ChildParts { get; protected set; }
 
     }
 
     enum V8ModulePartClass
     {
-        VariablesDefinition,
+        VariableDefinition,
         Method,
         StartupCode
     }
