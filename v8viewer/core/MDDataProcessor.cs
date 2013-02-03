@@ -252,7 +252,9 @@ namespace V8Reader.Core
             base.DeclareProperties();
             var internalProps = base.PropHolder;
                 
-            internalProps.Add(PropDef.Create("Module", "Модуль объекта", ObjectModule));
+            internalProps.Add(PropDef.Create("Module", "Модуль объекта", 
+                new V8ModuleProcessor(ObjectModule, "Модуль объекта:" + Name)));
+
             internalProps.Add(PropDef.Create("Help", "Справочная информация", Help));
             
             //internalProps.Add(PropDef.Create("Attributes", "Реквизиты", Attributes));

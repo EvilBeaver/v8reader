@@ -37,6 +37,8 @@ namespace V8Reader
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            txtDiffCmdLine.Text = V8Reader.Properties.Settings.Default.DiffCmdLine;
+            
             txtFileWorkshopPath.Text = V8Reader.Properties.Settings.Default.PathToFileWorkshop;
             txtFileWorkshopPath.Focus();
 
@@ -52,6 +54,7 @@ namespace V8Reader
             try
             {
                 V8Reader.Properties.Settings.Default.PathToFileWorkshop = txtFileWorkshopPath.Text;
+                V8Reader.Properties.Settings.Default.DiffCmdLine = txtDiffCmdLine.Text;
                 V8Reader.Properties.Settings.Default.Save();
                 HandleAssociation(".epf", epfAssociation);
             }
@@ -113,6 +116,17 @@ namespace V8Reader
         }
 
         private const String FileAssociationProgID = "V8Viewer.DataProcessor";
+
+        private void btnBrowseDiff_Click(object sender, RoutedEventArgs e)
+        {
+            var Dlg = new Microsoft.Win32.OpenFileDialog();
+            Dlg.Filter = "Приложение |*.exe";
+            Dlg.Multiselect = false;
+            if ((bool)Dlg.ShowDialog(this))
+            {
+                txtDiffCmdLine.Text = Dlg.FileName;
+            }
+        }
 
     }
 }

@@ -8,18 +8,10 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="V8Reader.Comparison.ComparableHelperWrapper" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="4.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAQAAAAQAAAgAAAAAAA=</HashCode>
-      <FileName>Comparison\CompareEngine.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
   <Class Name="V8Reader.Core.PropDef" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="0.5" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EQAAEAAAAAAAAAQAAAAAAAQAAAQAAEAQAAAgAAAAAAA=</HashCode>
+      <HashCode>EQAAEAAAAAAAAAQAAAAAAAQAAAQAAEAQAAAgAEAAAAA=</HashCode>
       <FileName>Core\IMDPropertyProvider.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -43,7 +35,7 @@
   <Class Name="V8Reader.Core.MDAttribute" Collapsed="true">
     <Position X="4.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAgAAAQQAAAAAAAAAAAAAIAAAAAACAEAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAgAAAQQAAAAAAAAAAAAAIAAAAAACEEAAAA=</HashCode>
       <FileName>Core\MDBaseObject.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -59,7 +51,7 @@
   <Interface Name="V8Reader.Comparison.IComparableItem">
     <Position X="3" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
       <FileName>Comparison\CompareEngine.cs</FileName>
     </TypeIdentifier>
   </Interface>

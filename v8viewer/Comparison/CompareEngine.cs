@@ -10,12 +10,17 @@ namespace V8Reader.Comparison
     interface IComparableItem
     {
         bool CompareTo(object Comparand);
-        DiffViewer GetDifferenceViewer(object Comparand);
+        IDiffViewer GetDifferenceViewer(object Comparand);
     }
 
     interface IComparator
     {
         bool CompareObjects(object Compared, object Comparand);
+    }
+
+    interface IDiffViewer
+    {
+        void ShowDifference();
     }
 
     class BasicComparator : IComparator
@@ -29,37 +34,6 @@ namespace V8Reader.Comparison
                 return Comparand == null;
 
             return Compared.Equals(Comparand);
-        }
-
-        #endregion
-    }
-
-    class ComparableHelperWrapper : IComparableItem
-    {
-        public ComparableHelperWrapper(object value, IComparator comparator)
-        {
-            m_Value = value;
-            m_Comparator = comparator;
-        }
-
-        public object Value
-        {
-            get { return m_Value; }
-        }
-
-        private object m_Value;
-        private IComparator m_Comparator;
-
-        #region IComparableItem Members
-
-        public bool CompareTo(object Comparand)
-        {
-            return m_Comparator.CompareObjects(Value, Comparand);
-        }
-
-        public DiffViewer GetDifferenceViewer(object Comparand)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

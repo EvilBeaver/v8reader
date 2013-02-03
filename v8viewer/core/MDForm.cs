@@ -41,6 +41,7 @@ namespace V8Reader.Core
             }
         }
         public abstract string Module { get; }
+        public /*abstract*/ string DialogDef { get; private set; }
 
         protected MDForm(String ObjID, MDReader Reader) : base(ObjID)
         {
@@ -76,6 +77,16 @@ namespace V8Reader.Core
                 throw new MDStreamFormatException();
 
             return new SerializedList(RawContent.Substring(ListStart - 1));
+        }
+
+        protected override void DeclareProperties()
+        {
+            base.DeclareProperties();
+            var internalProps = base.PropHolder;
+
+            internalProps.Add(PropDef.Create("Dialog", "Форма", DialogDef));
+            internalProps.Add(PropDef.Create("Module", "Модуль", Module));
+            
         }
 
         protected MDReader m_Reader;

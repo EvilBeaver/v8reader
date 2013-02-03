@@ -139,6 +139,23 @@ namespace V8Reader.Comparison
                 {
                     var PropDef = (PropDef)srcObject;
                     AddProviderCommands(PropDef as ICommandProvider, RClickCommands);
+
+                    if (cmpItem.Status == ComparisonStatus.Modified || cmpItem.Status == ComparisonStatus.Match)
+                    {
+                        if (PropDef.Value is V8ModuleProcessor)
+                        {
+                            var cmd = new UICommand("Показать различия в модулях", cmpItem, new Action(
+                                () =>
+                                {
+                                    V8ModuleProcessor LeftVal = ((PropDef)cmpItem.Left.Object).Value as V8ModuleProcessor;
+                                    V8ModuleProcessor RightVal = ((PropDef)cmpItem.Right.Object).Value as V8ModuleProcessor;
+                                    var viewer = ((V8ModuleProcessor)PropDef.Value).GetDifferenceViewer(RightVal);
+                                    viewer.ShowDifference();
+                                }));
+
+                            RClickCommands.Add(cmd);
+                        }
+                    }
                     GatherUICommands(cmpItem.Parent, RClickCommands, IsLeftSourced);
                 }
             }

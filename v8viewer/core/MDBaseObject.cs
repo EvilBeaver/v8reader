@@ -303,7 +303,7 @@ namespace V8Reader.Core
 
         }
 
-        public Comparison.DiffViewer GetDifferenceViewer(object Comparand)
+        public Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
         {
             return null;
         }

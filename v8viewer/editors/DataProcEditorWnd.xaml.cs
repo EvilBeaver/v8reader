@@ -55,10 +55,8 @@ namespace V8Reader.Editors
                 return;
             }
             
-            var frmEditor = new CodeEditorWnd();
-            frmEditor.codeTextBox.Text = module;
-            frmEditor.Title = "Модуль объекта: " + m_Object.Name;
-            frmEditor.Show();
+            var frmEditor = new V8ModuleProcessor(module, "Модуль объекта: " + m_Object.Name).GetEditor();
+            frmEditor.Edit();
 
         }
 
