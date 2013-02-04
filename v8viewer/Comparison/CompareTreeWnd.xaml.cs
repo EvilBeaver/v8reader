@@ -149,7 +149,7 @@ namespace V8Reader.Comparison
                                 {
                                     V8ModuleProcessor LeftVal = ((PropDef)cmpItem.Left.Object).Value as V8ModuleProcessor;
                                     V8ModuleProcessor RightVal = ((PropDef)cmpItem.Right.Object).Value as V8ModuleProcessor;
-                                    var viewer = ((V8ModuleProcessor)PropDef.Value).GetDifferenceViewer(RightVal);
+                                    var viewer = LeftVal.GetDifferenceViewer(RightVal);
                                     viewer.ShowDifference();
                                 }));
 
