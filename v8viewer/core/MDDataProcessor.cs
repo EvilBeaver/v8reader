@@ -57,6 +57,7 @@ namespace V8Reader.Core
                 return m_Templates;
             }
         }
+        
         public HTMLDocument Help
         {
             get
@@ -82,6 +83,7 @@ namespace V8Reader.Core
                 
             }
         }
+
         public String ObjectModule
         {
             get
@@ -226,13 +228,38 @@ namespace V8Reader.Core
 
         }
 
+        #endregion
+
+        #region ICommandProvider
+        
         public IEnumerable<UICommand> Commands
         {
             get
             {
-                return null;
+                List<UICommand> cmdList = new List<UICommand>();
+
+                cmdList.Add(new UICommand("Открыть модуль объекта", this, new Action(() =>
+                {
+                    var modProc = Properties["Module"].Value as V8ModuleProcessor;
+
+                    modProc.GetEditor().Edit();
+
+                })));
+
+                cmdList.Add(new UICommand("Справочная информация", this, new Action(() =>
+                {
+                    if (!Help.IsEmpty)
+                    {
+                        String Path = Help.Location;
+                        System.Diagnostics.Process.Start(Path);
+
+                    }
+
+                })));
+
+                return cmdList;
             }
-        }
+        } 
 
         #endregion
 
@@ -265,6 +292,7 @@ namespace V8Reader.Core
         }
 
         #endregion
-}
+
+    }
 
 }

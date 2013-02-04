@@ -6,7 +6,7 @@ using System.IO;
 
 namespace V8Reader.Core
 {
-    sealed class HTMLDocument : IDisposable
+    sealed class HTMLDocument : IDisposable, Comparison.IComparableItem
     {
 
         public HTMLDocument()
@@ -177,6 +177,37 @@ namespace V8Reader.Core
                 }
             }
             m_Disposed = true;
+        }
+
+        #endregion
+
+        #region IComparableItem Members
+
+        public bool CompareTo(object Comparand)
+        {
+            HTMLDocument htmlComparand = (HTMLDocument)Comparand;
+
+            if(htmlComparand.m_Content != null)
+            {
+                if(m_Content == null)
+                {
+                    return false;
+                }
+
+                var comparator = new Comparison.BasicComparator();
+                return comparator.CompareObjects(m_Content.ToString(), htmlComparand.m_Content.ToString());
+
+            }
+            else
+            {
+                return m_Content == null;
+            }
+        }
+
+        public Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
+        {
+            var DiffViewer = new Comparison.ExternalTextDiffViewer(m_Content.ToString(), ((HTMLDocument)Comparand).m_Content.ToString());
+            return DiffViewer;
         }
 
         #endregion
