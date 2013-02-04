@@ -91,9 +91,18 @@ namespace V8Reader.Comparison
             }
             else if (Left is MDObjectsCollection<MDBaseObject> || Left is StaticTreeNode)
             {
-
-                var LeftItems = from item in Left.ChildItems orderby item.Key, item.Text select item;
-                var RightItems = from item in Right.ChildItems orderby item.Key, item.Text select item;
+                IEnumerable<IMDTreeItem> LeftItems;
+                IEnumerable<IMDTreeItem> RightItems;
+                if (m_CurrentMode == MatchingMode.ByID)
+                {
+                    LeftItems = from item in Left.ChildItems orderby item.Key, item.Text select item;
+                    RightItems = from item in Right.ChildItems orderby item.Key, item.Text select item;
+                }
+                else
+                {
+                    LeftItems = from item in Left.ChildItems orderby item.Text, item.Text select item;
+                    RightItems = from item in Right.ChildItems orderby item.Text, item.Text select item;
+                }
 
                 var LeftList = LeftItems.ToArray<IMDTreeItem>();
                 var RightList = RightItems.ToArray<IMDTreeItem>();
