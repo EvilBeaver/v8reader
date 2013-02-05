@@ -6,7 +6,7 @@ using V8Reader.Editors;
 
 namespace V8Reader.Core
 {
-    class MDTemplate : MDBaseObject, IMDTreeItem, ICommandProvider, IEditable
+    class MDTemplate : MDBaseObject, IMDTreeItem, ICommandProvider, IEditable, Comparison.IComparableItem
     {
         public enum TemplateKind
         {
@@ -112,5 +112,19 @@ namespace V8Reader.Core
             else
                 throw new NotSupportedException("Редактирование макета данного типа не поддерживается");
         }
+
+        #region IComparableItem Members
+
+        public bool CompareTo(object Comparand)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }
