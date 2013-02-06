@@ -50,7 +50,7 @@ namespace V8Reader.Comparison
 
                 try
                 {
-                    //BlockInput(true);
+                    BlockInput(true);
 
                     SendVirtualKey((byte)VirtualKeyShort.MENU);
                     for (int i = 0; i < 8; i++)
@@ -124,7 +124,8 @@ namespace V8Reader.Comparison
             int len = text.Length;
             int inputsSize = len*2;
 
-            INPUT[] inputs = new INPUT[inputsSize];
+            //INPUT[] inputs = new INPUT[inputsSize];
+            INPUT[] inputs = new INPUT[1];
 
             for (int i = 0; i < len; i++)
             {
@@ -136,17 +137,25 @@ namespace V8Reader.Comparison
                 inp.U.ki.wScan = (short)text[i];
                 inp.U.ki.dwExtraInfo = GetMessageExtraInfo();
 
-                inputs[i] = inp;
-                
-                INPUT inpUp = inp;
+                //inputs[i] = inp;
+                inputs[0] = inp;
+                SendInput(1, inputs, INPUT.Size);
 
-                inpUp.U.ki.dwFlags = KEYEVENTF.UNICODE | KEYEVENTF.KEYUP;
+                inp = new INPUT();
+                inp.type = 1; //INPUT_KEYBOARD;
+                inp.U.ki.dwFlags = KEYEVENTF.KEYUP | KEYEVENTF.UNICODE;
+                inp.U.ki.time = 0;
+                inp.U.ki.wVk = 0;
+                inp.U.ki.wScan = (short)text[i];
+                inp.U.ki.dwExtraInfo = GetMessageExtraInfo();
 
-                inputs[i+1] = inpUp;
+                //inputs[i + 1] = inp;
+                inputs[0] = inp;
+                SendInput(1, inputs, INPUT.Size);
 
             }
 
-            SendInput((uint)inputsSize, inputs, INPUT.Size);
+            //SendInput((uint)inputsSize, inputs, INPUT.Size);
 
         }
 
