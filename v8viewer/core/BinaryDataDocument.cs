@@ -40,5 +40,19 @@ namespace V8Reader.Core
             return new Editors.BinaryTemplateEditor(this);
         }
 
+        #region IComparableItem Members
+
+        public override bool CompareTo(object Comparand)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
     }
 }

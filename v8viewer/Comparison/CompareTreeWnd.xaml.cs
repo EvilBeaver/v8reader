@@ -155,6 +155,19 @@ namespace V8Reader.Comparison
 
                             RClickCommands.Add(cmd);
                         }
+                        else if (PropDef.Value is TemplateDocument)
+                        {
+                            var cmd = new UICommand("Показать различия в макетах", cmpItem, new Action(
+                                () =>
+                                {
+                                    TemplateDocument LeftVal = ((PropDef)cmpItem.Left.Object).Value as TemplateDocument;
+                                    TemplateDocument RightVal = ((PropDef)cmpItem.Right.Object).Value as TemplateDocument;
+                                    var viewer = LeftVal.GetDifferenceViewer(RightVal);
+                                    viewer.ShowDifference();
+                                }));
+
+                            RClickCommands.Add(cmd);
+                        }
                     }
                     GatherUICommands(cmpItem.Parent, RClickCommands, IsLeftSourced);
                 }

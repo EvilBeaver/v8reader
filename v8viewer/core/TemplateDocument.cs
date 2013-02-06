@@ -7,7 +7,7 @@ using V8Reader.Editors;
 namespace V8Reader.Core
 {
     
-    abstract class TemplateDocument : IEditable
+    abstract class TemplateDocument : IEditable, Comparison.IComparableItem
     {
         public TemplateDocument(MDTemplate OwnerTemplate, MDReader Reader)
         {
@@ -37,6 +37,13 @@ namespace V8Reader.Core
         private MDReader m_Reader;
         private MDTemplate m_Owner;
 
+
+        #region IComparableItem Members
+
+        public abstract bool CompareTo(object Comparand);
+        public abstract Comparison.IDiffViewer GetDifferenceViewer(object Comparand);
+        
+        #endregion
     }
 
     // Базовый класс для макетов, открываемых с помощью "Работы с файлами" (File Workshop)
@@ -53,6 +60,22 @@ namespace V8Reader.Core
 
         public virtual String Extract()
         {
+            String Result = System.IO.Path.GetTempPath() + FWOpenableName;
+
+            using (var SourceStream = GetDataStream())
+            {
+                using (var DestStream = new System.IO.FileStream(Result, System.IO.FileMode.OpenOrCreate))
+                {
+                    SourceStream.CopyTo(DestStream);
+                }
+            }
+            
+            return Result;
+
+        }
+
+        private System.IO.Stream GetDataStream()
+        {
             var FileName = GetFileName();
             MDFileItem FileElement;
 
@@ -63,37 +86,16 @@ namespace V8Reader.Core
             catch (System.IO.FileNotFoundException exc)
             {
                 throw new MDObjectIsEmpty(Owner.Kind.ToString(), exc);
-            }            
+            }
 
             if (FileElement.ElemType == MDFileItem.ElementType.File)
             {
-
-                System.IO.Stream SourceStream = null;
-                System.IO.FileStream DestStream = null;
-                
-                String Result = System.IO.Path.GetTempPath() + FWOpenableName;
-                
-                try
-                {
-                    SourceStream = FileElement.GetStream();//new System.IO.FileStream(FileElement.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-                    DestStream = new System.IO.FileStream(Result, System.IO.FileMode.OpenOrCreate);
-
-                    SourceStream.CopyTo(DestStream);
-
-                }
-                finally
-                {
-                    if (SourceStream != null) SourceStream.Close();
-                    if (DestStream != null) DestStream.Close();
-                }
-
-                return Result;
-
-
+                return FileElement.GetStream();
             }
             else
+            {
                 throw new MDObjectIsEmpty(Owner.Kind.ToString());
-
+            }
         }
 
         private String FWOpenableName
@@ -136,6 +138,76 @@ namespace V8Reader.Core
         {
             return Owner.ID + ".0";
         }
+
+        private bool IsEmpty()
+        {
+            try
+            {
+                var FileElement = Reader.GetElement(GetFileName());
+                if (FileElement.ElemType == MDFileItem.ElementType.File)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                return true;
+            }
+        }
+
+        #region IComparableItem Members
+
+        public override bool CompareTo(object Comparand)
+        {
+            FWOpenableDocument cmpDoc = Comparand as FWOpenableDocument;
+
+            bool docEmpty = cmpDoc.IsEmpty();
+            bool CurrentIsEmpty = this.IsEmpty();
+
+            if (cmpDoc != null)
+            {
+                if (docEmpty)
+                {
+                    return CurrentIsEmpty;
+                }
+                else if (!CurrentIsEmpty)
+                {
+                    Comparison.StreamComparator sc = new Comparison.StreamComparator();
+
+                    return sc.CompareStreams(GetDataStream(), cmpDoc.GetDataStream());
+
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return CurrentIsEmpty;
+            }         
+
+        }
+
+        public override Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
+        {
+            FWOpenableDocument cmpDoc = Comparand as FWOpenableDocument;
+
+            string path1 = this.Extract();
+            string path2 = cmpDoc.Extract();
+
+            var DiffViewer = new Comparison.FWDiffViewer(path1, path2);
+
+            return DiffViewer;
+
+        }
+
+        #endregion
 
     }
 }
