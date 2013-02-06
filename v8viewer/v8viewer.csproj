@@ -117,6 +117,9 @@
     <Compile Include="Editors\ManagedFormWnd.xaml.cs">
       <DependentUpon>ManagedFormWnd.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ExceptionWindow.xaml.cs">
+      <DependentUpon>ExceptionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -159,6 +162,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Editors\ManagedFormWnd.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ExceptionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -271,9 +278,6 @@
     <Resource Include="Resources\Diff.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Open.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Settings.png" />
   </ItemGroup>
   <ItemGroup>
@@ -287,6 +291,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\MD_Pictures.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\cancel.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -9,7 +9,9 @@ namespace V8Reader.Utils
     {
         public static void DefaultErrHandling(Exception exc)
         {
-            MessageBox.Show(exc.ToString(), "Ошибка", MessageBoxButton.OK, MessageBoxImage.Stop);
+            ExceptionWindow wnd = new ExceptionWindow();
+            wnd.excText.Text = exc.ToString();
+            wnd.ShowDialog();
         }
 
         public static T FindLogicalParent<T>(DependencyObject childElement) where T : DependencyObject
