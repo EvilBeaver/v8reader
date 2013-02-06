@@ -32,6 +32,15 @@ namespace V8Reader
 
             }
 
+            try
+            {
+                Utils.TempFileCleanup.PerformCleanup();
+            }
+            catch
+            {
+
+            }
+
         }
         
     }

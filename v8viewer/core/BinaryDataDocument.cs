@@ -44,12 +44,22 @@ namespace V8Reader.Core
 
         public override bool CompareTo(object Comparand)
         {
-            throw new NotImplementedException();
+            BinaryDataDocument cmpDoc = Comparand as BinaryDataDocument;
+            if (cmpDoc != null)
+            {
+                Comparison.StreamComparator sc = new Comparison.StreamComparator();
+
+                return sc.CompareStreams(GetStream(), cmpDoc.GetStream());
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public override Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         #endregion

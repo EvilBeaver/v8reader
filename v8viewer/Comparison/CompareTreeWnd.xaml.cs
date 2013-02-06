@@ -150,7 +150,10 @@ namespace V8Reader.Comparison
                                     V8ModuleProcessor LeftVal = ((PropDef)cmpItem.Left.Object).Value as V8ModuleProcessor;
                                     V8ModuleProcessor RightVal = ((PropDef)cmpItem.Right.Object).Value as V8ModuleProcessor;
                                     var viewer = LeftVal.GetDifferenceViewer(RightVal);
-                                    viewer.ShowDifference();
+                                    if (viewer != null)
+                                    {
+                                        viewer.ShowDifference();
+                                    }
                                 }));
 
                             RClickCommands.Add(cmd);
@@ -163,7 +166,10 @@ namespace V8Reader.Comparison
                                     TemplateDocument LeftVal = ((PropDef)cmpItem.Left.Object).Value as TemplateDocument;
                                     TemplateDocument RightVal = ((PropDef)cmpItem.Right.Object).Value as TemplateDocument;
                                     var viewer = LeftVal.GetDifferenceViewer(RightVal);
-                                    viewer.ShowDifference();
+                                    if (viewer != null)
+                                    {
+                                        viewer.ShowDifference();
+                                    }
                                 }));
 
                             RClickCommands.Add(cmd);

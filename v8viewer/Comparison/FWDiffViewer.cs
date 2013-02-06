@@ -38,8 +38,8 @@ namespace V8Reader.Comparison
             }
             finally
             {
-                DestroyTempFile(m_file1);
-                DestroyTempFile(m_file2);
+                Utils.TempFileCleanup.RegisterTempFile(m_file1);
+                Utils.TempFileCleanup.RegisterTempFile(m_file2);
             }
         }
 
@@ -89,23 +89,8 @@ namespace V8Reader.Comparison
                 finally
                 {
                     BlockInput(false);
-                    FWProcess.WaitForInputIdle();
                 }
 
-            }
-        }
-
-        private void DestroyTempFile(string filename)
-        {
-            if (System.IO.File.Exists(filename))
-            {
-                try
-                {
-                    System.IO.File.Delete(filename);
-                }
-                catch
-                {
-                }
             }
         }
 
