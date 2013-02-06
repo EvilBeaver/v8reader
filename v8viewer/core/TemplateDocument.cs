@@ -166,7 +166,7 @@ namespace V8Reader.Core
         {
             FWOpenableDocument cmpDoc = Comparand as FWOpenableDocument;
 
-            bool docEmpty = cmpDoc.IsEmpty();
+            bool docEmpty = cmpDoc == null ? true: cmpDoc.IsEmpty();
             bool CurrentIsEmpty = this.IsEmpty();
 
             if (cmpDoc != null)
