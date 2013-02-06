@@ -4,21 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using System.Threading;
+using V8Reader.Core;
 
 namespace V8Reader.Comparison
 {
     class FWDiffViewer : IDiffViewer
     {
 
-        public FWDiffViewer(string File1, string File2)
+        public FWDiffViewer(FWOpenableDocument doc1, FWOpenableDocument doc2)
         {
-            m_Filename1 = File1;
-            m_Filename2 = File2;
+            m_Doc1 = doc1;
+            m_Doc2 = doc2;
         }
 
-        private string m_Filename1, m_Filename2;
-
+        private FWOpenableDocument m_Doc1, m_Doc2;
+        private string m_file1, m_file2;
+        
         #region IDiffViewer Members
 
         public void ShowDifference()
@@ -27,7 +28,23 @@ namespace V8Reader.Comparison
             string exeName = null;
             if (!Utils.UIHelper.AskForFileWorkshop(out exeName, null))
                 return;
-            
+
+            m_file1 = m_Doc1.Extract();
+            m_file2 = m_Doc2.Extract();
+
+            try
+            {
+                PerformDiffView(exeName);
+            }
+            finally
+            {
+                DestroyTempFile(m_file1);
+                DestroyTempFile(m_file2);
+            }
+        }
+
+        private void PerformDiffView(string exeName)
+        {
             using (Process FWProcess = new Process())
             {
                 ProcessStartInfo sInfo = new ProcessStartInfo();
@@ -37,20 +54,19 @@ namespace V8Reader.Comparison
                 FWProcess.Start();
                 if (!FWProcess.WaitForInputIdle(3000))
                 {
-                    throw new Exception("wait failed");
                     return; // TODO: надо какое-то уведомление вызывающей стороны
                 }
 
                 IntPtr fwWindow = GetWindowHandle(FWProcess);
                 if (fwWindow == IntPtr.Zero)
                 {
-                    throw new Exception("window not found");
                     return; // TODO: надо какое-то уведомление вызывающей стороны
                 }
 
                 try
                 {
                     BlockInput(true);
+                    SetForegroundWindow(fwWindow);
 
                     SendVirtualKey((byte)VirtualKeyShort.MENU);
                     for (int i = 0; i < 8; i++)
@@ -58,10 +74,11 @@ namespace V8Reader.Comparison
 
                     SendVirtualKey((byte)VirtualKeyShort.RETURN);
 
-                    SendText(m_Filename1);
+                    SendText(m_file1);
                     SendVirtualKey((byte)VirtualKeyShort.TAB);
-                    SendText(m_Filename2);
+                    SendText(m_file2);
                     SendVirtualKey((byte)VirtualKeyShort.RETURN);
+                    
                 }
                 catch
                 {
@@ -72,8 +89,23 @@ namespace V8Reader.Comparison
                 finally
                 {
                     BlockInput(false);
+                    FWProcess.WaitForInputIdle();
                 }
 
+            }
+        }
+
+        private void DestroyTempFile(string filename)
+        {
+            if (System.IO.File.Exists(filename))
+            {
+                try
+                {
+                    System.IO.File.Delete(filename);
+                }
+                catch
+                {
+                }
             }
         }
 

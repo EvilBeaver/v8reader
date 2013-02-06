@@ -198,10 +198,7 @@ namespace V8Reader.Core
         {
             FWOpenableDocument cmpDoc = Comparand as FWOpenableDocument;
 
-            string path1 = this.Extract();
-            string path2 = cmpDoc.Extract();
-
-            var DiffViewer = new Comparison.FWDiffViewer(path1, path2);
+            var DiffViewer = new Comparison.FWDiffViewer(this, cmpDoc);
 
             return DiffViewer;
 
