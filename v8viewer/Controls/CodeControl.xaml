@@ -7,6 +7,27 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Focusable="True" IsTabStop="True" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
         <ics:TextEditor SyntaxHighlighting="1CV8" FontFamily="Courier New" FontSize="13" Name="editor" Background="{x:Null}" Foreground="Blue"/>
+        <StatusBar Grid.Row="1" HorizontalContentAlignment="Left">
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+
+                    <TextBlock Margin="5,0">Line:</TextBlock>
+                    <TextBlock Text="{Binding ElementName=editor, Path=TextArea.Caret.Position.Line}" Margin="3,0"></TextBlock>
+
+                    <TextBlock Margin="5,0">Col:</TextBlock>
+                    <TextBlock Text="{Binding ElementName=editor, Path=TextArea.Caret.Position.VisualColumn}" Margin="3,0"></TextBlock>
+
+                    <TextBlock Margin="5,0">Lines:</TextBlock>
+                    <TextBlock Text="{Binding ElementName=editor, Path=Document.LineCount}" Margin="3,0"></TextBlock>
+
+                </StackPanel>
+            </StatusBarItem>
+            
+        </StatusBar>
     </Grid>
 </UserControl>

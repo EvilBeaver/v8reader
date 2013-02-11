@@ -51,7 +51,11 @@ namespace V8Reader.Controls
             foldingManager = FoldingManager.Install(editor.TextArea);
 
             editor.TextChanged += editor_TextChanged;
-
+            editor.TextArea.Options.EnableHyperlinks = false;
+            editor.TextArea.Options.EnableVirtualSpace = true;
+            editor.TextArea.Options.EnableRectangularSelection = true;
+            editor.TextArea.SelectionCornerRadius = 0;
+            
             foldingUpdateTimer = new DispatcherTimer();
             foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
             foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
