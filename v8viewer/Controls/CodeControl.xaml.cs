@@ -15,7 +15,6 @@ using System.Xml;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Search;
 
 using System.Windows.Threading;
@@ -49,16 +48,31 @@ namespace V8Reader.Controls
             editor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(editor.TextArea));
             editor.ShowLineNumbers = true;
 
-            //DispatcherTimer foldingUpdateTimer = new DispatcherTimer();
-            //foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
-            //foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
-            //foldingUpdateTimer.Start();
+            foldingManager = FoldingManager.Install(editor.TextArea);
 
+            editor.TextChanged += editor_TextChanged;
+
+            foldingUpdateTimer = new DispatcherTimer();
+            foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
+            foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
+            foldingUpdateTimer.Start();
+
+        }
+
+        void editor_TextChanged(object sender, EventArgs e)
+        {
+            m_ModifyFlag = true;
+            if (foldingUpdateTimer!= null && !foldingUpdateTimer.IsEnabled)
+            {
+                foldingUpdateTimer.Start();
+            }
         }
 
         void foldingUpdateTimer_Tick(object sender, EventArgs e)
         {
+            foldingStrategy.UpdateFoldings(foldingManager, editor.Document);
             ((DispatcherTimer)sender).Stop();
+            m_ModifyFlag = false;
         }
 
         public String Text 
@@ -73,8 +87,10 @@ namespace V8Reader.Controls
             }
         }
 
-        
-
+        FoldingManager foldingManager;
+        AbstractFoldingStrategy foldingStrategy = new V8ModuleFoldingStrategy();
+        bool m_ModifyFlag;
+        DispatcherTimer foldingUpdateTimer;
     }
 
     class V8ModuleFoldingStrategy : AbstractFoldingStrategy
@@ -97,29 +113,99 @@ namespace V8Reader.Controls
 		/// <summary>
 		/// Create <see cref="NewFolding"/>s for the specified document.
 		/// </summary>
+
+        private struct TextFragment
+        {
+            public int offset;
+            public int len;
+        }
+
+
 		public IEnumerable<NewFolding> CreateNewFoldings(ITextSource document)
 		{
 			List<NewFolding> newFoldings = new List<NewFolding>();
-			
-            //Stack<int> startOffsets = new Stack<int>();
-            //int lastNewLineOffset = 0;
-            //char openingBrace = this.OpeningBrace;
-            //char closingBrace = this.ClosingBrace;
-            //for (int i = 0; i < document.TextLength; i++) {
-            //    char c = document.GetCharAt(i);
-            //    if (c == openingBrace) {
-            //        startOffsets.Push(i);
-            //    } else if (c == closingBrace && startOffsets.Count > 0) {
-            //        int startOffset = startOffsets.Pop();
-            //        // don't fold if opening and closing brace are on the same line
-            //        if (startOffset < lastNewLineOffset) {
-            //            newFoldings.Add(new NewFolding(startOffset, i + 1));
-            //        }
-            //    } else if (c == '\n' || c == '\r') {
-            //        lastNewLineOffset = i + 1;
-            //    }
-            //}
-            //newFoldings.Sort((a,b) => a.StartOffset.CompareTo(b.StartOffset));
+
+            int startPos = 0;
+            int len = document.TextLength;
+
+            int currentStart = 0;
+
+            bool MethodIsOpen = false;
+            string EndToken = null;
+
+            int PreCommentStart = -1;
+
+            var Reader = document.CreateReader();
+            
+            do
+            {
+
+                string lineText = Reader.ReadLine();
+                if (lineText == null)
+                {
+                    break;
+                }
+                
+                TextFragment tf = new TextFragment();
+                tf.offset = startPos;
+                tf.len = lineText.Length;
+
+                startPos += lineText.Length + 2;
+
+                if (!MethodIsOpen)
+                {
+                    bool CommentBreak = false;
+                    
+                    if (lineText.StartsWith("//"))
+                    {
+                        if (PreCommentStart < 0)
+                        {
+                            PreCommentStart = tf.offset + tf.len;
+                        }
+                    }
+                    else
+                    {
+                        CommentBreak = true;
+                    }
+                    
+                    if (lineText.StartsWith("ПРОЦЕДУРА", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MethodIsOpen = true;
+                        EndToken = "КОНЕЦПРОЦЕДУРЫ";
+                    }
+                    else if(lineText.StartsWith("ФУНКЦИЯ", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MethodIsOpen = true;
+                        EndToken = "КОНЕЦФУНКЦИИ";
+                    }
+
+                    if (MethodIsOpen)
+                    {
+                        currentStart = tf.offset + tf.len;
+
+                        if (PreCommentStart >= 0)
+                        {
+                            var Folding = new NewFolding(PreCommentStart, tf.offset - 2);
+                            newFoldings.Add(Folding);
+                            PreCommentStart = -1;
+                        }
+                    }
+                    else if(CommentBreak)
+                    {
+                        PreCommentStart = -1;
+                    }
+                    
+                }
+                else if (lineText.StartsWith(EndToken, StringComparison.OrdinalIgnoreCase))
+                {
+                    var Folding = new NewFolding(currentStart, tf.offset + tf.len);
+                    newFoldings.Add(Folding);
+
+                    MethodIsOpen = false;
+                }
+                
+            }
+            while (true);
 
 			return newFoldings;
 		}

@@ -86,7 +86,6 @@
     <Compile Include="Comparison\ValueConverters.cs" />
     <Compile Include="Core\IValueVisualizer.cs" />
     <Compile Include="Core\UICommands.cs" />
-    <Compile Include="Core\V8Module.cs" />
     <Compile Include="Editors\BinaryTemplateWindow.xaml.cs">
       <DependentUpon>BinaryTemplateWindow.xaml</DependentUpon>
     </Compile>
