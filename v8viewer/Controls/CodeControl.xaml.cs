@@ -11,8 +11,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Text.RegularExpressions;
-using FastColoredTextBoxNS;
+using System.Xml;
+using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Search;
+
+using System.Windows.Threading;
 
 namespace V8Reader.Controls
 {
@@ -23,63 +28,191 @@ namespace V8Reader.Controls
     {
         public CodeControl()
         {
+            var Res = Application.GetResourceStream(new Uri("pack://application:,,,/v8viewer;component/controls/1CV8Syntax.xshd", UriKind.Absolute));
+
+            IHighlightingDefinition v8Highlighting;
+
+            using (var s = Res.Stream)
+            {
+                using (XmlReader reader = new XmlTextReader(s))
+                {
+                    v8Highlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.
+                        HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                }
+            }
+
+            HighlightingManager.Instance.RegisterHighlighting("1CV8", new string[] { ".v8m" }, v8Highlighting);
+
             InitializeComponent();
+
+            editor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(editor.TextArea));
+            editor.ShowLineNumbers = true;
+
+            foldingManager = FoldingManager.Install(editor.TextArea);
+
+            editor.TextChanged += editor_TextChanged;
+            editor.TextArea.Options.EnableHyperlinks = false;
+            editor.TextArea.Options.EnableVirtualSpace = true;
+            editor.TextArea.Options.EnableRectangularSelection = true;
+            editor.TextArea.SelectionCornerRadius = 0;
+            
+            foldingUpdateTimer = new DispatcherTimer();
+            foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
+            foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
+            foldingUpdateTimer.Start();
+
+        }
+
+        void editor_TextChanged(object sender, EventArgs e)
+        {
+            m_ModifyFlag = true;
+            if (foldingUpdateTimer!= null && !foldingUpdateTimer.IsEnabled)
+            {
+                foldingUpdateTimer.Start();
+            }
+        }
+
+        void foldingUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            foldingStrategy.UpdateFoldings(foldingManager, editor.Document);
+            ((DispatcherTimer)sender).Stop();
+            m_ModifyFlag = false;
         }
 
         public String Text 
         { 
             get 
-            { 
-                return codeTextBox.Text; 
+            {
+                return editor.Text; 
             }
             set
             {
-                codeTextBox.Text = value;
+                editor.Text = value;
             }
         }
 
-        private void FastColoredTextBox_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
-        {
-
-            //clear style of changed range
-            e.ChangedRange.ClearStyle(KeywordStyle, CommentStyle, NumbersStyle, StringStyle);
-
-            //comment highlighting
-            e.ChangedRange.SetStyle(CommentStyle, @"//.*$", RegexOptions.Multiline);
-
-            //preprocessor highlighting
-            e.ChangedRange.SetStyle(PreprocStyle, @"\#.*$", RegexOptions.Multiline);
-            e.ChangedRange.SetStyle(PreprocStyle, @"&.*$", RegexOptions.Multiline);
-
-            //string highlighting
-            e.ChangedRange.SetStyle(StringStyle, @"""""|@""""|''|@"".*?""|(?<!@)(?<range>"".*?[^\\]"")|'.*?[^\\]'");
-
-            //number highlighting
-            e.ChangedRange.SetStyle(NumbersStyle, @"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b");
-
-            //keyword highlighting
-            e.ChangedRange.SetStyle(KeywordStyle, @"\b(Процедура|КонецПроцедуры|Функция|КонецФункции|Если|Тогда|ИначеЕсли|Иначе|КонецЕсли|Для|Пока|Каждого|По|Из|Цикл|КонецЦикла|Прервать|Продолжить|Возврат|Попытка|Исключение|КонецПопытки|ВызватьИсключение|Истина|Ложь|Лев|Прав|Сред|СокрЛ|СокрП|СокрЛП|Дата|Булево|Строка|Число|Новый|Перем|Экспорт)\b");
-            e.ChangedRange.SetStyle(KeywordStyle, @"[\(|\)|,|;|.|+|-|*|\/|%|=|<|>]");
-
-            //clear folding markers
-            e.ChangedRange.ClearFoldingMarkers();
-            //set folding markers
-            e.ChangedRange.SetFoldingMarkers("Процедура", "КонецПроцедуры", RegexOptions.IgnoreCase);
-            e.ChangedRange.SetFoldingMarkers("Функция", "КонецФункции", RegexOptions.IgnoreCase);
-
-        }
-
-        //styles
-        TextStyle KeywordStyle = new TextStyle(System.Drawing.Brushes.Red, null, System.Drawing.FontStyle.Regular);
-        TextStyle NumbersStyle = new TextStyle(System.Drawing.Brushes.Magenta, null, System.Drawing.FontStyle.Regular);
-        TextStyle CommentStyle = new TextStyle(System.Drawing.Brushes.Green, null, System.Drawing.FontStyle.Regular);
-        TextStyle StringStyle = new TextStyle(System.Drawing.Brushes.Black, null, System.Drawing.FontStyle.Regular);
-        TextStyle PreprocStyle = new TextStyle(System.Drawing.Brushes.Brown, null, System.Drawing.FontStyle.Regular);
-
-        private void UserControl_GotFocus(object sender, RoutedEventArgs e)
-        {
-            Keyboard.Focus(WFHost);
-        }
-
+        FoldingManager foldingManager;
+        AbstractFoldingStrategy foldingStrategy = new V8ModuleFoldingStrategy();
+        bool m_ModifyFlag;
+        DispatcherTimer foldingUpdateTimer;
     }
+
+    class V8ModuleFoldingStrategy : AbstractFoldingStrategy
+	{
+		
+        public V8ModuleFoldingStrategy()
+		{
+			
+		}
+		
+		/// <summary>
+		/// Create <see cref="NewFolding"/>s for the specified document.
+		/// </summary>
+		public override IEnumerable<NewFolding> CreateNewFoldings(TextDocument document, out int firstErrorOffset)
+		{
+			firstErrorOffset = -1;
+			return CreateNewFoldings(document);
+		}
+		
+		/// <summary>
+		/// Create <see cref="NewFolding"/>s for the specified document.
+		/// </summary>
+
+        private struct TextFragment
+        {
+            public int offset;
+            public int len;
+        }
+
+
+		public IEnumerable<NewFolding> CreateNewFoldings(ITextSource document)
+		{
+			List<NewFolding> newFoldings = new List<NewFolding>();
+
+            int startPos = 0;
+            int len = document.TextLength;
+
+            int currentStart = 0;
+
+            bool MethodIsOpen = false;
+            string EndToken = null;
+
+            int PreCommentStart = -1;
+
+            var Reader = document.CreateReader();
+            
+            do
+            {
+
+                string lineText = Reader.ReadLine();
+                if (lineText == null)
+                {
+                    break;
+                }
+                
+                TextFragment tf = new TextFragment();
+                tf.offset = startPos;
+                tf.len = lineText.Length;
+
+                startPos += lineText.Length + 2;
+
+                if (!MethodIsOpen)
+                {
+                    bool CommentBreak = false;
+                    
+                    if (lineText.StartsWith("//"))
+                    {
+                        if (PreCommentStart < 0)
+                        {
+                            PreCommentStart = tf.offset + tf.len;
+                        }
+                    }
+                    else
+                    {
+                        CommentBreak = true;
+                    }
+                    
+                    if (lineText.StartsWith("ПРОЦЕДУРА", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MethodIsOpen = true;
+                        EndToken = "КОНЕЦПРОЦЕДУРЫ";
+                    }
+                    else if(lineText.StartsWith("ФУНКЦИЯ", StringComparison.OrdinalIgnoreCase))
+                    {
+                        MethodIsOpen = true;
+                        EndToken = "КОНЕЦФУНКЦИИ";
+                    }
+
+                    if (MethodIsOpen)
+                    {
+                        currentStart = tf.offset + tf.len;
+
+                        if (PreCommentStart >= 0)
+                        {
+                            var Folding = new NewFolding(PreCommentStart, tf.offset - 2);
+                            newFoldings.Add(Folding);
+                            PreCommentStart = -1;
+                        }
+                    }
+                    else if(CommentBreak)
+                    {
+                        PreCommentStart = -1;
+                    }
+                    
+                }
+                else if (lineText.StartsWith(EndToken, StringComparison.OrdinalIgnoreCase))
+                {
+                    var Folding = new NewFolding(currentStart, tf.offset + tf.len);
+                    newFoldings.Add(Folding);
+
+                    MethodIsOpen = false;
+                }
+                
+            }
+            while (true);
+
+			return newFoldings;
+		}
+	}
+
 }
