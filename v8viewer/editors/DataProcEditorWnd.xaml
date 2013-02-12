@@ -69,18 +69,7 @@
                         <Path Fill="Black" Stroke="#FF989898">
                         <Path.Data>
                         <PathGeometry>
-                            <PathGeometry.Figures>
-                                <PathFigureCollection>
-                                    <PathFigure IsFilled="True" StartPoint="10 6" IsClosed="True">
-                                        <PathFigure.Segments>
-                                            <PathSegmentCollection>
-                                                <LineSegment Point="15 6"/>
-                                                <LineSegment Point="12.5 10.5"/>
-                                            </PathSegmentCollection>
-                                        </PathFigure.Segments>
-                                    </PathFigure>
-                                </PathFigureCollection>
-                            </PathGeometry.Figures>
+                            <PathGeometry.Figures>M8,6 L15,6 L11.5,10.5 Z</PathGeometry.Figures>
                         </PathGeometry>
                         </Path.Data>
                         </Path>

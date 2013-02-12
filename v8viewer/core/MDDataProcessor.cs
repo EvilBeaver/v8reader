@@ -102,9 +102,17 @@ namespace V8Reader.Core
 
                 if (DirElem.ElemType == MDFileItem.ElementType.Directory)
                 {
-                    var textElem = DirElem.GetElement("text");
 
-                    return textElem.ReadAll();
+                    try
+                    {
+                        var textElem = DirElem.GetElement("text");
+                        return textElem.ReadAll();
+                    }
+                    catch (System.IO.FileNotFoundException)
+                    {
+                        return String.Empty;
+                    }
+
                 }
                 else
                 {

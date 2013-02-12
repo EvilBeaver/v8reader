@@ -83,14 +83,7 @@ namespace V8Reader.Core
 
                 var imgLister = (CFReader.IImageLister)m_DataElement;
 
-                try
-                {
-                    return new MDFileItem(imgLister, itemName);
-                }
-                catch (KeyNotFoundException)
-                {
-                    throw new FileNotFoundException();
-                }
+                return new MDFileItem(imgLister, itemName);
 
             }
             else
