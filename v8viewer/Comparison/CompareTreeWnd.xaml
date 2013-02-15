@@ -91,16 +91,24 @@
                         </Grid>
                         
                         <HierarchicalDataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Added">
+                            <DataTrigger Binding="{Binding Status}" Value="Added">
                                 <Setter TargetName="RightSide" Property="Background" Value="{StaticResource AddedColorBrush}"></Setter>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Deleted">
+                            <DataTrigger Binding="{Binding Status}" Value="Deleted">
                                 <Setter TargetName="LeftSide" Property="Background" Value="{StaticResource DeletedColorBrush}"></Setter>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Status, Converter={StaticResource StatusConverter}}" Value="Modified">
+                            <DataTrigger Binding="{Binding Status}" Value="Modified">
                                 <Setter TargetName="LeftSide" Property="Background" Value="{StaticResource ModifiedColorBrush}"></Setter>
                                 <Setter TargetName="RightSide" Property="Background" Value="{StaticResource ModifiedColorBrush}"></Setter>
                             </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Status}" Value="Modified"/>
+                                    <Condition Binding="{Binding NodeType}" Value="ObjectsCollection"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="LeftSide" Property="Background" Value="{x:Null}"></Setter>
+                                <Setter TargetName="RightSide" Property="Background" Value="{x:Null}"></Setter>
+                            </MultiDataTrigger>
                             <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TreeViewItem}}" Value="true">
                                 <Setter TargetName="LeftSide" Property="Background" Value="{x:Null}"></Setter>
                                 <Setter TargetName="RightSide" Property="Background" Value="{x:Null}"></Setter>
@@ -114,6 +122,7 @@
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="TreeViewItem" BasedOn="{StaticResource DiffTreeItemStyle}">
                         <EventSetter Event="MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                        <EventSetter Event="Expanded" Handler="TreeViewItem_Expanded"/>
                     </Style>
                 </TreeView.ItemContainerStyle>
                 
@@ -153,7 +162,7 @@
                         <ColumnDefinition Width="29*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Фильтр:" Grid.Column="0" Margin="0,3"/>
-                    <ComboBox x:Name="FilterCombo" IsReadOnly="True" Grid.Column="1" Margin="0,3" SelectedIndex="0" VerticalContentAlignment="Center">
+                    <ComboBox x:Name="FilterCombo" IsReadOnly="True" Grid.Column="1" Margin="0,3" SelectedIndex="0" VerticalContentAlignment="Center" SelectionChanged="FilterCombo_SelectionChanged">
                         <ComboBoxItem>Отображать только изменения</ComboBoxItem>
                         <ComboBoxItem>Нет фильтра</ComboBoxItem>
                     </ComboBox>

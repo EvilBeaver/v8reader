@@ -50,6 +50,16 @@ namespace V8Reader.Comparison
 
             var Result = m_Engine.Perform(mode);
             twTree.Items.Add(Result);
+
+            ExpandTopLevel();
+
+        }
+
+        private void ExpandTopLevel()
+        {
+            TreeViewItem root = (TreeViewItem)twTree.ItemContainerGenerator.ContainerFromIndex(0);
+            if(root != null)
+                root.IsExpanded = true;
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
@@ -64,9 +74,7 @@ namespace V8Reader.Comparison
 
         private void CompareTree_Loaded(object sender, RoutedEventArgs e)
         {
-            var twItem = (TreeViewItem)twTree.ItemContainerGenerator.ContainerFromIndex(0);
-            twItem.IsExpanded = true;
-
+            
         }
 
         private void CompareTree_ContentRendered(object sender, EventArgs e)
@@ -74,6 +82,9 @@ namespace V8Reader.Comparison
             double percent = Math.Round(HeaderGrid.ActualWidth * 40 / 100, 2);
             HeaderGrid.ColumnDefinitions[0].Width = new GridLength(percent, GridUnitType.Pixel);
             HeaderGrid.ColumnDefinitions[1].Width = new GridLength(percent, GridUnitType.Pixel);
+
+            RedrawTree();
+
         }
 
         private void TreeViewItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -194,6 +205,62 @@ namespace V8Reader.Comparison
             }
         }
 
+        private void SetFilter(bool Hide)
+        {
+            var rootNode = (TreeViewItem)twTree.ItemContainerGenerator.ContainerFromIndex(0);
+            SetNodeFilter(rootNode, Hide);
+        }
+
+        private void SetNodeFilter(TreeViewItem node, bool Hide)
+        {
+            if (node == null)
+                return;
+
+            ComparisonItem nodeItem = node.Header as ComparisonItem;
+            if (nodeItem != null)
+            {
+                if (Hide && nodeItem.Status == ComparisonStatus.Match)
+                {
+                    node.Visibility = System.Windows.Visibility.Collapsed;
+                }
+                else
+                {
+                    node.Visibility = System.Windows.Visibility.Visible;
+                }
+
+                IterateFiltering(node, Hide);
+
+            }
+
+        }
+
+        private void IterateFiltering(TreeViewItem node, bool Hide)
+        {
+            for (int i = 0; i < node.Items.Count; i++)
+            {
+                var curNode = (TreeViewItem)node.ItemContainerGenerator.ContainerFromIndex(i);
+                SetNodeFilter(curNode, Hide);
+            }
+
+        }
+
+        private void RedrawTree()
+        {
+            if (!twTree.HasItems)
+            {
+                return;
+            }
+            
+            ComparisonResult result = (ComparisonResult)twTree.Items[0];
+
+            twTree.Items.Clear();
+            twTree.Items.Add(result);
+            SetFilter(FilterCombo.SelectedIndex == 0);
+
+            ExpandTopLevel();
+
+        }
+
         private void Label_MouseRightButtonUp_1(object sender, MouseButtonEventArgs e)
         {
 
@@ -236,6 +303,24 @@ namespace V8Reader.Comparison
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void FilterCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RedrawTree();
+        }
+
+        private void TreeViewItem_Expanded(object sender, RoutedEventArgs e)
+        {
+
+            Action filter = new Action(() =>
+            {
+                TreeViewItem node = (TreeViewItem)sender;
+                SetNodeFilter(node, FilterCombo.SelectedIndex == 0);
+            });
+
+            Dispatcher.BeginInvoke(filter, System.Windows.Threading.DispatcherPriority.Background);
+            e.Handled = true;
         }
 
     }

@@ -109,6 +109,7 @@ namespace V8Reader.Comparison
 
                 int rightIdx = 0;
                 bool WalkRight = true;
+                bool Modified = false;
 
                 for (int i = 0; i < LeftList.Length; i++)
                 {
@@ -120,7 +121,11 @@ namespace V8Reader.Comparison
                         if (ItsASameObjects(LeftObj, RightObj))
                         {
                             // это один и тот же объект.
-                            AddAndFillNewNode(LeftObj, RightObj, node);
+                            var addedNode = AddAndFillNewNode(LeftObj, RightObj, node);
+                            if (addedNode != null)
+                            {
+                                Modified = Modified || addedNode.IsDiffer;
+                            }
                             // дальнейший траверс в штатном режиме
                             WalkRight = true;
                         }
@@ -131,6 +136,7 @@ namespace V8Reader.Comparison
                             AddAndFillNewNode(LeftObj, null, node);
                             // при следующей итерации правый объект не двигаем.
                             WalkRight = false;
+                            Modified = true;
 
                         }
                     }
@@ -138,6 +144,7 @@ namespace V8Reader.Comparison
                     {
                         // справа элементы закончились
                         AddAndFillNewNode(LeftList[i], null, node);
+                        Modified = true;
                     }
 
                     if (WalkRight)
@@ -151,6 +158,12 @@ namespace V8Reader.Comparison
                 for (int i = rightIdx; i < RightList.Length; i++)
                 {
                     AddAndFillNewNode(null, RightList[i], node);
+                    Modified = true;
+                }
+
+                if (Modified)
+                {
+                    node.IsDiffer = true;
                 }
 
             }
@@ -181,7 +194,10 @@ namespace V8Reader.Comparison
                     }
 
                     if (!(newNode.Left == null && newNode.Right == null))
+                    {
                         node.Items.Add(newNode);
+                    }
+                        
                 }
 
             }
@@ -207,13 +223,20 @@ namespace V8Reader.Comparison
             }
         }
 
-        private void AddAndFillNewNode(IMDTreeItem Left, IMDTreeItem Right, ComparisonItem ParentNode)
+        private ComparisonItem AddAndFillNewNode(IMDTreeItem Left, IMDTreeItem Right, ComparisonItem ParentNode)
         {
             ComparisonItem newNode = new ComparisonItem();
             FillComparisonNode(Left, Right, newNode);
 
             if (!(newNode.Left == null && newNode.Right == null))
+            {
                 ParentNode.Items.Add(newNode);
+                return newNode;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void TraverseRightObject(IMDTreeItem Right, ComparisonItem ParentNode)
@@ -265,9 +288,13 @@ namespace V8Reader.Comparison
             var PropStub = parentNode.AddStaticNode("Свойства");
             
             bool HasDifference = false;
-
+            
             foreach (PropDef propDef in Left.Properties.Values)
             {
+                if (m_CurrentMode == MatchingMode.ByName && propDef.Key == "ID")
+                {
+                    continue;
+                }
 
                 object RightVal = null;
                 PropDef RightProperty = null;
