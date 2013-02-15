@@ -13,7 +13,7 @@
 
             <SolidColorBrush x:Key="AddedColorBrush">#C0DCC0</SolidColorBrush>
             <SolidColorBrush x:Key="DeletedColorBrush">#FFE4C4</SolidColorBrush>
-            <SolidColorBrush x:Key="ModifiedColorBrush">#CEFBFF</SolidColorBrush>
+            <SolidColorBrush x:Key="ModifiedColorBrush">#E0FFFF</SolidColorBrush>
             
         </ResourceDictionary>
 
