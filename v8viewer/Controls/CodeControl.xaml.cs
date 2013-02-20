@@ -65,7 +65,7 @@ namespace V8Reader.Controls
 
         void editor_TextChanged(object sender, EventArgs e)
         {
-            m_ModifyFlag = true;
+           // m_ModifyFlag = true;
             if (foldingUpdateTimer!= null && !foldingUpdateTimer.IsEnabled)
             {
                 foldingUpdateTimer.Start();
@@ -76,7 +76,7 @@ namespace V8Reader.Controls
         {
             foldingStrategy.UpdateFoldings(foldingManager, editor.Document);
             ((DispatcherTimer)sender).Stop();
-            m_ModifyFlag = false;
+            //m_ModifyFlag = false;
         }
 
         public String Text 
@@ -93,7 +93,7 @@ namespace V8Reader.Controls
 
         FoldingManager foldingManager;
         AbstractFoldingStrategy foldingStrategy = new V8ModuleFoldingStrategy();
-        bool m_ModifyFlag;
+        //bool m_ModifyFlag;
         DispatcherTimer foldingUpdateTimer;
     }
 
