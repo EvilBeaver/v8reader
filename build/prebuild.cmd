@@ -1,7 +1,6 @@
 @echo off
 
 set setter=%~dp0\tools\vsetter.exe
-echo %setter%
 
 if %2 == Release goto release
 if %2 == Debug goto debug

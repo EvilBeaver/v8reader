@@ -7,4 +7,5 @@ call tools/setlocals.cmd
 
 call "%vsvars%vsvars32.bat"
 devenv "%SolutionPath%" /build Release
-pause
+call getfiles.cmd
+echo Done
