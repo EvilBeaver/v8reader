@@ -196,6 +196,7 @@ namespace V8Reader.Comparison
                     if (!(newNode.Left == null && newNode.Right == null))
                     {
                         node.Items.Add(newNode);
+                        node.IsDiffer = node.IsDiffer || newNode.IsDiffer;
                     }
                         
                 }
