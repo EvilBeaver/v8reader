@@ -44,6 +44,8 @@ namespace V8Reader
 
             epfAssociation.IsChecked = Utils.FileAssociation.IsAssociated(".epf", "V8Viewer.DataProcessor");
 
+            VersionLbl.Inlines.Add("Версия: " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
         }
 
         private void cmdОК_Click(object sender, RoutedEventArgs e)
@@ -126,6 +128,11 @@ namespace V8Reader
             {
                 txtDiffCmdLine.Text = Dlg.FileName;
             }
+        }
+
+        private void Hyperlink_Click_1(object sender, RoutedEventArgs e)
+        {
+
         }
 
     }

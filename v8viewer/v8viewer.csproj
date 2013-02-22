@@ -82,6 +82,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AboutBox.xaml.cs">
+      <DependentUpon>AboutBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Comparison\ExtTextDiffViewer.cs" />
     <Compile Include="Comparison\FWDiffViewer.cs" />
     <Compile Include="Comparison\StreamComparator.cs" />
@@ -131,12 +134,13 @@
     <Compile Include="Utils\FileAssociator.cs" />
     <Compile Include="Utils\FormSettings.cs" />
     <Compile Include="Utils\MiscUtils.cs" />
-    <Compile Include="WelcomeWindow.xaml.cs">
-      <DependentUpon>WelcomeWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DiffFilesSelect.xaml.cs">
       <DependentUpon>DiffFilesSelect.xaml</DependentUpon>
     </Compile>
+    <Page Include="AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Comparison\DiffTreeStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -203,10 +207,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="StartupWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WelcomeWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

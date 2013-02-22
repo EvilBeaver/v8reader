@@ -1,0 +1,26 @@
+﻿<Window x:Class="V8Reader.AboutBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="О программе" Height="191" Width="358" TextOptions.TextFormattingMode="Display" ShowInTaskbar="False">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="72*"/>
+            <RowDefinition Height="69*"/>
+        </Grid.RowDefinitions>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0,0">
+                <GradientStop Color="#FFFDFDFD" Offset="1"/>
+                <GradientStop Color="#FFD3F5FD"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Image HorizontalAlignment="Left" Height="70" VerticalAlignment="Top" Width="67" Source="Resources/epf_icon.ico"/>
+        <Label Content="V8 Viewer" HorizontalAlignment="Left" Margin="67,10,0,0" VerticalAlignment="Top" Foreground="#FF7466FB" FontSize="18" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="72,44,0,0" TextWrapping="Wrap" Text="Версия:" VerticalAlignment="Top"/>
+
+        <StackPanel Grid.Row="1" Margin="7">
+            <TextBlock>Страница проекта: <Hyperlink>www.sourceforge.net/projects/v8reader/</Hyperlink></TextBlock>
+            <Button Margin="5,8">Проверить обновления</Button>
+        </StackPanel>
+        
+    </Grid>
+</Window>
