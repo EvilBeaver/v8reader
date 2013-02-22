@@ -132,6 +132,31 @@ namespace V8Reader
 
         private void Hyperlink_Click_1(object sender, RoutedEventArgs e)
         {
+            e.Handled = true;
+            var answer = MessageBox.Show("Проверить обновления?", "V8 Viewer", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (answer == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            try
+            {
+                var UpdChecker = new Utils.UpdateChecker();
+
+                if (UpdChecker.HasUpdates())
+                {
+                    var Log = UpdChecker.GetLog();
+                }
+
+            }
+            catch (Utils.UpdaterException wexc)
+            {
+                MessageBox.Show("Ошибка проверки обновлений:\n" + wexc.ToString(), "V8 Viewer", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception exc)
+            {
+                Utils.UIHelper.DefaultErrHandling(exc);
+            }
 
         }
 
