@@ -139,19 +139,31 @@ namespace V8Reader
                 return;
             }
 
+            var UpdChecker = new Utils.UpdateChecker();
+
             try
             {
-                var UpdChecker = new Utils.UpdateChecker();
+                UpdChecker.CheckUpdates((u, result) =>
+                        {
+                            try
+                            {
+                                if (!result.Success) throw result.Exception;
+                            }
+                            catch (System.Net.WebException webExc)
+                            {
+                                MessageBox.Show(webExc.ToString());
+                                return;
+                            }
+                            
+                            if (result.Updates.Count > 0)
+                            {
+                            }
+                            else
+                            {
+                                MessageBox.Show("Новых версий нет.", "V8 Viewer", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
 
-                if (UpdChecker.HasUpdates())
-                {
-                    var Log = UpdChecker.GetLog();
-                }
-
-            }
-            catch (Utils.UpdaterException wexc)
-            {
-                MessageBox.Show("Ошибка проверки обновлений:\n" + wexc.ToString(), "V8 Viewer", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        });
             }
             catch (Exception exc)
             {

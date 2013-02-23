@@ -11,28 +11,37 @@ namespace V8Reader.Utils
     class UpdateChecker
     {
 
-        public bool HasUpdates()
+        public void CheckUpdates(UpdateCheckerResultHandler ResultHandler)
         {
-            m_UpdLog = CheckUpdates();
-            return m_UpdLog.Count > 0;
+            CheckUpdatesAsync(ResultHandler);
         }
-
-        public UpdateLog GetLog()
-        {
-            return m_UpdLog;
-        }
-
-        UpdateLog m_UpdLog;
-
+        
         class RequestState
         {
             public WebRequest request;
             public WebResponse response;
-            public AutoResetEvent wait;
-            public Exception exception;
+            public UpdateCheckerResultHandler ResultHandler;
         }
 
-        private UpdateLog CheckUpdates()
+        private static AsyncCallback GUIContextCallback(AsyncCallback initialCallback)
+        {
+            SynchronizationContext sc = SynchronizationContext.Current;
+            if (sc == null)
+            {
+                return initialCallback;
+            }
+
+            return (asyncResult)=>
+                {
+                    sc.Post((result)=>
+                        {
+                            initialCallback((IAsyncResult)result);
+                        }, asyncResult);
+                };
+
+        }
+
+        private void CheckUpdatesAsync(UpdateCheckerResultHandler ResultHandler)
         {
             string url = @"http://sourceforge.net/projects/v8reader/files/update.xml/download";
 
@@ -41,29 +50,40 @@ namespace V8Reader.Utils
             client.Proxy = WebRequest.DefaultWebProxy;
             client.Proxy.Credentials = System.Net.CredentialCache.DefaultCredentials;
 
-            AutoResetEvent awaitEvent = new AutoResetEvent(false);
-
             RequestState state = new RequestState();
             state.request = client;
-            state.wait = awaitEvent;
+            state.ResultHandler = ResultHandler;
 
-            IAsyncResult result = (IAsyncResult)client.BeginGetResponse(new AsyncCallback(DownloadFileCompleted), state);
+            IAsyncResult result = (IAsyncResult)client.BeginGetResponse(GUIContextCallback(DownloadFileCompleted), state);
 
-            if (awaitEvent.WaitOne(30 * 1000))
+        }
+
+        void DownloadFileCompleted(IAsyncResult asynchronousResult)
+        {
+            RequestState state = (RequestState)asynchronousResult.AsyncState;
+
+            UpdateCheckerResult CheckResult = new UpdateCheckerResult();
+
+            try
             {
-                var resState = (RequestState)result.AsyncState;
-                if (resState.exception != null)
-                {
-                    throw resState.exception;
-                }
-                
-                return LoadResult(resState.response);
+                HttpWebRequest myHttpWebRequest = (HttpWebRequest)state.request;
+                state.response = (HttpWebResponse)myHttpWebRequest.EndGetResponse(asynchronousResult);
+
+                CheckResult.Updates = LoadResult(state.response);
+                CheckResult.Success = true;
             }
-            else
+            catch (Exception exc)
             {
-                client.Abort();
-                throw new UpdaterException("Превышено время ожидания");
+                CheckResult.Exception = exc;
+                CheckResult.Success = false;
             }
+            finally
+            {
+                if(state.response != null)
+                    state.response.Close();
+            }
+
+            state.ResultHandler(this, CheckResult);
 
         }
 
@@ -102,25 +122,16 @@ namespace V8Reader.Utils
             return log;
         }
 
-        void DownloadFileCompleted(IAsyncResult asynchronousResult)
-        {
-            RequestState state = (RequestState)asynchronousResult.AsyncState;
-            
-            try
-            {
-                HttpWebRequest myHttpWebRequest = (HttpWebRequest)state.request;
-                state.response = (HttpWebResponse)myHttpWebRequest.EndGetResponse(asynchronousResult);
-            }
-            catch (Exception exc)
-            {
-                state.exception = exc;
-            }
-
-            state.wait.Set();
-
-        }
-
     }
+
+    class UpdateCheckerResult
+    {
+        public bool Success { get; set; }
+        public UpdateLog Updates { get; set; }
+        public Exception Exception { get; set; }
+    }
+
+    internal delegate void UpdateCheckerResultHandler(UpdateChecker sender, UpdateCheckerResult result);
 
     class UpdateDefinition
     {
