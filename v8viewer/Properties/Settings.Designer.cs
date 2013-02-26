@@ -49,13 +49,24 @@ namespace V8Reader.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ShowWelcomeScreen {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SettingsVersion {
             get {
-                return ((bool)(this["ShowWelcomeScreen"]));
+                return ((string)(this["SettingsVersion"]));
             }
             set {
-                this["ShowWelcomeScreen"] = value;
+                this["SettingsVersion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime LastUpdateCheck {
+            get {
+                return ((global::System.DateTime)(this["LastUpdateCheck"]));
+            }
+            set {
+                this["LastUpdateCheck"] = value;
             }
         }
     }

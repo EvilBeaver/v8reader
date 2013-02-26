@@ -50,6 +50,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>..\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -135,6 +136,9 @@
       <DependentUpon>DiffFilesSelect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\UpdateChecker.cs" />
+    <Compile Include="Utils\UpdatesWnd.xaml.cs">
+      <DependentUpon>UpdatesWnd.xaml</DependentUpon>
+    </Compile>
     <Page Include="Comparison\DiffTreeStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -207,6 +211,10 @@
     <Page Include="DiffFilesSelect.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Utils\UpdatesWnd.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

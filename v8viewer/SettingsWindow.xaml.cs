@@ -143,33 +143,44 @@ namespace V8Reader
 
             try
             {
-                UpdChecker.CheckUpdates((u, result) =>
-                        {
-                            try
-                            {
-                                if (!result.Success) throw result.Exception;
-                            }
-                            catch (System.Net.WebException webExc)
-                            {
-                                MessageBox.Show(webExc.ToString());
-                                return;
-                            }
-                            
-                            if (result.Updates.Count > 0)
-                            {
-                            }
-                            else
-                            {
-                                MessageBox.Show("Новых версий нет.", "V8 Viewer", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-
-                        });
+                UpdChecker.CheckUpdates(UpdateCheckerCallback);
             }
             catch (Exception exc)
             {
                 Utils.UIHelper.DefaultErrHandling(exc);
             }
 
+        }
+
+        void UpdateCheckerCallback(Utils.UpdateChecker uc, Utils.UpdateCheckerResult result)
+        {
+            try
+            {
+                
+                if (!result.Success) throw result.Exception;
+                            
+                if (result.Updates.Count > 0)
+                {
+                    var UpdWnd = new Utils.UpdatesWnd();
+                    UpdWnd.Updates = result.Updates;
+                    UpdWnd.Owner = this;
+                    UpdWnd.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Новых версий нет.", "V8 Viewer", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+            }
+            catch (System.Net.WebException webExc)
+            {
+                MessageBox.Show(webExc.ToString());
+                return;
+            }
+            catch (Exception exc)
+            {
+                Utils.UIHelper.DefaultErrHandling(exc);
+            }
         }
 
     }

@@ -18,6 +18,77 @@ namespace V8Reader
         public App()
         {
             InitializeComponent();
+
+            string storedValue = V8Reader.Properties.Settings.Default.SettingsVersion;
+            string currentValue = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+            if (storedValue != currentValue)
+            {
+                V8Reader.Properties.Settings.Default.Upgrade();
+                V8Reader.Properties.Settings.Default.SettingsVersion = currentValue;
+                V8Reader.Properties.Settings.Default.Save();
+            }
+
+            DateTime lastCheck = V8Reader.Properties.Settings.Default.LastUpdateCheck;
+            if (lastCheck.Date != DateTime.Now.Date)
+            {
+                dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+                dispatcherTimer.Tick += dispatcherTimer_Tick;
+#if DEBUG
+                dispatcherTimer.Interval = TimeSpan.FromMinutes(0.2);
+#else
+                dispatcherTimer.Interval = TimeSpan.FromMinutes(1);
+#endif
+                dispatcherTimer.Start();
+            }
+
+        }
+
+        System.Windows.Threading.DispatcherTimer dispatcherTimer;
+
+        void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            var Timer = sender as System.Windows.Threading.DispatcherTimer;
+
+            Timer.Stop();
+
+            Utils.UpdateChecker chk = new Utils.UpdateChecker();
+            try
+            {
+                chk.CheckUpdates(UpdateCheckerCallback);
+            }
+            catch
+            {
+                
+            }
+
+        }
+
+        void UpdateCheckerCallback(Utils.UpdateChecker uc, Utils.UpdateCheckerResult result)
+        {            
+            try
+            {
+
+                if (!result.Success) return;
+
+                V8Reader.Properties.Settings.Default.LastUpdateCheck = DateTime.Now.Date;
+
+                if (result.Updates.Count > 0)
+                {
+                    var answer = MessageBox.Show("Обнаружены новые версии. Обновить программу?", "Обновление", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (answer == MessageBoxResult.Yes)
+                    {
+                        var UpdWnd = new Utils.UpdatesWnd();
+                        UpdWnd.Updates = result.Updates;
+                        UpdWnd.Show();
+                    }
+                }
+
+            }
+            catch
+            {
+                
+            }
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)

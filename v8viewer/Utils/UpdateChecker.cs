@@ -115,6 +115,7 @@ namespace V8Reader.Utils
                     UpdateDefinition upd = new UpdateDefinition();
                     upd.Version = inFile.ToString();
                     upd.Url = vDeclaration.Element("url").Value;
+                    upd.News = vDeclaration.Element("news").Value;
                     log.Add(upd);
                 }
             }
