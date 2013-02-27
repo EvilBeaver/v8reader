@@ -66,6 +66,15 @@
       <Word>Знач</Word>
       <Word>Новый</Word>
       <Word>Экспорт</Word>
+      <Word>Истина</Word>
+      <Word>Ложь</Word>
+      <Word>Неопределено</Word>
+      <Word>Null</Word>
+      <Word>Лев</Word>
+      <Word>Прав</Word>
+      <Word>Сред</Word>
+      <Word>Число</Word>
+      <Word>Дата</Word>
     </Keywords>
 
     <!-- Mark previous rule
