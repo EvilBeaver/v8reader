@@ -34,11 +34,11 @@ namespace V8Reader
             {
                 dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
                 dispatcherTimer.Tick += dispatcherTimer_Tick;
-#if DEBUG
+				#if DEBUG
                 dispatcherTimer.Interval = TimeSpan.FromMinutes(0.2);
-#else
+				#else
                 dispatcherTimer.Interval = TimeSpan.FromMinutes(1);
-#endif
+				#endif
                 dispatcherTimer.Start();
             }
 
@@ -59,7 +59,9 @@ namespace V8Reader
             }
             catch
             {
-                
+                #if DEBUG
+				throw;
+				#endif
             }
 
         }
@@ -87,7 +89,9 @@ namespace V8Reader
             }
             catch
             {
-                
+                #if DEBUG
+				throw;
+				#endif
             }
         }
 
@@ -100,7 +104,9 @@ namespace V8Reader
             }
             catch
             {
-
+				#if DEBUG
+				throw;
+				#endif
             }
 
             try
@@ -109,7 +115,9 @@ namespace V8Reader
             }
             catch
             {
-
+				#if DEBUG
+				throw;
+				#endif
             }
 
         }
