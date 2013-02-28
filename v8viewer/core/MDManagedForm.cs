@@ -25,7 +25,35 @@ namespace V8Reader.Core
             m_ModuleText = stream.Items[2].ToString();
             LoadAttributes((SerializedList)stream.Items[3]);
 
+            m_DialogDef = new SimpleDialogStub(CreateDialogDefList(stream));
+
             m_Loaded = true;
+        }
+
+        private static SerializedList CreateDialogDefList(SerializedList stream)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("{2,");
+            sb.Append(((SerializedList)stream.Items[1]).ToString());
+            sb.Append(',');
+            sb.Append(((SerializedList)stream.Items[3]).ToString());
+            sb.Append('}');
+
+            return new SerializedList(sb.ToString());
+
+        }
+
+        public override MDUserDialogBase DialogDef
+        {
+            get 
+            {
+                if (!m_Loaded)
+                    LoadFormContent();
+
+                return m_DialogDef;
+
+            }
+
         }
 
         override public String Module 
@@ -38,6 +66,7 @@ namespace V8Reader.Core
                 return m_ModuleText;
             }
         }
+
         public ManagedFormElements Elements
         {
             get
@@ -48,6 +77,7 @@ namespace V8Reader.Core
                 return m_Elements;
             }
         }
+
         public MDObjectsCollection<ManagedFormAttribute> Attributes
         {
             get
@@ -66,7 +96,9 @@ namespace V8Reader.Core
 
         private ManagedFormElements m_Elements = null;
         private MDObjectsCollection<ManagedFormAttribute> m_Attributes = null;
-        private String m_ModuleText;
+        private string m_ModuleText;
+        private MDUserDialogBase m_DialogDef;
+
         private bool m_Loaded = false;
         
         private void LoadAttributes(SerializedList attrSection)

@@ -41,7 +41,7 @@ namespace V8Reader.Core
             }
         }
         public abstract string Module { get; }
-        public /*abstract*/ string DialogDef { get; private set; }
+        public abstract MDUserDialogBase DialogDef { get; }
 
         protected MDForm(String ObjID, MDReader Reader) : base(ObjID)
         {
@@ -84,9 +84,8 @@ namespace V8Reader.Core
             base.DeclareProperties();
             var internalProps = base.PropHolder;
 
-            //internalProps.Add(PropDef.Create("Dialog", "Форма", DialogDef));
-            internalProps.Add(PropDef.Create("Module", "Модуль", 
-                new V8ModuleProcessor(Module, Name)));
+            internalProps.Add(PropDef.Create("Dialog", "Форма", DialogDef, new Comparison.ToStringComparator()));
+            internalProps.Add(PropDef.Create("Module", "Модуль", new V8ModuleProcessor(Module, Name)));
             
         }
 

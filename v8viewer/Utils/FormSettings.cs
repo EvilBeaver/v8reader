@@ -123,7 +123,7 @@ namespace V8Reader.Utils
                 {
                 }
 
-                using (var fs = storage.OpenFile(ctFileName, FileMode.Truncate, FileAccess.Write, FileShare.None))
+                using (var fs = storage.OpenFile(ctFileName, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     DataContractSerializer serializer = new DataContractSerializer(typeof(SettingsList));
                     serializer.WriteObject(fs, m_Storage);

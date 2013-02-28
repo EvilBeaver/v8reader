@@ -185,6 +185,22 @@ namespace V8Reader.Comparison
 
                             RClickCommands.Add(cmd);
                         }
+                        else if (PropDef.Value is MDUserDialogBase)
+                        {
+                            var cmd = new UICommand("Показать различия в диалогах", cmpItem, new Action(
+                                () =>
+                                {
+                                    MDUserDialogBase LeftVal = ((PropDef)cmpItem.Left.Object).Value as MDUserDialogBase;
+                                    MDUserDialogBase RightVal = ((PropDef)cmpItem.Right.Object).Value as MDUserDialogBase;
+                                    var viewer = new Comparison.ExternalTextDiffViewer(LeftVal.ToString(), RightVal.ToString());
+                                    if (viewer != null)
+                                    {
+                                        viewer.ShowDifference();
+                                    }
+                                }));
+
+                            RClickCommands.Add(cmd);
+                        }
                     }
                     GatherUICommands(cmpItem.Parent, RClickCommands, IsLeftSourced);
                 }
