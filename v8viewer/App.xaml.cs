@@ -97,8 +97,6 @@ namespace V8Reader
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            bool dummy = false;
-
             try
             {
                 if (dispatcherTimer != null)
