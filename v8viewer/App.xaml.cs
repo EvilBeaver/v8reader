@@ -97,8 +97,6 @@ namespace V8Reader
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            bool dummy = false;
-
             try
             {
                 if (dispatcherTimer != null)
@@ -191,11 +189,28 @@ namespace V8Reader
                 {
                     Diff(args[1], args[2]);
                 }
+                else if (args.Length==2 && args[0] == "-browse" && System.IO.File.Exists(args[1]))
+                {
+                    BrowseFile(args[1]);
+                }
                 else
                 {
                     RunDefault();
                 }                
             }
+        }
+
+        private static void BrowseFile(string filename)
+        {
+            SafeMessageLoop(() =>
+                {
+                    App WPFApp = new App();
+                    var frm = new Utils.Browser.BrowserWindow(filename);
+                    WPFApp.MainWindow = frm;
+                    WPFApp.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                    WPFApp.Run(frm);
+
+                });
         }
 
         private static void OpenFile(String FileName)
