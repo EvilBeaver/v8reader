@@ -15,7 +15,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="V8Reader.Core.TemplateDocument" Collapsed="true">
+  <Class Name="V8Reader.Core.TemplateDocument">
     <Position X="2" Y="1" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAACAAAAAAAQAAAAAAAAIAAAAAAAAABQAAECAAAA=</HashCode>
@@ -23,10 +23,10 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="V8Reader.Core.FWOpenableDocument">
-    <Position X="2" Y="2" Width="1.5" />
+  <Class Name="V8Reader.Core.FWOpenableDocument" Collapsed="true">
+    <Position X="2" Y="4.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAQAQAAAAAAAAAQAAAAAAAAAQAAEAAAQA=</HashCode>
+      <HashCode>AABAAAAAIAAAQAQAAAAAAAAAQAAAAAAAAAQAAEAAAQA=</HashCode>
       <FileName>Core\TemplateDocument.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -38,10 +38,17 @@
     </TypeIdentifier>
   </Class>
   <Class Name="V8Reader.Core.HTMLTemplate">
-    <Position X="2" Y="5.25" Width="1.5" />
+    <Position X="2" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAQAAAAAABAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Core\HTMLTemplate.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="V8Reader.Core.DCSSchemaDocument">
+    <Position X="5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAhAAACAAAQAAQACAAQAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Core\DCSSchemaDocument.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

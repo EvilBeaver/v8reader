@@ -96,6 +96,7 @@
     <Compile Include="Core\MDUserDialogBase.cs" />
     <Compile Include="Core\UICommands.cs" />
     <Compile Include="Core\V8ModuleProcessor.cs" />
+    <Compile Include="Core\DCSSchemaDocument.cs" />
     <Compile Include="Editors\BinaryTemplateWindow.xaml.cs">
       <DependentUpon>BinaryTemplateWindow.xaml</DependentUpon>
     </Compile>

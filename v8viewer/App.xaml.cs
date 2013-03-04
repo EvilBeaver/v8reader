@@ -74,6 +74,7 @@ namespace V8Reader
                 if (!result.Success) return;
 
                 V8Reader.Properties.Settings.Default.LastUpdateCheck = DateTime.Now.Date;
+                V8Reader.Properties.Settings.Default.Save();
 
                 if (result.Updates.Count > 0)
                 {

@@ -36,7 +36,6 @@ namespace V8Reader.Core
                 case MDTemplate.TemplateKind.Text:
                 case MDTemplate.TemplateKind.GEOSchema:
                 case MDTemplate.TemplateKind.GraphicChart:
-                //case MDTemplate.TemplateKind.DataCompositionSchema:
                 case MDTemplate.TemplateKind.DCSAppearanceTemplate:
                     m_Document = new PersistedTemplateStub(this, Reader);
                     break;
@@ -45,6 +44,9 @@ namespace V8Reader.Core
                     break;
                 case MDTemplate.TemplateKind.HTMLDocument:
                     m_Document = new HTMLTemplate(this, Reader);
+                    break;
+                case MDTemplate.TemplateKind.DataCompositionSchema:
+                    m_Document = new DCSSchemaDocument(this, Reader);
                     break;
                 default:
                     break;
