@@ -47,10 +47,9 @@ namespace V8Reader.Core
         {
             XDocument result = new XDocument();
             XDocument schema = XDocument.Parse(SchemaContent);
-
-            result.Add(schema.Element("SchemaFile/dataCompositionSchema"));
-            return null;
-
+            
+            result.Add(schema.Root.Elements().First<XElement>());
+            
         }
 
         private void LoadData()
@@ -105,9 +104,8 @@ namespace V8Reader.Core
 
         private string ReadUTF8Array(byte[] arr)
         {
-            var enc = Encoding.UTF8;
 #if !AS_IS
-            
+            var enc = Encoding.UTF8;
             var BOM = enc.GetPreamble();
             bool hasBOM = true;
             for (int i = 0; i < BOM.Length; i++)
