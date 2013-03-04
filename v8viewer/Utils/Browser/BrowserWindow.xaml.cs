@@ -23,19 +23,26 @@ namespace V8Reader.Utils.Browser
         {
             InitializeComponent();
 
+            Utils.FormsSettingsManager.Register(this, "FileBrowser");
+
             m_FileImage = new V8File(filename);
+            m_OpenedDocs = new Dictionary<FileTreeItem, OpenedDocument>();
 
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            if(m_FileImage != null)
+            if (m_FileImage != null)
+            {
+                FileTree.Items.Clear();
+                m_OpenedDocs.Clear();
                 m_FileImage.Dispose();
-
+            }
             base.OnClosed(e);
         }
 
         V8File m_FileImage;
+        Dictionary<FileTreeItem, OpenedDocument> m_OpenedDocs;
 
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
@@ -45,16 +52,149 @@ namespace V8Reader.Utils.Browser
                 FileTree.Items.Add(new FileTreeItem(item.GetElement()));
             }
 
-            if (FileTree.HasItems)
-            {
-                var lst = this.Resources["DocListKey"] as DocList;
-                FileTreeItem elem = FileTree.Items[0] as FileTreeItem;
-                lst.Add(new OpenedDocument(elem));
-            }
-
         }
 
-        
+        private void btnTabClose_Click(object sender, RoutedEventArgs e)
+        {
+            var tabItm = Utils.UIHelper.FindVisualParent<TabItem>((DependencyObject)sender);
+            if (tabItm != null)
+            {
+
+                var ToRemove = from Opened in m_OpenedDocs where Opened.Value == tabItm.Content select Opened.Key;
+
+                foreach (var kv in ToRemove.ToArray<FileTreeItem>())
+                {
+                    m_OpenedDocs.Remove(kv);
+                }
+
+                int idx = FilePanel.Items.IndexOf(tabItm.Content);
+                FilePanel.Items.Remove(tabItm.Content);
+                tabItm = null;
+                FilePanel.SelectedIndex = idx;
+            }
+        }
+
+        private void FileTree_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if ((sender as TreeViewItem).Header is FileTreeItem)
+            {
+                var fti = (sender as TreeViewItem).Header as FileTreeItem;
+                if (!fti.IsFolder)
+                {
+                    e.Handled = true;
+
+                    OpenedDocument od;
+                    m_OpenedDocs.TryGetValue(fti, out od);
+                    if (od != null)
+                    {
+                        int tabIdx = FilePanel.Items.IndexOf(od);
+                        if (tabIdx >= 0)
+                        {
+                            FilePanel.SelectedIndex = tabIdx;
+                        }
+                        else
+                        {
+                            m_OpenedDocs.Remove(fti);
+                        }
+                    }
+                    else
+                    {
+                        var NewDoc = new OpenedDocument(fti);
+                        m_OpenedDocs.Add(fti, NewDoc);
+                        int tabIdx = FilePanel.Items.Add(NewDoc);
+                        FilePanel.SelectedIndex = tabIdx;
+                    }
+
+                }
+            }
+        }
+
+        private void tbSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            int tabIdx = FilePanel.SelectedIndex;
+            if (tabIdx < 0)
+                return;
+
+            var dlg = new Microsoft.Win32.SaveFileDialog();
+            if ((bool)dlg.ShowDialog())
+            {
+                string fileToSave = dlg.FileName;
+                var od = FilePanel.Items[tabIdx];
+                var findReslt = from Opened in m_OpenedDocs where Opened.Value == od select Opened.Key;
+                foreach (var fti in findReslt)
+                {
+                    SaveToFileAsync(fileToSave, fti);
+                    break;
+                }
+
+            }
+        }
+
+        private void SaveToFileAsync(string fileToSave, FileTreeItem fti)
+        {
+            
+            try
+            {
+                var fs = new System.IO.FileStream(fileToSave, System.IO.FileMode.Create);
+                var src = fti.GetDataStream();
+
+                const int CHUNK_SIZE = 1024*10; //kilobytes
+                byte[] buffer = new byte[CHUNK_SIZE];
+
+                Action<Exception> Done = (exc) =>
+                    {
+                        if (exc != null)
+                        {
+                            this.Dispatcher.BeginInvoke(new Action(() => Utils.UIHelper.DefaultErrHandling(exc)));
+                        }
+
+                        fs.Close();
+                        src.Close();
+
+                    };
+
+                AsyncCallback CallbackExpr = null;
+                CallbackExpr = (IAsyncResult readResult)=>
+                {
+                    try 
+                    { 
+                        int read = src.EndRead(readResult);
+                        if (read > 0)
+                        {
+                            fs.BeginWrite(buffer, 0, read, writeResult =>
+                                {
+                                    try
+                                    {
+                                        fs.EndWrite(writeResult);
+                                        src.BeginRead(buffer, 0, buffer.Length, CallbackExpr, null);
+                                    }
+                                    catch (Exception exc)
+                                    {
+                                        Done(exc);
+                                    }
+                                },
+                             null);
+                        }
+                        else
+                        {
+                            Done(null);
+                        }
+                    } 
+                    catch (Exception exc) 
+                    {
+                        Done(exc);
+                    }
+                };
+
+                // Here we go!
+                src.BeginRead(buffer, 0, buffer.Length, CallbackExpr, null);
+
+            }
+            catch (Exception exc)
+            {
+                Utils.UIHelper.DefaultErrHandling(exc);
+            }
+        }
 
     }
 
@@ -67,10 +207,10 @@ namespace V8Reader.Utils.Browser
 
             if (_isFolder)
             {
-                _children = new List<V8DataElement>();
+                _children = new List<FileTreeItem>();
                 foreach (var item in (elem as IImageLister).Items)
                 {
-                    _children.Add(item.GetElement());
+                    _children.Add(new FileTreeItem(item.GetElement()));
                 }
 
             }
@@ -82,6 +222,11 @@ namespace V8Reader.Utils.Browser
             {
                 return _elem.Name;
             }
+        }
+
+        public System.IO.Stream GetDataStream()
+        {
+            return _elem.GetDataStream();
         }
 
         public string Text
@@ -105,7 +250,7 @@ namespace V8Reader.Utils.Browser
             }
         }
 
-        public List<V8DataElement> Items
+        public List<FileTreeItem> Items
         {
             get
             {
@@ -115,7 +260,14 @@ namespace V8Reader.Utils.Browser
 
         private V8DataElement _elem;
         private bool _isFolder;
-        List<V8DataElement> _children;
+
+        public bool IsFolder
+        {
+            get { return _isFolder; }
+            set { _isFolder = value; }
+        }
+
+        List<FileTreeItem> _children;
 
     }
 
