@@ -34,8 +34,10 @@ namespace V8Reader.Utils
                     if (icon != null)
                         key.CreateSubKey("DefaultIcon").SetValue("", icon);
                     if (application != null)
-                        key.CreateSubKey(@"Shell\Open\Command").SetValue("",
-                                    application + " \"%1\"");
+                    {
+                        key.CreateSubKey(@"Shell\Open\Command").SetValue("", application + " \"%1\"");
+                        key.CreateSubKey(@"Shell\Browse\Command").SetValue("", application + "-browse \"%1\"");
+                    }
 
                 }
         }

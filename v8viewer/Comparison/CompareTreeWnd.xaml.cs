@@ -22,6 +22,7 @@ namespace V8Reader.Comparison
         internal CompareTreeWnd()
         {
             InitializeComponent();
+
             Utils.FormsSettingsManager.Register(this, "ComparisonTree");
         }
 
