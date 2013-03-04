@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace V8Reader.Core
 {
@@ -42,6 +43,16 @@ namespace V8Reader.Core
             }
         }
 
+        public override Editors.ICustomEditor GetEditor()
+        {
+            XDocument result = new XDocument();
+            XDocument schema = XDocument.Parse(SchemaContent);
+
+            result.Add(schema.Element("SchemaFile/dataCompositionSchema"));
+            return null;
+
+        }
+
         private void LoadData()
         {
             MDFileItem FileElement;
@@ -74,12 +85,13 @@ namespace V8Reader.Core
                         // вряд ли кто-то засунет в схему данные не влезающие в Int32
                         // поэтому, не будем заморачиваться с длиной в Int64 
                         // (BinaryReader.ReadBytes не работает c Int64)
-                        _SchemaContent = Encoding.UTF8.GetString(rdr.ReadBytes((Int32)SchemaLen));
+                        
+                        _SchemaContent = ReadUTF8Array(rdr.ReadBytes((Int32)SchemaLen));
                         _SettingsList = new List<string>();
 
                         for (int i = 0; i < variantNum; i++)
                         {
-                            _SettingsList.Add(Encoding.UTF8.GetString(rdr.ReadBytes((Int32)lenArray[i])));
+                            _SettingsList.Add(ReadUTF8Array(rdr.ReadBytes((Int32)lenArray[i])));
                         }
                     }
                 }
@@ -88,6 +100,30 @@ namespace V8Reader.Core
             {
                 throw new MDObjectIsEmpty(Owner.Kind.ToString());
             }
+
+        }
+
+        private string ReadUTF8Array(byte[] arr)
+        {
+            var enc = Encoding.UTF8;
+#if !AS_IS
+            
+            var BOM = enc.GetPreamble();
+            bool hasBOM = true;
+            for (int i = 0; i < BOM.Length; i++)
+            {
+                if (arr[i] != BOM[i])
+                {
+                    hasBOM = false;
+                    break;
+                }
+            }
+
+            int startPoint = hasBOM ? BOM.Length : 0;
+#else
+            int startPoint = 0;
+#endif
+            return enc.GetString(arr, startPoint, arr.Length - startPoint);
 
         }
 
