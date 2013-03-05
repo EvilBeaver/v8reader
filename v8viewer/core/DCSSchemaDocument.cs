@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace V8Reader.Core
 {
-    internal class DCSSchemaDocument : TemplateDocument
+    internal class DCSSchemaDocument : FWOpenableDocument
     {
         public DCSSchemaDocument(MDTemplate OwnerTemplate, MDReader Reader)
             : base(OwnerTemplate, Reader)
@@ -15,7 +15,6 @@ namespace V8Reader.Core
 
         private bool _isLoaded;
         private string _SchemaContent;
-        private List<String> _SettingsList;
 
         public string SchemaContent 
         { 
@@ -23,15 +22,6 @@ namespace V8Reader.Core
             {
                 LoadDataIfNeeded();
                 return _SchemaContent;
-            }
-        }
-
-        public IEnumerable<String> Variants
-        {
-            get
-            {
-                LoadDataIfNeeded();
-                return _SettingsList.AsReadOnly();
             }
         }
 
@@ -43,96 +33,158 @@ namespace V8Reader.Core
             }
         }
 
-        public override Editors.ICustomEditor GetEditor()
+        public override string Extract()
         {
-            XDocument result = new XDocument();
-            XDocument schema = XDocument.Parse(SchemaContent);
-            
-            result.Add(schema.Root.Elements().First<XElement>());
-            
+            string Filename = DefaultExtractionPath();
+            using (var writer = new System.IO.StreamWriter(Filename, false, Encoding.UTF8))
+            {
+                writer.Write(SchemaContent);
+            }
+
+            return Filename;
+        }
+
+        protected override bool InternalCompare(FWOpenableDocument cmpDoc)
+        {
+            if (cmpDoc is DCSSchemaDocument)
+            {
+                return SchemaContent == ((DCSSchemaDocument)cmpDoc).SchemaContent;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void LoadData()
         {
-            MDFileItem FileElement;
-            try
+            
+            using (var src = GetDataStream())
             {
-                FileElement = Reader.GetElement(Owner.ID + ".0");
-            }
-            catch(System.IO.FileNotFoundException exc)
-            {
-                throw new MDObjectIsEmpty(Owner.Kind.ToString(), exc);
-            }
-
-            if (FileElement.ElemType == MDFileItem.ElementType.File)
-            {
-                using (var src = FileElement.GetStream())
+                using (var rdr = new System.IO.BinaryReader(src))
                 {
-                    src.Seek(4, System.IO.SeekOrigin.Begin);
-
-                    using (var rdr = new System.IO.BinaryReader(src))
+                    int marker = rdr.ReadInt32();
+                    if (marker == 0)
                     {
-                        int variantNum = rdr.ReadInt32();
-                        Int64 SchemaLen = rdr.ReadInt64();
-
-                        Int64[] lenArray = new Int64[variantNum];
-                        for (int i = 0; i < variantNum; i++)
-                        {
-                            lenArray[i] = rdr.ReadInt64();
-                        }
-
-                        // вряд ли кто-то засунет в схему данные не влезающие в Int32
-                        // поэтому, не будем заморачиваться с длиной в Int64 
-                        // (BinaryReader.ReadBytes не работает c Int64)
-                        
-                        _SchemaContent = ReadUTF8Array(rdr.ReadBytes((Int32)SchemaLen));
-                        _SettingsList = new List<string>();
-
-                        for (int i = 0; i < variantNum; i++)
-                        {
-                            _SettingsList.Add(ReadUTF8Array(rdr.ReadBytes((Int32)lenArray[i])));
-                        }
+                        ReadSchemaFiles(rdr);
                     }
+                    else
+                    {
+                        rdr.BaseStream.Position = 0;
+                        ReadPlainXML(rdr.BaseStream);
+                    }
+
                 }
             }
-            else
-            {
-                throw new MDObjectIsEmpty(Owner.Kind.ToString());
-            }
+
 
         }
 
-        private string ReadUTF8Array(byte[] arr)
+        private void ReadPlainXML(System.IO.Stream stream)
         {
-#if !AS_IS
-            var enc = Encoding.UTF8;
-            var BOM = enc.GetPreamble();
-            bool hasBOM = true;
-            for (int i = 0; i < BOM.Length; i++)
+            _SchemaContent = ReadStreamAsText(stream);
+        }
+
+        private void ReadSchemaFiles(System.IO.BinaryReader rdr)
+        {
+            int variantNum = rdr.ReadInt32();
+            Int64 SchemaLen = rdr.ReadInt64();
+
+            Int64[] lenArray = new Int64[variantNum];
+            for (int i = 0; i < variantNum; i++)
             {
-                if (arr[i] != BOM[i])
+                lenArray[i] = rdr.ReadInt64();
+            }
+
+            // вряд ли кто-то засунет в схему данные не влезающие в Int32
+            // поэтому, не будем заморачиваться с длиной в Int64 
+            // (BinaryReader.ReadBytes не работает c Int64, читать частями лень)
+
+            var tmp_SchemaContent = ReadUTF8Array(rdr.ReadBytes((Int32)SchemaLen));
+            var settingsList = new List<string>();
+
+            for (int i = 0; i < variantNum; i++)
+            {
+                settingsList.Add(ReadUTF8Array(rdr.ReadBytes((Int32)lenArray[i])));
+            }
+
+            JoinSchemaAndVariants(tmp_SchemaContent, settingsList);
+        }
+
+        private void JoinSchemaAndVariants(string tmp_SchemaContent, List<string> settingsList)
+        {
+            XNamespace schemaNS = XNamespace.Get("http://v8.1c.ru/8.1/data-composition-system/schema");
+            XNamespace settingsNS = XNamespace.Get("http://v8.1c.ru/8.1/data-composition-system/settings");
+
+            XDocument File = XDocument.Parse(tmp_SchemaContent);
+            XContainer schema = File.Root.Element(XName.Get("dataCompositionSchema", schemaNS.NamespaceName));
+
+            if (schema == null)
+            {
+                _SchemaContent = tmp_SchemaContent;
+                return;
+            }
+
+            if (settingsList.Count == 0)
+            {
+                _SchemaContent = schema.ToString();
+                return;
+            }
+
+            var elemVariants = schema.Elements(XName.Get("settingsVariant", schemaNS.NamespaceName));
+            if (elemVariants == null)
+            {
+                // непонятная ситуация, в схеме нет описания вариантов, но сами варианты есть.
+                // пока оставим просто схему, потом видно будет
+                _SchemaContent = schema.ToString();
+                return;
+            }
+
+            int i = 0;
+            foreach (var variant in elemVariants)
+            {
+                if (i >= settingsList.Count)
                 {
-                    hasBOM = false;
                     break;
                 }
+
+                var settings = XDocument.Parse(settingsList[i++]);
+                
+                if (settings.Root.GetDefaultNamespace() == settingsNS)
+                {
+                    XName currentName = XName.Get("settings",settingsNS.NamespaceName);
+                    settings.Root.Name = currentName;
+                    variant.Add(settings.Root);
+                }
+
             }
 
-            int startPoint = hasBOM ? BOM.Length : 0;
-#else
-            int startPoint = 0;
-#endif
-            return enc.GetString(arr, startPoint, arr.Length - startPoint);
-
+            _SchemaContent = schema.ToString();
         }
 
-        public override bool CompareTo(object Comparand)
+        private static string ReadUTF8Array(byte[] arr)
         {
-            throw new NotImplementedException();
+            string result;
+
+            using (var ms = new System.IO.MemoryStream(arr))
+            {
+                result = ReadStreamAsText(ms);
+            }
+
+            return result;
         }
 
-        public override Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
+        private static string ReadStreamAsText(System.IO.Stream Stream)
         {
-            throw new NotImplementedException();
+            string result;
+
+            using (var sr = new System.IO.StreamReader(Stream, true))
+            {
+                result = sr.ReadToEnd();
+            }
+
+            return result;
         }
+
     }
 }

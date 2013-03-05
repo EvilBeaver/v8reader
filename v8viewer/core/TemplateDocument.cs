@@ -60,7 +60,7 @@ namespace V8Reader.Core
 
         public virtual String Extract()
         {
-            String Result = System.IO.Path.GetTempPath() + FWOpenableName;
+            String Result = DefaultExtractionPath();
 
             using (var SourceStream = GetDataStream())
             {
@@ -69,12 +69,30 @@ namespace V8Reader.Core
                     SourceStream.CopyTo(DestStream);
                 }
             }
-            
+
+            if (AutoExtractionCleanup)
+            {
+                Utils.TempFileCleanup.RegisterTempFile(Result);
+            }
+
             return Result;
 
         }
 
-        private System.IO.Stream GetDataStream()
+        protected bool AutoExtractionCleanup 
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        protected virtual string DefaultExtractionPath()
+        {
+            return System.IO.Path.GetTempPath() + FWOpenableName;
+        }
+
+        protected System.IO.Stream GetDataStream()
         {
             var FileName = GetFileName();
             MDFileItem FileElement;
@@ -119,9 +137,9 @@ namespace V8Reader.Core
                     case MDTemplate.TemplateKind.GraphicChart:
                         FileExt = ".grs";
                         break;
-                    //case MDTemplate.TemplateKind.DataCompositionSchema:
-                    //    FileExt = ".xml";
-                    //    break;
+                    case MDTemplate.TemplateKind.DataCompositionSchema:
+                        FileExt = ".txt";
+                        break;
                     case MDTemplate.TemplateKind.DCSAppearanceTemplate:
                         FileExt = ".txt";
                         break;
@@ -177,9 +195,7 @@ namespace V8Reader.Core
                 }
                 else if (!CurrentIsEmpty)
                 {
-                    Comparison.StreamComparator sc = new Comparison.StreamComparator();
-
-                    return sc.CompareStreams(GetDataStream(), cmpDoc.GetDataStream());
+                    return InternalCompare(cmpDoc);
 
                 }
                 else
@@ -192,6 +208,12 @@ namespace V8Reader.Core
                 return CurrentIsEmpty;
             }         
 
+        }
+
+        protected virtual bool InternalCompare(FWOpenableDocument cmpDoc)
+        {
+            Comparison.StreamComparator sc = new Comparison.StreamComparator();
+            return sc.CompareStreams(GetDataStream(), cmpDoc.GetDataStream());
         }
 
         public override Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
