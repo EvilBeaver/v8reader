@@ -149,6 +149,7 @@
     <Compile Include="Utils\UpdatesWnd.xaml.cs">
       <DependentUpon>UpdatesWnd.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\XMLMerge.cs" />
     <Page Include="Comparison\DiffTreeStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

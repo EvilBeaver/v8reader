@@ -116,6 +116,12 @@ namespace V8Reader.Core
             XNamespace schemaNS = XNamespace.Get("http://v8.1c.ru/8.1/data-composition-system/schema");
             XNamespace settingsNS = XNamespace.Get("http://v8.1c.ru/8.1/data-composition-system/settings");
 
+            Utils.XMLMerge.NamespaceMap nsMap = new Utils.XMLMerge.NamespaceMap();
+            nsMap.Add("dcsset", settingsNS.NamespaceName);
+            nsMap.Add("dcscor", "http://v8.1c.ru/8.1/data-composition-system/core");
+            nsMap.Add("xs"    , "http://www.w3.org/2001/XMLSchema");
+            nsMap.Add("xsi"   , "http://www.w3.org/2001/XMLSchema-instance");
+
             XDocument File = XDocument.Parse(tmp_SchemaContent);
             XContainer schema = File.Root.Element(XName.Get("dataCompositionSchema", schemaNS.NamespaceName));
 
@@ -154,7 +160,10 @@ namespace V8Reader.Core
                 {
                     XName currentName = XName.Get("settings",settingsNS.NamespaceName);
                     settings.Root.Name = currentName;
-                    variant.Add(settings.Root);
+
+                    Utils.XMLMerge.Perform(variant, settings.Root, nsMap);
+                    
+                    //variant.Add(settings.Root);
                 }
 
             }
