@@ -139,22 +139,25 @@ namespace V8Reader.Controls
 
             int PreCommentStart = -1;
 
-            var Reader = document.CreateReader();
-            
+            //var Reader = document.CreateReader();
+
+            string FullText = document.Text;
+
             do
             {
+                int prev_start = startPos;
+                string lineText = ReadLine(FullText, ref startPos);
 
-                string lineText = Reader.ReadLine();
                 if (lineText == null)
                 {
                     break;
                 }
                 
                 TextFragment tf = new TextFragment();
-                tf.offset = startPos;
+                tf.offset = prev_start;
                 tf.len = lineText.Length;
 
-                startPos += lineText.Length + 2;
+                //startPos += lineText.Length + 2;
 
                 if (!MethodIsOpen)
                 {
@@ -213,6 +216,42 @@ namespace V8Reader.Controls
 
 			return newFoldings;
 		}
+
+        string ReadLine(string Content, ref int Position)
+        {
+            if (Position >= Content.Length)
+            {
+                Position = -1;
+                return null;
+            }
+            
+            int StartPoint = Position;
+            int EndPoint = Position;
+
+            while (Position < Content.Length)
+            {
+                if (Content[Position] == '\n')
+                {
+                    Position++;
+                    break;
+                }
+                
+                if (Content[Position] != '\r')
+                {
+                    EndPoint = Position;
+                }
+
+                Position++;
+
+            }
+
+            int len = EndPoint == StartPoint ? 0 : EndPoint - StartPoint + 1;
+            
+            string result = Content.Substring(StartPoint, len);
+            return result;
+
+        }
+
 	}
 
 }
