@@ -56,6 +56,10 @@ namespace V8Reader.Comparison
 
         }
 
+        IComparisonPerformer m_Engine;
+
+
+
         private void ExpandTopLevel()
         {
             TreeViewItem root = (TreeViewItem)twTree.ItemContainerGenerator.ContainerFromIndex(0);
@@ -70,8 +74,6 @@ namespace V8Reader.Comparison
                 PrintResultInternal();
             }
         }
-
-        IComparisonPerformer m_Engine;
 
         private void CompareTree_Loaded(object sender, RoutedEventArgs e)
         {
@@ -212,6 +214,21 @@ namespace V8Reader.Comparison
                 AddProviderCommands(Provider, RClickCommands);
             }
 
+            if (srcObject != null && srcObject is IMDPropertyProvider)
+            {
+                var cmd = new UICommand("Отчет по свойствам", srcObject, () =>
+                {
+                    PropertiesReport repGenerator = new PropertiesReport((IMDPropertyProvider) srcObject);
+                    
+                    FlowDocViewer fdViewer = new FlowDocViewer();
+                    fdViewer.Title = srcObject.ToString();
+                    fdViewer.Document = repGenerator.GenerateReport();
+                    fdViewer.Show();
+                });
+
+                RClickCommands.Add(cmd);
+            }
+            
         }
 
         private void AddProviderCommands(ICommandProvider Provider, List<UICommand> RClickCommands)

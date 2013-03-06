@@ -45,17 +45,35 @@ namespace V8Reader.Core
             set { m_Value = value; }
         }
 
-        private string m_Key;
-        private object m_Value;
-        private string m_Name;
-        private Comparison.IComparator m_Comparator;
-
-        private Comparison.IComparator Comparator
+        public Comparison.IComparator Comparator
         {
             get { return m_Comparator; }
             set { m_Comparator = value; }
         }
 
+        public IValueVisualizer ValueVisualizer 
+        {
+            get
+            {
+                if(m_Visualizer == null)
+                {
+                    m_Visualizer = new SimpleTextVisualizer(Value);
+                }
+
+                return m_Visualizer;
+            }
+
+            set
+            {
+                m_Visualizer = value;
+            }
+        }
+
+        private string m_Key;
+        private object m_Value;
+        private string m_Name;
+        private Comparison.IComparator m_Comparator;
+        private IValueVisualizer m_Visualizer;
 
         #region IComparableItem Members
 

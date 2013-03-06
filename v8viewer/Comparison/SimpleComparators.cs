@@ -28,6 +28,12 @@ namespace V8Reader.Comparison
 
         public bool CompareObjects(object Compared, object Comparand)
         {
+            // null<>null
+            if (Compared == null)
+                return false;
+            if (Comparand == null)
+                return false;
+
             return Compared.ToString() == Comparand.ToString();
         }
 

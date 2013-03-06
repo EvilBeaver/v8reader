@@ -58,6 +58,20 @@
     <Optimize>true</Optimize>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.AvalonEdit, Version=4.2.0.8783, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -88,7 +102,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Comparison\ExtTextDiffViewer.cs" />
+    <Compile Include="Comparison\FlowDocViewer.xaml.cs">
+      <DependentUpon>FlowDocViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Comparison\FWDiffViewer.cs" />
+    <Compile Include="Comparison\PropertiesReport.cs" />
     <Compile Include="Comparison\SimpleComparators.cs" />
     <Compile Include="Comparison\StreamComparator.cs" />
     <Compile Include="Comparison\ValueConverters.cs" />
@@ -151,6 +169,10 @@
     </Compile>
     <Compile Include="Utils\XMLMerge.cs" />
     <Page Include="Comparison\DiffTreeStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Comparison\FlowDocViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -248,6 +270,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Comparison\ComparisonDiag.cd" />
@@ -309,6 +332,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\cancel.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\beeCells.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
