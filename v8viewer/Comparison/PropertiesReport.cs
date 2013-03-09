@@ -7,57 +7,12 @@ using System.Windows.Documents;
 
 namespace V8Reader.Comparison
 {
-    class PropertiesReport
+    
+    abstract class PropertiesReport
     {
-        public PropertiesReport(IMDPropertyProvider PropertyProvider) : this(PropertyProvider, null)
-        {
-        }
 
-        public PropertiesReport(IMDPropertyProvider PropertyProvider, IPropertiesReportFormatter formatter)
-        {
-            _provider = PropertyProvider;
-            Formatter = formatter;
-        }
-
-        public FlowDocument GenerateReport()
-        {
-            FlowDocument doc = new FlowDocument();
-            //doc.Resources.Add("", Formatter.DefaultStyle());
-            
-            Paragraph Header = new Paragraph(Formatter.Header1("Отчет по свойствам"));
-
-            doc.Blocks.Add(Header);
-
-            Section contentSection = new Section();
-            contentSection.Style = Formatter.DefaultStyle();
-            contentSection.Blocks.Add(GenerateContent());
-
-            doc.Blocks.Add(contentSection);
-
-            return doc;
-
-        }
-
-        public Block GenerateContent()
-        {
-            Section content = new Section();
-
-            foreach (var PropDef in _provider.Properties.Values)
-            {
-                Section propSection = new Section();
-
-                var p = new Paragraph(Formatter.HeaderProperty(PropDef.Name));
-                p.Margin = new System.Windows.Thickness(0,2,0,1);
-
-                propSection.Blocks.Add(p);
-                propSection.Blocks.Add(PropDef.ValueVisualizer.FlowContent);
-
-                content.Blocks.Add(propSection);
-
-            }
-
-            return content;
-        }
+        abstract public FlowDocument GenerateReport();
+        abstract public Block GenerateContent();
 
         public IPropertiesReportFormatter Formatter
         {
@@ -84,7 +39,6 @@ namespace V8Reader.Comparison
             }
         }
 
-        private IMDPropertyProvider _provider;
         private IPropertiesReportFormatter _formatter;
 
         private class StandartFormatter : IPropertiesReportFormatter
@@ -133,7 +87,7 @@ namespace V8Reader.Comparison
 
             public Run MainText(string content)
             {
-                return new Run(content);
+                return new Run(content) { Style = DefaultStyle() };
             }
 
             public System.Windows.Style DefaultStyle()
@@ -143,6 +97,126 @@ namespace V8Reader.Comparison
 
         }
 
+    }
+    
+    class PropertiesReportSingle : PropertiesReport
+    {
+        public PropertiesReportSingle(IMDPropertyProvider PropertyProvider) : this(PropertyProvider, null)
+        {
+        }
+
+        public PropertiesReportSingle(IMDPropertyProvider PropertyProvider, IPropertiesReportFormatter formatter)
+        {
+            _provider = PropertyProvider;
+            Formatter = formatter;
+        }
+
+        public override FlowDocument GenerateReport()
+        {
+            FlowDocument doc = new FlowDocument();
+            
+            Paragraph Header = new Paragraph(Formatter.Header1("Отчет по свойствам"));
+
+            doc.Blocks.Add(Header);
+
+            Section contentSection = new Section();
+            contentSection.Style = Formatter.DefaultStyle();
+            contentSection.Blocks.Add(GenerateContent());
+
+            doc.Blocks.Add(contentSection);
+
+            return doc;
+
+        }
+
+        public override Block GenerateContent()
+        {
+            Section content = new Section();
+
+            foreach (var PropDef in _provider.Properties.Values)
+            {
+                Section propSection = new Section();
+
+                var p = new Paragraph(Formatter.HeaderProperty(PropDef.Name));
+                p.Margin = new System.Windows.Thickness(0,2,0,1);
+
+                propSection.Blocks.Add(p);
+                propSection.Blocks.Add(PropDef.ValueVisualizer.FlowContent);
+
+                content.Blocks.Add(propSection);
+
+            }
+
+            return content;
+        }
+
+        private IMDPropertyProvider _provider;
+        
+    }
+
+    class PropertiesReportCompare : PropertiesReport
+    {
+        public PropertiesReportCompare(IMDPropertyProvider left, IMDPropertyProvider right)
+        {
+            _left = left;
+            _right = right;
+        }
+
+        IMDPropertyProvider _left;
+        IMDPropertyProvider _right;
+
+        public override FlowDocument GenerateReport()
+        {
+            FlowDocument doc = new FlowDocument();
+
+            Paragraph Header = new Paragraph(Formatter.Header1("Отчет о сравнении объектов"));
+
+            Paragraph legend = new Paragraph();
+            legend.Inlines.Add(Formatter.MainText("-> свойства первого объекта"));
+            legend.Inlines.Add(new LineBreak());
+            legend.Inlines.Add(Formatter.MainText("<- свойства второго объекта"));
+
+            doc.Blocks.Add(Header);
+            doc.Blocks.Add(legend);
+
+            Section contentSection = new Section();
+            contentSection.Style = Formatter.DefaultStyle();
+            contentSection.Blocks.Add(GenerateContent());
+
+            doc.Blocks.Add(contentSection);
+
+            return doc;
+        }
+
+        public override Block GenerateContent()
+        {
+            Section content = new Section();
+
+            foreach (var PropDef in _left.Properties.Values)
+            {
+                Section propSection = new Section();
+
+                var p = new Paragraph(Formatter.HeaderProperty(PropDef.Name));
+                p.Margin = new System.Windows.Thickness(0, 2, 0, 1);
+
+                propSection.Blocks.Add(p);
+                
+                var lp = new Paragraph(new Run("->")){Margin = new System.Windows.Thickness(0)};
+                propSection.Blocks.Add(lp);
+                propSection.Blocks.Add(PropDef.ValueVisualizer.FlowContent);
+
+                var rightProp = _right.Properties[PropDef.Key];
+
+                var rp = new Paragraph(new Run("<-")) { Margin = new System.Windows.Thickness(0) };
+                propSection.Blocks.Add(rp);
+                propSection.Blocks.Add(rightProp.ValueVisualizer.FlowContent);
+
+                content.Blocks.Add(propSection);
+
+            }
+
+            return content;
+        }
     }
 
     interface IPropertiesReportFormatter

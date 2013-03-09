@@ -218,12 +218,26 @@ namespace V8Reader.Comparison
             {
                 var cmd = new UICommand("Отчет по свойствам", srcObject, () =>
                 {
-                    PropertiesReport repGenerator = new PropertiesReport((IMDPropertyProvider) srcObject);
+
+                    PropertiesReport repGenerator;
+
+                    if (cmpItem.Left.Object != null && cmpItem.Right.Object != null)
+                    {
+                        repGenerator = new PropertiesReportCompare(cmpItem.Left.Object as IMDPropertyProvider, cmpItem.Right.Object as IMDPropertyProvider);
+                    }
+                    else
+                    {
+                        repGenerator = new PropertiesReportSingle((IMDPropertyProvider)srcObject);
+                    }
+
+                    Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            FlowDocViewer fdViewer = new FlowDocViewer();
+                            fdViewer.Title = srcObject.ToString();
+                            fdViewer.Document = repGenerator.GenerateReport();
+                            fdViewer.Show();
+                        }));
                     
-                    FlowDocViewer fdViewer = new FlowDocViewer();
-                    fdViewer.Title = srcObject.ToString();
-                    fdViewer.Document = repGenerator.GenerateReport();
-                    fdViewer.Show();
                 });
 
                 RClickCommands.Add(cmd);

@@ -41,5 +41,5 @@ namespace V8Reader.Core
 
         #endregion
     }
-    
+
 }

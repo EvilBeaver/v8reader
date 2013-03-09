@@ -376,12 +376,6 @@ namespace V8Reader.Core
 
         #endregion
 
-        protected override void DeclareProperties()
-        {
-            base.DeclareProperties();
-            base.PropHolder.Add("Attributes", "Реквизиты", Attributes);
-        }
-
     }
 
 #region Exceptions

@@ -86,7 +86,9 @@ namespace V8Reader.Core
 
             internalProps.Add(PropDef.Create("Dialog", "Форма", DialogDef, new Comparison.ToStringComparator()));
             internalProps.Add(PropDef.Create("Module", "Модуль", new V8ModuleProcessor(Module, Name)));
-            
+
+            internalProps.Properties["Dialog"].ValueVisualizer = new DialogVisualizer(DialogDef);
+
         }
 
         protected MDReader m_Reader;
@@ -202,4 +204,35 @@ namespace V8Reader.Core
         private FormElementClass m_Class;
 
     }
+
+    class DialogVisualizer : IValueVisualizer
+    {
+
+        public DialogVisualizer(MDUserDialogBase dialog)
+        {
+
+        }
+
+        #region IValueVisualizer Members
+
+        public System.Windows.Documents.Block FlowContent
+        {
+            get 
+            {
+                var run = new System.Windows.Documents.Run(StringContent);
+                var p = new System.Windows.Documents.Paragraph(run);
+                p.Margin = new System.Windows.Thickness(0);
+
+                return p; 
+            }
+        }
+
+        public string StringContent
+        {
+            get { return "Диалоговое окно"; }
+        }
+
+        #endregion
+    }
+
 }
