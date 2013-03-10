@@ -14,6 +14,8 @@ namespace V8Reader.Core
         public const String TablesCollection = "2bcef0d1-0981-11d6-b9b8-0050bae0a95d";
         public const String FormCollection = "d5b0e5ed-256d-401c-9c36-f630cafd8a62";
         public const String TemplatesCollection = "3daea016-69b7-4ed4-9453-127911372fe6";
+        public const String ExternalProcessingClass = "c3831ec8-d8d5-4f93-8a22-f9bfae07327f";
+        public const String ExternalReportClass = "e41aff26-25cf-4bb6-b6c1-3f478a75f374";
     }
 
     static class IconCollections
