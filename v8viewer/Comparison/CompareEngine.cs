@@ -73,7 +73,7 @@ namespace V8Reader.Comparison
                 // Разница определяется самим объектом
                 node.IsDiffer = !((IComparableItem)Left).CompareTo(Right);
             }
-            else if (Left is MDObjectsCollection<MDBaseObject> || Left is StaticTreeNode)
+            else if (Left is MDObjectsCollection<MDObjectBase> || Left is StaticTreeNode)
             {
                 IEnumerable<IMDTreeItem> LeftItems;
                 IEnumerable<IMDTreeItem> RightItems;
@@ -351,11 +351,11 @@ namespace V8Reader.Comparison
                 }
                 else
                 {
-                    if (checkSide.Object is MDObjectsCollection<MDBaseObject> || checkSide.Object is StaticTreeNode)
+                    if (checkSide.Object is MDObjectsCollection<MDObjectBase> || checkSide.Object is StaticTreeNode)
                     {
                         return ResultNodeType.ObjectsCollection;
                     }
-                    else if (checkSide.Object is MDBaseObject)
+                    else if (checkSide.Object is MDObjectBase)
                     {
                         return ResultNodeType.Object;
                     }

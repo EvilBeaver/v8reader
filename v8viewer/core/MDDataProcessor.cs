@@ -6,10 +6,11 @@ using V8Reader.Editors;
 
 namespace V8Reader.Core
 {
-    partial class MDDataProcessor : MDBaseObject, IMDTreeItem, IDisposable, IEditable, ICommandProvider
+    partial class MDDataProcessor : MDObjectBase, IMDTreeItem, IDisposable, IEditable, ICommandProvider
     {
 
-        private MDDataProcessor(MDReader Reader) : base()
+        private MDDataProcessor(V8MetadataContainer Container, SerializedList Content)
+            : base()
         {
 
             m_Attributes = new MDObjectsCollection<MDAttribute>();
@@ -17,11 +18,9 @@ namespace V8Reader.Core
             m_Forms      = new MDObjectsCollection<MDForm>();
             m_Templates  = new MDObjectsCollection<MDTemplate>();
             
-            m_Reader = Reader;
+            //m_Reader = Reader;
 
-            var ProcData = GetMainStream(Reader);
-
-            ReadFromStream(ProcData);
+            ReadFromStream(Content);
 
         }
 

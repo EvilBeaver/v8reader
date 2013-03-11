@@ -111,8 +111,10 @@
     <Compile Include="Comparison\StreamComparator.cs" />
     <Compile Include="Comparison\ValueConverters.cs" />
     <Compile Include="Core\IValueVisualizer.cs" />
+    <Compile Include="Core\MDObjectsCollection.cs" />
     <Compile Include="Core\MDUserDialogBase.cs" />
     <Compile Include="Core\UICommands.cs" />
+    <Compile Include="Core\V8MetadataContainer.cs" />
     <Compile Include="Core\V8ModuleProcessor.cs" />
     <Compile Include="Core\DCSSchemaDocument.cs" />
     <Compile Include="Editors\BinaryTemplateWindow.xaml.cs">

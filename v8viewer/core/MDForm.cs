@@ -5,7 +5,7 @@ using System.Text;
 
 namespace V8Reader.Core
 {
-    abstract class MDForm : MDBaseObject, IMDTreeItem, ICommandProvider, Editors.IEditable
+    abstract class MDForm : MDObjectBase, IMDTreeItem, ICommandProvider, Editors.IEditable
     {
         public enum FormKind
         {
@@ -51,7 +51,7 @@ namespace V8Reader.Core
 
             SerializedList StringsBlock = FindStringsBlock(header.ReadAll());
 
-            MDBaseObject.ReadStringsBlock(this, StringsBlock);
+            MDObjectBase.ReadStringsBlock(this, StringsBlock);
 
         }
 
@@ -188,10 +188,9 @@ namespace V8Reader.Core
         Unknown
     }
 
-    abstract class FormElement : NamedObject
+    abstract class FormElement
     {
-        public FormElement(String ElementName, String Title, FormElementClass ElemClass)
-            : base(ElementName, Title)
+        public FormElement(String ElementName, FormElementClass ElemClass)
         {
             m_Class = ElemClass;
         }
@@ -202,7 +201,8 @@ namespace V8Reader.Core
         }
 
         private FormElementClass m_Class;
-
+        public string Name { get; private set; }
+        
     }
 
     class DialogVisualizer : IValueVisualizer

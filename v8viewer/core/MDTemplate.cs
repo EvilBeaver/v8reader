@@ -6,7 +6,7 @@ using V8Reader.Editors;
 
 namespace V8Reader.Core
 {
-    class MDTemplate : MDBaseObject, IMDTreeItem, ICommandProvider, IEditable
+    class MDTemplate : MDObjectBase, IMDTreeItem, ICommandProvider, IEditable
     {
         public enum TemplateKind
         {

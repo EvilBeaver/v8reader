@@ -5,99 +5,43 @@ using System.Text;
 
 namespace V8Reader.Core
 {
-    abstract class NamedObject
-    {
-        protected String m_Name;
-        protected String m_Synonym;
-
-        public NamedObject()
-        {
-            Name = "";
-            Synonym = "";
-        }
-
-        public NamedObject(String newName, String newSynonym)
-        {
-            Name = newName;
-            Synonym = newSynonym;
-        }
-
-        public virtual String Name
-        {
-            get
-            {
-                return m_Name;
-            }
-            protected set
-            {
-                m_Name = value;
-            }
-        }
-
-        public virtual String Synonym
-        {
-            get
-            {
-                return m_Synonym;
-            }
-            protected set
-            {
-                m_Synonym = value;
-            }
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
-        
-    }
     
-    abstract class MDBaseObject : NamedObject, IMDPropertyProvider
+    abstract class MDObjectBase : IMDPropertyProvider
     {
 
-        public MDBaseObject() { }
+        public MDObjectBase() { }
         
-        public MDBaseObject(String ObjID) {
+        public MDObjectBase(String ObjID) {
             ID = ObjID;
         }
 
-        public MDBaseObject(SerializedList lst)
+        public MDObjectBase(SerializedList lst)
         {
-            ReadFromStream(lst);
+            ReadStringsBlock(lst);
         }
+
+        public string ID { get; private set; }
         
-        public String Comment { get; protected set; }
-
-        public String ID
+        public string Name { get; private set; }
+        public string Synonym { get; private set; }
+        public string Comment { get; protected set; }
+        
+        protected void ReadStringsBlock(SerializedList StringBlock)
         {
-            get { return m_ObjectID; }
-            private set { m_ObjectID = value; }
-        }
-
-        protected virtual void ReadFromStream(SerializedList StringBlock)
-        {
-            MDBaseObject.ReadStringsBlock(this, StringBlock);
-        }
-
-        protected static void ReadStringsBlock(MDBaseObject Obj, SerializedList StringBlock)
-        {
-            Obj.ID = StringBlock.Items[1].Items[2].ToString();
-            Obj.Name = StringBlock.Items[2].ToString();
+            ID = StringBlock.Items[1].Items[2].ToString();
+            Name = StringBlock.Items[2].ToString();
 
             if (StringBlock.Items[3].Items.Count > 1)
             {
-                Obj.Synonym = StringBlock.Items[3].Items[2].ToString();
+                Synonym = StringBlock.Items[3].Items[2].ToString();
             }
             else
             {
-                Obj.Synonym = "";
+                Synonym = "";
             }
 
-            Obj.Comment = StringBlock.Items[4].ToString();
+            Comment = StringBlock.Items[4].ToString();
         }
-
-        private String m_ObjectID;
 
 
         #region IMDPropertyProvider Members
@@ -144,101 +88,8 @@ namespace V8Reader.Core
         #endregion
     }
 
-    class MDObjectsCollection<TItem> : IEnumerable<TItem>
-    {
-
-        public MDObjectsCollection()
-        {
-            m_Collection = new List<TItem>();
-        }
-        
-        public TItem this[int index]
-        {
-            get { return m_Collection[index]; }
-        }
-
-        public void Add(TItem item)
-        {
-            m_Collection.Add(item);
-        }
-
-        public void RemoveAt(int index)
-        {
-            m_Collection.RemoveAt(index);
-        }
-
-        public void Clear()
-        {
-            m_Collection.Clear();
-        }
-
-        public int Count
-        {
-            get { return m_Collection.Count; }
-        }
-
-        public IEnumerator<TItem> GetEnumerator()
-        {
-            return new MDObjectsEnumerator<TItem>(m_Collection);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return (System.Collections.IEnumerator)GetEnumerator();
-        }
-
-        private List<TItem> m_Collection;
-
-    }
-
-    class MDObjectsEnumerator<T> : IEnumerator<T>
-    {
-        private List<T> m_collection;
-        private int m_CurrentIndex;
-        private T m_current;
-
-        public MDObjectsEnumerator(List<T> Collection)
-        {
-            m_collection = Collection;
-            Reset();
-        }
-
-        public T Current
-        {
-            get { return m_current; }
-        }
-
-        public void Dispose()
-        {
-            
-        }
-
-        object System.Collections.IEnumerator.Current
-        {
-            get { return m_current; }
-        }
-
-        public bool MoveNext()
-        {
-            if (++m_CurrentIndex >= m_collection.Count)
-            {
-                return false;
-            }
-            else
-            {
-                m_current = m_collection[m_CurrentIndex];
-                return true;
-            }
-        }
-
-        public void Reset()
-        {
-            m_CurrentIndex = -1;
-            m_current = default(T);
-        }
-    }
-
-    class MDAttribute : MDBaseObject, IMDTreeItem, Comparison.IComparableItem
+    
+    class MDAttribute : MDObjectBase, IMDTreeItem, Comparison.IComparableItem
     {
         public MDAttribute(SerializedList attrDestription)
         {
@@ -256,12 +107,12 @@ namespace V8Reader.Core
                 StringsBlock = attrDestription.DrillDown(4);
             }
             
-            MDBaseObject.ReadStringsBlock(this, StringsBlock);
+            ReadStringsBlock(StringsBlock);
         }
 
         private SerializedList m_RawContent;
 
-        #region MDTreeItem
+        #region IMDTreeItem
 
         public String Key
         {
@@ -311,13 +162,13 @@ namespace V8Reader.Core
         #endregion
     }
 
-    class MDTable : MDBaseObject, IMDTreeItem
+    class MDTable : MDObjectBase, IMDTreeItem
     {
         public MDTable(SerializedList tableDescription)
         {
             m_RawContent = tableDescription;
             var StringsBlock = ((SerializedList)tableDescription).DrillDown(4);
-            MDBaseObject.ReadStringsBlock(this,StringsBlock);
+            ReadStringsBlock(StringsBlock);
 
             m_Attributes = new MDObjectsCollection<MDAttribute>();
 

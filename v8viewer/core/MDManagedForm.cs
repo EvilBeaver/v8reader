@@ -122,16 +122,18 @@ namespace V8Reader.Core
 
     class ManagedFormElement : FormElement, IMDTreeItem
     {
-        public ManagedFormElement(String ElementName, String Title, ManagedFormElementType Type) : base(ElementName, Title, Type.Class) 
+        public ManagedFormElement(String ElementName, String ElementTitle, ManagedFormElementType Type) : base(ElementName, Type.Class) 
         {
             m_ElementType = Type;
+            Title = ElementTitle;
         }
 
-        public ManagedFormElement(String ElementName, String Title, ManagedFormElementType Type, ManagedFormElements Children)
-            : base(ElementName, Title, Type.Class)
+        public ManagedFormElement(String ElementName, String ElementTitle, ManagedFormElementType Type, ManagedFormElements Children)
+            : base(ElementName, Type.Class)
         {
             m_ChildItems = Children;
             m_ElementType = Type;
+            Title = ElementTitle;
         }
 
         public ManagedFormElements ChildElements
@@ -149,6 +151,8 @@ namespace V8Reader.Core
                 return m_ElementType;
             }
         }
+
+        public string Title { get; private set; }
 
         private ManagedFormElements m_ChildItems = null;
         private ManagedFormElementType m_ElementType;
@@ -551,7 +555,7 @@ namespace V8Reader.Core
 
     #region Attributes
 
-    class ManagedFormAttribute : NamedObject, IMDTreeItem
+    class ManagedFormAttribute : IMDTreeItem
     {
         private ManagedFormAttribute(String name, String synonym, ManagedFormAttributeType type) : this (name, synonym, type, null)
         {
@@ -559,9 +563,9 @@ namespace V8Reader.Core
         }
 
         private ManagedFormAttribute(String name, String synonym, ManagedFormAttributeType type, ManagedFormAttribute[] children)
-            : base(name, synonym)
         {
             m_Type = type;
+            Title = synonym;
 
             if (children != null)
             {
@@ -589,7 +593,7 @@ namespace V8Reader.Core
 
         private ManagedFormAttributeType m_Type;
         private MDObjectsCollection<ManagedFormAttribute> m_ChildItems = null;
-
+        private string Title { get; private set; }
         
         public static ManagedFormAttribute CreateFromList(SerializedList attrLst)
         {
