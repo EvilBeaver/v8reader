@@ -229,7 +229,6 @@
     <Compile Include="Core\SerializedItem.cs" />
     <Compile Include="Core\SerializedList.cs" />
     <Compile Include="Core\StaticTreeNode.cs" />
-    <Compile Include="Core\UnpackWrapper.cs" />
     <Compile Include="Editors\DataProcEditorWnd.xaml.cs">
       <DependentUpon>DataProcEditorWnd.xaml</DependentUpon>
     </Compile>
