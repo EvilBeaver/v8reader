@@ -14,6 +14,9 @@ namespace V8Reader.Core
     
     class V8MetadataContainer : IDisposable, IV8MetadataContainer
     {
+        const string kExtProccessing = "c3831ec8-d8d5-4f93-8a22-f9bfae07327f";
+        const string kExtReport = "e41aff26-25cf-4bb6-b6c1-3f478a75f374";
+        
         public V8MetadataContainer(string FileName)
         {
             _fileName = FileName;
@@ -39,9 +42,22 @@ namespace V8Reader.Core
 
             SerializedList procData = GetMainStream(_reader);
 
-            MDDataProcessor NewMDObject = MDDataProcessor.Create(new NonDisposableContainer(this), procData);
+            string classID = procData.Items[3].Items[0].ToString();
 
-            return NewMDObject;
+            MDObjectBase newObj;
+            switch (classID)
+            {
+                case kExtProccessing:
+                    newObj = MDDataProcessor.Create(new NonDisposableContainer(this), procData);
+                    break;
+                case kExtReport:
+                    newObj = MDReport.Create(new NonDisposableContainer(this), procData);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unknown container");
+            }
+
+            return newObj;
 
         }
 

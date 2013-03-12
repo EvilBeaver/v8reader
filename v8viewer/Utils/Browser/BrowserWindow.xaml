@@ -35,6 +35,7 @@
 
             <ToolBar Grid.Row="0">
                 <Button x:Name="tbSaveAs" Click="tbSaveAs_Click">Сохранить как...</Button>
+                <Button x:Name="tbGC" Click="tbGC_Click">GC.Collect</Button>
             </ToolBar>
           
             <TabControl x:Name="FilePanel" Grid.Row="1">

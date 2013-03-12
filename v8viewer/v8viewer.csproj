@@ -112,7 +112,9 @@
     <Compile Include="Comparison\ValueConverters.cs" />
     <Compile Include="Core\FWOpenableDocument.cs" />
     <Compile Include="Core\IValueVisualizer.cs" />
+    <Compile Include="Core\MDClasses.cs" />
     <Compile Include="Core\MDObjectsCollection.cs" />
+    <Compile Include="Core\MDReport.cs" />
     <Compile Include="Core\MDUserDialogBase.cs" />
     <Compile Include="Core\UICommands.cs" />
     <Compile Include="Core\V8MetadataContainer.cs" />
@@ -146,6 +148,7 @@
     <Compile Include="Editors\ManagedFormWnd.xaml.cs">
       <DependentUpon>ManagedFormWnd.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Editors\ReportEditor.cs" />
     <Compile Include="ExceptionWindow.xaml.cs">
       <DependentUpon>ExceptionWindow.xaml</DependentUpon>
     </Compile>
@@ -337,6 +340,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\beeCells.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\rep_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

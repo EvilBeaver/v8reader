@@ -7,16 +7,16 @@ using V8Reader.Core;
 
 namespace V8Reader.Editors
 {
-    sealed class DataProcEditor : CustomEditor, ICustomEditor
+    sealed class ReportEditor : CustomEditor, ICustomEditor
     {
-        public DataProcEditor(MDDataProcessor DataProc)
+        public ReportEditor(MDReport Report)
             : base()
         {
-            m_Object = DataProc;
+            m_Object = Report;
         }
 
         private MDObjectEditorWnd m_Window;
-        private MDDataProcessor m_Object;
+        private MDReport m_Object;
 
         public void Edit()
         {
@@ -41,7 +41,7 @@ namespace V8Reader.Editors
             m_Window.Closing += m_Window_Closing;
         }
 
-        private void  m_Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void m_Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             OnEditComplete(true, m_Object);
         }

@@ -17,14 +17,14 @@ namespace V8Reader.Editors
     /// <summary>
     /// Логика взаимодействия для DataProcEditorWnd.xaml
     /// </summary>
-    partial class DataProcEditorWnd : Window
+    partial class MDObjectEditorWnd : Window
     {
-        
-        internal DataProcEditorWnd(MDDataProcessor EditedObject)
+
+        internal MDObjectEditorWnd(MDObjectClass EditedObject)
         {
             InitializeComponent();
             Utils.FormsSettingsManager.Register(this, "DataProcessor");
-            m_Object = (MDDataProcessor)EditedObject;
+            m_Object = (MDObjectClass)EditedObject;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -33,14 +33,14 @@ namespace V8Reader.Editors
             txtSynonym.Text = m_Object.Synonym;
             txtComment.Text = m_Object.Comment;
 
-            foreach (IMDTreeItem node in m_Object.ChildItems)
+            foreach (IMDTreeItem node in ((IMDTreeItem)m_Object).ChildItems)
             {
                 twElements.Items.Add(node);
             }
 
         }
 
-        MDDataProcessor m_Object;
+        MDObjectClass m_Object;
 
 
         private void btnObjectModule_Click(object sender, RoutedEventArgs e)

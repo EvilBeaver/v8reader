@@ -12,7 +12,7 @@ namespace V8Reader.Core
 
             MDDataProcessor NewMDObject = new MDDataProcessor();
 
-            NewMDObject.m_Container = Container;
+            NewMDObject.Container = Container;
 
             ReadFromStream(NewMDObject, Content);
 
@@ -23,6 +23,11 @@ namespace V8Reader.Core
 
         private static void ReadFromStream(MDDataProcessor NewMDObject, SerializedList ProcData)
         {
+            const String AttributeCollection = "ec6bb5e5-b7a8-4d75-bec9-658107a699cf";
+            const String TablesCollection = "2bcef0d1-0981-11d6-b9b8-0050bae0a95d";
+            const String FormCollection = "d5b0e5ed-256d-401c-9c36-f630cafd8a62";
+            const String TemplatesCollection = "3daea016-69b7-4ed4-9453-127911372fe6";
+            
             SerializedList Content = ProcData.DrillDown(3);
 
             NewMDObject.ReadStringsBlock(Content.DrillDown(3));
@@ -41,17 +46,17 @@ namespace V8Reader.Core
                 {
                     switch (CollectionID)
                     {
-                        case MDConstants.AttributeCollection:
-                            NewMDObject.m_Attributes.Add(new MDAttribute((SerializedList)Collection.Items[itemIndex]));
+                        case AttributeCollection:
+                            NewMDObject.Attributes.Add(new MDAttribute((SerializedList)Collection.Items[itemIndex]));
                             break;
-                        case MDConstants.TablesCollection:
-                            NewMDObject.m_Tables.Add(new MDTable((SerializedList)Collection.Items[itemIndex]));
+                        case TablesCollection:
+                            NewMDObject.Tables.Add(new MDTable((SerializedList)Collection.Items[itemIndex]));
                             break;
-                        case MDConstants.FormCollection:
-                            NewMDObject.m_Forms.Add(MDForm.Create(NewMDObject.m_Container, Collection.Items[itemIndex].ToString()));
+                        case FormCollection:
+                            NewMDObject.Forms.Add(MDForm.Create(NewMDObject.Container, Collection.Items[itemIndex].ToString()));
                             break;
-                        case MDConstants.TemplatesCollection:
-                            NewMDObject.m_Templates.Add(new MDTemplate(NewMDObject.m_Container, Collection.Items[itemIndex].ToString()));
+                        case TemplatesCollection:
+                            NewMDObject.Templates.Add(new MDTemplate(NewMDObject.Container, Collection.Items[itemIndex].ToString()));
                             break;
                     }
                 }

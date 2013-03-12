@@ -5,7 +5,7 @@ using System.Text;
 
 namespace V8Reader.Core
 {
-    abstract class MDForm : MDObjectBase, IMDTreeItem, ICommandProvider, Editors.IEditable
+    abstract class MDForm : MDObjectBase, IMDTreeItem, ICommandProvider, Editors.IEditable, IHelpProvider
     {
         public enum FormKind
         {
@@ -22,21 +22,10 @@ namespace V8Reader.Core
 
                 if (m_Help == null)
                 {
-                    try
-                    {
-                        var HelpItem = _Container.GetElement(ID + ".1");
-                        var Stream = new SerializedList(HelpItem.ReadAll());
-
-                        m_Help = new HTMLDocument(Stream);
-
-                    }
-                    catch (System.IO.FileNotFoundException)
-                    {
-                        m_Help = new HTMLDocument();
-                    }
+                    m_Help = new HelpProviderImpl(Container, ID + ".1");
                 }
 
-                return m_Help;
+                return m_Help.Help;
 
             }
         }
@@ -96,7 +85,7 @@ namespace V8Reader.Core
             get { return _Container; }
         }
 
-        private HTMLDocument m_Help = null;
+        private HelpProviderImpl m_Help = null;
 
         ////////////////////////////////////////////////////////
         // static

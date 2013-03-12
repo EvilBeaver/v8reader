@@ -1,4 +1,4 @@
-﻿<Window x:Class="V8Reader.Editors.DataProcEditorWnd"
+﻿<Window x:Class="V8Reader.Editors.MDObjectEditorWnd"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:v8r="clr-namespace:V8Reader.Core"
