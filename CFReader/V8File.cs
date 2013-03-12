@@ -326,12 +326,18 @@ namespace CFReader
         {
             using (var DataStream = handle.Container.GetDataStream(handle))
             {
+                byte[] data = new byte[DataStream.Length];
+                DataStream.Read(data, 0, data.Length);
+                DataStream.Position = 0;
+
                 if (DataStream.Length >= sizeof(UInt32))
                 {
-                    var strReader = new BinaryReader(DataStream);
-                    UInt32 signature = strReader.ReadUInt32();
-
-                    if (signature == 0x7fffffff)
+                    byte[] signature = new byte[] { 0xff, 0xff, 0xff, 0x7f };
+                    
+                    //var strReader = new BinaryReader(DataStream);
+                    //UInt32 signature = strReader.ReadUInt32();
+                    
+                    if (ArrayStartsWith(data, signature))
                     {
                         // Это правильный заголовок блока, значит, данные - несжатый cf-файл.
                         return new V8ContainerElement(handle);
@@ -348,6 +354,17 @@ namespace CFReader
                     return new V8DataElement(handle);
                 }
             }
+        }
+
+        static private bool ArrayStartsWith(byte[] arr, byte[] signature)
+        {
+            for (int i = 0; i < signature.Length; i++)
+            {
+                if (arr[i] != signature[i])
+                    return false;
+            }
+
+            return true;
         }
 
     }
