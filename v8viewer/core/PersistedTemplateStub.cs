@@ -7,6 +7,6 @@ namespace V8Reader.Core
 {
     class PersistedTemplateStub : FWOpenableDocument
     {
-        public PersistedTemplateStub(MDTemplate OwnerTemplate, MDReader Reader) : base(OwnerTemplate, Reader) { }
+        public PersistedTemplateStub(MDTemplate OwnerTemplate) : base(OwnerTemplate) { }
     }
 }

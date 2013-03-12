@@ -86,6 +86,15 @@ namespace V8Reader.Utils
 
         }
 
+        public static Microsoft.Win32.OpenFileDialog GetOpenFileDialog()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.Multiselect = false;
+            dlg.Filter = "Все поддерживаемые файлы (*.epf, *.erf)|*.epf;*.erf|Внешние обработки (*.epf)|*.epf|Внешние отчеты (*.erf)|*.erf";
+
+            return dlg;
+        }
+
     }
 
     internal static class TempFileCleanup

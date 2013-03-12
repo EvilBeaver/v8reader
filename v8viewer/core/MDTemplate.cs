@@ -21,14 +21,14 @@ namespace V8Reader.Core
             DCSAppearanceTemplate = 7
         }
 
-        public MDTemplate(String ObjID, MDReader Reader)
+        public MDTemplate(IV8MetadataContainer MDContainer, String ObjID)
         {
-            m_Reader = Reader;
+            _Container = MDContainer;
 
-            SerializedList header = new SerializedList(Reader.GetElement(ObjID).ReadAll());
+            SerializedList header = new SerializedList(_Container.GetElement(ObjID).ReadAll());
             Kind = (TemplateKind)Enum.Parse(typeof(TemplateKind), header.Items[1].Items[1].ToString());
 
-            base.ReadFromStream((SerializedList)header.Items[1].Items[2]);
+            ReadStringsBlock((SerializedList)header.Items[1].Items[2]);
 
             switch (Kind)
             {
@@ -37,16 +37,16 @@ namespace V8Reader.Core
                 case MDTemplate.TemplateKind.GEOSchema:
                 case MDTemplate.TemplateKind.GraphicChart:
                 case MDTemplate.TemplateKind.DCSAppearanceTemplate:
-                    m_Document = new PersistedTemplateStub(this, Reader);
+                    m_Document = new PersistedTemplateStub(this);
                     break;
                 case MDTemplate.TemplateKind.BinaryData:
-                    m_Document = new BinaryDataDocument(this, Reader);
+                    m_Document = new BinaryDataDocument(this);
                     break;
                 case MDTemplate.TemplateKind.HTMLDocument:
-                    m_Document = new HTMLTemplate(this, Reader);
+                    m_Document = new HTMLTemplate(this);
                     break;
                 case MDTemplate.TemplateKind.DataCompositionSchema:
-                    m_Document = new DCSSchemaDocument(this, Reader);
+                    m_Document = new DCSSchemaDocument(this);
                     break;
                 default:
                     break;
@@ -56,7 +56,12 @@ namespace V8Reader.Core
 
         public TemplateKind Kind { get; protected set; }
 
-        protected MDReader m_Reader;
+        private IV8MetadataContainer _Container;
+
+        public IV8MetadataContainer Container
+        {
+            get { return _Container; }
+        }
 
         #region IMDTree Implementation
 

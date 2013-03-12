@@ -37,10 +37,10 @@ namespace V8Reader.Core
         {
             if (!IsDisposed())
             {
+                m_FileReader.Dispose();
+
                 if (ManualDisposal)
                     GC.SuppressFinalize(this);
-
-                m_FileReader.Dispose();
 
                 m_FileReader = null;
             }

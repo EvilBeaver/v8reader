@@ -9,14 +9,11 @@ namespace V8Reader.Core
 {
     class MDManagedForm : MDForm, IMDTreeItem
     {
-        public MDManagedForm(String ObjID, MDReader Reader) : base(ObjID, Reader) 
-        {
-            
-        }
+        private MDManagedForm(IV8MetadataContainer Container, string formID) : base(Container, formID) { }
 
         private void LoadFormContent()
         {
-            var FileElem = m_Reader.GetElement(ID + ".0");
+            var FileElem = Container.GetElement(ID + ".0");
 
             var stream = new SerializedList(FileElem.ReadAll());
 
@@ -116,6 +113,14 @@ namespace V8Reader.Core
             }
         }
 
+        /// static
+        /// 
+
+        new public static MDManagedForm Create(IV8MetadataContainer Container, string formID)
+        {
+            return new MDManagedForm(Container, formID);
+        }
+
     }
 
     #region Elements
@@ -166,7 +171,7 @@ namespace V8Reader.Core
 
         public string Text
         {
-            get { return Synonym; }
+            get { return Title; }
         }
 
         public AbstractImage Icon
@@ -565,6 +570,7 @@ namespace V8Reader.Core
         private ManagedFormAttribute(String name, String synonym, ManagedFormAttributeType type, ManagedFormAttribute[] children)
         {
             m_Type = type;
+            Name = name;
             Title = synonym;
 
             if (children != null)
@@ -593,7 +599,9 @@ namespace V8Reader.Core
 
         private ManagedFormAttributeType m_Type;
         private MDObjectsCollection<ManagedFormAttribute> m_ChildItems = null;
-        private string Title { get; private set; }
+
+        public string Name  { get; private set; }
+        public string Title { get; private set; }
         
         public static ManagedFormAttribute CreateFromList(SerializedList attrLst)
         {

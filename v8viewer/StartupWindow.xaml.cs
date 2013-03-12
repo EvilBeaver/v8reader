@@ -29,22 +29,28 @@ namespace V8Reader
 
         private void btnOpen_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Multiselect = false;
-            dlg.Filter = "Внешняя обработка (*.epf)|*.epf";
+            var dlg = Utils.UIHelper.GetOpenFileDialog();
+            
             if ((bool)dlg.ShowDialog(this))
             {
-                MDDataProcessor proc = MDDataProcessor.Create(dlg.FileName);
-                ICustomEditor editor = proc.GetEditor();
-                editor.EditComplete += new EditorCompletionHandler(editor_EditComplete);
+                V8MetadataContainer Container = new V8MetadataContainer(dlg.FileName);
+
+                IEditable editable = Container.RaiseObject() as IEditable;
+                if (editable == null)
+                {
+                    MessageBox.Show("Редактирование данного объекта не поддерживается", "V8 Reader", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    Container.Dispose();
+                    return;
+                }
+
+                ICustomEditor editor = editable.GetEditor();
+                editor.EditComplete += (s, evArg) =>
+                    {
+                        Container.Dispose();
+                    };
+
                 editor.Edit();
             }
-        }
-
-        void editor_EditComplete(object Sender, EditorEventArgs e)
-        {
-            MDDataProcessor proc = e.EditedObject as MDDataProcessor;
-            proc.Dispose();
         }
 
         private void btnDiff_Click(object sender, RoutedEventArgs e)

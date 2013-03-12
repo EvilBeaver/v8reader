@@ -7,7 +7,7 @@ namespace V8Reader.Core
 {
     class HTMLTemplate : FWOpenableDocument
     {
-        public HTMLTemplate(MDTemplate OwnerTemplate, MDReader Reader) : base(OwnerTemplate, Reader)
+        public HTMLTemplate(MDTemplate OwnerTemplate) : base (OwnerTemplate)
         {
             try
             {

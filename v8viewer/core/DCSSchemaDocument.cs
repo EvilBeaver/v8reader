@@ -8,8 +8,7 @@ namespace V8Reader.Core
 {
     internal class DCSSchemaDocument : FWOpenableDocument
     {
-        public DCSSchemaDocument(MDTemplate OwnerTemplate, MDReader Reader)
-            : base(OwnerTemplate, Reader)
+        public DCSSchemaDocument(MDTemplate OwnerTemplate) : base(OwnerTemplate)
         {
         }
 
@@ -74,6 +73,7 @@ namespace V8Reader.Core
                         ReadPlainXML(rdr.BaseStream);
                     }
 
+                    _isLoaded = true;
                 }
             }
 

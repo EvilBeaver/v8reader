@@ -9,7 +9,7 @@ namespace V8Reader.Core
 {
     class BinaryDataDocument : TemplateDocument
     {
-        public BinaryDataDocument(MDTemplate OwnerTemplate, MDReader Reader) : base(OwnerTemplate, Reader)
+        public BinaryDataDocument(MDTemplate OwnerTemplate) : base(OwnerTemplate)
         {           
         }
 

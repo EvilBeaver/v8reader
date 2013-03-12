@@ -24,7 +24,7 @@ namespace V8Reader.Core
                 {
                     try
                     {
-                        var HelpItem = m_Reader.GetElement(ID + ".1");
+                        var HelpItem = _Container.GetElement(ID + ".1");
                         var Stream = new SerializedList(HelpItem.ReadAll());
 
                         m_Help = new HTMLDocument(Stream);
@@ -43,21 +43,19 @@ namespace V8Reader.Core
         public abstract string Module { get; }
         public abstract MDUserDialogBase DialogDef { get; }
 
-        protected MDForm(String ObjID, MDReader Reader) : base(ObjID)
+        protected MDForm(IV8MetadataContainer Container, string formID) : base()
         {
-            m_Reader = Reader;
-
-            MDFileItem header = Reader.GetElement(ID);
-
-            SerializedList StringsBlock = FindStringsBlock(header.ReadAll());
-
-            MDObjectBase.ReadStringsBlock(this, StringsBlock);
+            var Header = Container.GetElement(formID);
+            
+            SerializedList StringsBlock = FindStringsBlock(Header.ReadAll(), formID);
+            ReadStringsBlock(StringsBlock);
+            _Container = Container;
 
         }
 
-        protected SerializedList FindStringsBlock(String RawContent)
+        protected SerializedList FindStringsBlock(String RawContent, String formID)
         {
-            int pos = RawContent.IndexOf("{0,0," + this.ID + "}");
+            int pos = RawContent.IndexOf("{0,0," + formID + "}");
             int ListStart = -1;
             if (pos > 0)
             {
@@ -91,23 +89,29 @@ namespace V8Reader.Core
 
         }
 
-        protected MDReader m_Reader;
+        private IV8MetadataContainer _Container;
+
+        protected IV8MetadataContainer Container
+        {
+            get { return _Container; }
+        }
+
         private HTMLDocument m_Help = null;
 
         ////////////////////////////////////////////////////////
         // static
 
-        public static MDForm CreateByID(String ObjID, MDReader Reader)
+        public static MDForm Create(IV8MetadataContainer Container, string ElementName)
         {
-            var Container = Reader.GetElement(ObjID + ".0");
+            var Data = Container.GetElement(ElementName + ".0");
 
-            if (Container.ElemType == MDFileItem.ElementType.Directory)
+            if (Data.ElemType == MDFileItem.ElementType.Directory)
             {
-                return new MDOrdinaryForm(ObjID, Reader);
+                return MDOrdinaryForm.Create(Container, ElementName);
             }
             else
             {
-                return new MDManagedForm(ObjID, Reader);
+                return MDManagedForm.Create(Container, ElementName);
             }
         }
 

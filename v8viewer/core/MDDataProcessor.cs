@@ -6,29 +6,21 @@ using V8Reader.Editors;
 
 namespace V8Reader.Core
 {
-    partial class MDDataProcessor : MDObjectBase, IMDTreeItem, IDisposable, IEditable, ICommandProvider
+    partial class MDDataProcessor : MDObjectBase, IMDTreeItem, IEditable, ICommandProvider
     {
 
-        private MDDataProcessor(V8MetadataContainer Container, SerializedList Content)
-            : base()
+        private MDDataProcessor() : base()
         {
-
             m_Attributes = new MDObjectsCollection<MDAttribute>();
-            m_Tables     = new MDObjectsCollection<MDTable>();
-            m_Forms      = new MDObjectsCollection<MDForm>();
-            m_Templates  = new MDObjectsCollection<MDTemplate>();
-            
-            //m_Reader = Reader;
-
-            ReadFromStream(Content);
-
+            m_Tables = new MDObjectsCollection<MDTable>();
+            m_Forms = new MDObjectsCollection<MDForm>();
+            m_Templates = new MDObjectsCollection<MDTemplate>();
         }
 
         public MDObjectsCollection<MDAttribute> Attributes 
         {
             get
             {
-                CheckDisposed();
                 return m_Attributes;
             }
         }
@@ -36,7 +28,6 @@ namespace V8Reader.Core
         {
             get
             {
-                CheckDisposed();
                 return m_Tables;
             }
         }
@@ -44,7 +35,6 @@ namespace V8Reader.Core
         {
             get
             {
-                CheckDisposed();
                 return m_Forms;
             }
         }
@@ -52,7 +42,6 @@ namespace V8Reader.Core
         {
             get
             {
-                CheckDisposed();
                 return m_Templates;
             }
         }
@@ -61,12 +50,11 @@ namespace V8Reader.Core
         {
             get
             {
-                CheckDisposed();
                 if (m_Help == null)
                 {
                     try
                     {
-                        var HelpItem = m_Reader.GetElement(ID + ".1");
+                        var HelpItem = m_Container.GetElement(ID + ".1");
                         var Stream = new SerializedList(HelpItem.ReadAll());
 
                         m_Help = new HTMLDocument(Stream);
@@ -87,12 +75,11 @@ namespace V8Reader.Core
         {
             get
             {
-                CheckDisposed();
                 MDFileItem DirElem;
 
                 try
                 {
-                    DirElem = m_Reader.GetElement(this.ID + ".0");
+                    DirElem = m_Container.GetElement(this.ID + ".0");
                 }
                 catch (System.IO.FileNotFoundException)
                 {
@@ -120,76 +107,14 @@ namespace V8Reader.Core
             }
         }
 
-        public void Dispose()
-        {
-            m_Reader.Dispose();
-        }
-
-        ~MDDataProcessor()
-        {
-            m_Reader.Dispose();
-        }
-
-        #region "Private members"
-
-        private MDReader m_Reader;
+        
+        private IV8MetadataContainer m_Container;
         private MDObjectsCollection<MDAttribute> m_Attributes;
         private MDObjectsCollection<MDTable> m_Tables;
         private MDObjectsCollection<MDForm> m_Forms;
         private MDObjectsCollection<MDTemplate> m_Templates;
         private HTMLDocument m_Help;
 
-        protected override void ReadFromStream(SerializedList ProcData)
-        {
-
-            SerializedList Content = ProcData.DrillDown(3);
-            
-            base.ReadFromStream(Content.DrillDown(3));
-
-            const int start = 3;
-            int ChildCount = Int32.Parse(Content.Items[2].ToString());
-
-            for (int i = 0; i < ChildCount; ++i)
-            {
-                SerializedList Collection = (SerializedList)Content.Items[start + i];
-
-                String CollectionID = Collection.Items[0].ToString();
-                int ItemsCount = Int32.Parse(Collection.Items[1].ToString());
-
-                for (int itemIndex = 2; itemIndex < (2+ItemsCount); ++itemIndex)
-                {
-                    switch (CollectionID)
-                    {
-                        case MDConstants.AttributeCollection:
-                            Attributes.Add(new MDAttribute((SerializedList)Collection.Items[itemIndex]));
-                            break;
-                        case MDConstants.TablesCollection:
-                            Tables.Add(new MDTable((SerializedList)Collection.Items[itemIndex]));
-                            break;
-                        case MDConstants.FormCollection:
-                            Forms.Add(MDForm.CreateByID(Collection.Items[itemIndex].ToString(), m_Reader));
-                            break;
-                        case MDConstants.TemplatesCollection:
-                            Templates.Add(new MDTemplate(Collection.Items[itemIndex].ToString(), m_Reader));
-                            break;
-                    }
-                }
-
-            }
-
-
-        }
-
-        private void CheckDisposed()
-        {
-            if (m_Reader.IsDisposed())
-            {
-                throw new ObjectDisposedException(Name);
-            }
-        }
-
-
-        #endregion
 
         #region ITreeItem implementation
 

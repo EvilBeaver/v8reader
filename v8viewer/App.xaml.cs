@@ -219,11 +219,19 @@ namespace V8Reader
 
             SafeMessageLoop(() =>
                 {
-                    MDDataProcessor Processor = null;
-                    App WPFApp = new App();
-                    using (Processor = MDDataProcessor.Create(FileName))
+                    using (V8MetadataContainer Container = new V8MetadataContainer(FileName))
                     {
-                        ICustomEditor editor = Processor.GetEditor();
+                        IEditable editable = Container.RaiseObject() as IEditable;
+
+                        if (editable == null)
+                        {
+                            MessageBox.Show("Редактирование данного объекта не поддерживается", "V8 Reader", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            return;
+                        }
+
+                        App WPFApp = new App();
+
+                        ICustomEditor editor = editable.GetEditor();
                         editor.EditComplete += (s, e) =>
                         {
                             WPFApp.Shutdown();

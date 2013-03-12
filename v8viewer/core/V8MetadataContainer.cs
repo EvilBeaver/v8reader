@@ -5,7 +5,14 @@ using System.Text;
 
 namespace V8Reader.Core
 {
-    class V8MetadataContainer
+    interface IV8MetadataContainer
+    {
+        string FileName { get; }
+        MDFileItem GetElement(string ItemName);
+        MDFileItem GetElement(string ItemName, System.IO.FileAccess Access);
+    }
+    
+    class V8MetadataContainer : IDisposable, IV8MetadataContainer
     {
         public V8MetadataContainer(string FileName)
         {
@@ -32,10 +39,27 @@ namespace V8Reader.Core
 
             SerializedList procData = GetMainStream(_reader);
 
-            MDDataProcessor NewMDObject = new MDDataProcessor(_reader);
+            MDDataProcessor NewMDObject = MDDataProcessor.Create(new NonDisposableContainer(this), procData);
 
             return NewMDObject;
 
+        }
+
+        public MDFileItem GetElement(string ItemName)
+        {
+            return _reader.GetElement(ItemName);
+        }
+
+        public MDFileItem GetElement(string ItemName, System.IO.FileAccess Access)
+        {
+            if (Access == System.IO.FileAccess.Read)
+            {
+                return _reader.GetElement(ItemName);
+            }
+            else
+            {
+                throw new NotSupportedException("Write operations aren't supported");
+            }
         }
 
         private SerializedList GetMainStream(MDReader Reader)
@@ -47,5 +71,59 @@ namespace V8Reader.Core
 
         private string _fileName;
         private MDReader _reader;
+
+        
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            _reader.Dispose();
+            
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
+
+        }
+
+        ~V8MetadataContainer()
+        {
+            Dispose(false);
+        }
+
+        #endregion
+
     }
+
+    class NonDisposableContainer : IV8MetadataContainer
+    {
+        public NonDisposableContainer(V8MetadataContainer DisposableContainer)
+        {
+            _Container = DisposableContainer;
+        }
+
+        V8MetadataContainer _Container;
+
+        public string FileName
+        {
+            get { return _Container.FileName; }
+        }
+
+        public MDFileItem GetElement(string ItemName)
+        {
+            return _Container.GetElement(ItemName);
+        }
+
+        public MDFileItem GetElement(string ItemName, System.IO.FileAccess Access)
+        {
+            return _Container.GetElement(ItemName, Access);
+        }
+
+    }
+
 }

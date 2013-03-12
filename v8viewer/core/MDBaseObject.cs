@@ -87,7 +87,6 @@ namespace V8Reader.Core
 
         #endregion
     }
-
     
     class MDAttribute : MDObjectBase, IMDTreeItem, Comparison.IComparableItem
     {

@@ -110,6 +110,7 @@
     <Compile Include="Comparison\SimpleComparators.cs" />
     <Compile Include="Comparison\StreamComparator.cs" />
     <Compile Include="Comparison\ValueConverters.cs" />
+    <Compile Include="Core\FWOpenableDocument.cs" />
     <Compile Include="Core\IValueVisualizer.cs" />
     <Compile Include="Core\MDObjectsCollection.cs" />
     <Compile Include="Core\MDUserDialogBase.cs" />
@@ -339,8 +340,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>$(TargetDir)\..\build\prebuild.cmd "$(ProjectDir)\Properties\AssemblyInfo.cs" $(ConfigurationName)</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

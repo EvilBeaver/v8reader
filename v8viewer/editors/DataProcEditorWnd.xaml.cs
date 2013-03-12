@@ -191,12 +191,18 @@ namespace V8Reader.Editors
 
         private void mnuCompareTo_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Multiselect = false;
-            dlg.Filter = "Внешняя обработка (*.epf)|*.epf";
+            var dlg = Utils.UIHelper.GetOpenFileDialog();
+
             if ((bool)dlg.ShowDialog(this))
             {
-                MDDataProcessor proc = MDDataProcessor.Create(dlg.FileName);
+                V8MetadataContainer Container = new V8MetadataContainer(dlg.FileName);
+                IMDTreeItem proc = Container.RaiseObject() as IMDTreeItem;
+                if (proc == null)
+                {
+                    MessageBox.Show("Отображение данного объекта не поддерживается", "V8 Reader", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    Container.Dispose();
+                    return;
+                }
 
                 Comparison.ComparisonPerformer Performer 
                     = new Comparison.ComparisonPerformer((IMDTreeItem)m_Object, (IMDTreeItem)proc);
@@ -204,6 +210,11 @@ namespace V8Reader.Editors
                 var diffWnd = new Comparison.CompareTreeWnd();
                 diffWnd.PrintResult(Performer);
                 diffWnd.Owner = this;
+                diffWnd.Closed += (s, evArg) =>
+                    {
+                        Container.Dispose();
+                    };
+
                 diffWnd.Show();
 
             }

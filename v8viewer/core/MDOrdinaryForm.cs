@@ -8,7 +8,8 @@ namespace V8Reader.Core
 {
     class MDOrdinaryForm : MDForm, IMDTreeItem
     {
-        public MDOrdinaryForm(String ObjID, MDReader Reader) : base(ObjID, Reader) { }
+
+        private MDOrdinaryForm(IV8MetadataContainer Container, string formID) : base(Container, formID) { }
 
         public override ICustomEditor GetEditor()
         {
@@ -37,7 +38,7 @@ namespace V8Reader.Core
         {
             if (!m_Loaded)
             {
-                var DirElem = m_Reader.GetElement(this.ID + ".0");
+                var DirElem = Container.GetElement(this.ID + ".0");
                 var textElem = DirElem.GetElement("module");
 
                 m_ModuleText = textElem.ReadAll();
@@ -52,6 +53,15 @@ namespace V8Reader.Core
         private string m_ModuleText;
         private MDUserDialogBase m_DialogDef;
         private bool m_Loaded;
+
+
+        /// static
+        /// 
+
+        new public static MDOrdinaryForm Create(IV8MetadataContainer Container, string formID)
+        {
+            return new MDOrdinaryForm(Container, formID);
+        }
 
     }
 }

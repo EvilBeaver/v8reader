@@ -560,8 +560,8 @@ namespace V8Reader.Comparison
 
         public FileComparisonPerformer(string LeftFile, string RightFile)
         {
-            m_LeftObject = MDDataProcessor.Create(LeftFile);
-            m_RightObject = MDDataProcessor.Create(RightFile);
+            _LeftFile = new V8MetadataContainer(LeftFile);
+            _RightFile = new V8MetadataContainer(RightFile);
         }
 
         public ComparisonResult Perform()
@@ -571,24 +571,49 @@ namespace V8Reader.Comparison
 
         public ComparisonResult Perform(ComparisonPerformer.MatchingMode Mode)
         {
-            m_Performer = new ComparisonPerformer(m_LeftObject, m_RightObject);
+            InstantiateObject(_LeftFile, ref _LeftObject);
+            InstantiateObject(_RightFile, ref _RightObject);
+
+            m_Performer = new ComparisonPerformer(_LeftObject, _RightObject);
+            
             return m_Performer.Perform(Mode);
         }
 
+        private void InstantiateObject(V8MetadataContainer cnt, ref IMDTreeItem obj)
+        {
+            if (obj == null)
+            {
+                var tmpObj = cnt.RaiseObject();
+
+                if (tmpObj is IMDTreeItem)
+                {
+                    obj = (IMDTreeItem)tmpObj;
+                }
+                else
+                {
+                    throw new InvalidOperationException(String.Format("Comparison of '{0}' isn't supported", obj.GetType().ToString()));
+                }
+            }
+        }
+
+        private IMDTreeItem _LeftObject;
+        private IMDTreeItem _RightObject;
+
         private ComparisonPerformer m_Performer;
-        private MDDataProcessor m_LeftObject;
-        private MDDataProcessor m_RightObject;
+
+        private V8MetadataContainer _LeftFile;
+        private V8MetadataContainer _RightFile;
 
 
         #region IDisposable Members
 
         public void Dispose()
         {
-            LocalDispose(m_LeftObject);
-            LocalDispose(m_RightObject);
+            LocalDispose(_LeftFile);
+            LocalDispose(_RightFile);
 
-            m_LeftObject  = null;
-            m_RightObject = null;
+            _LeftObject  = null;
+            _RightObject = null;
         }
 
         private void LocalDispose(IDisposable Obj)
