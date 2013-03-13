@@ -72,7 +72,7 @@
         
         <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Grid.Row="1" HorizontalAlignment="Right">
             <Button x:Name="cmdОК" IsDefault="True" Width="93" Height="22" Click="cmdОК_Click">ОК</Button>
-            <Button x:Name="cmdCancel" IsCancel="True" Margin="5,0,0,0" Width="93" Height="22" Click="cmdОК_Click">Отмена</Button>
+            <Button x:Name="cmdCancel" IsCancel="True" Margin="5,0,0,0" Width="93" Height="22" Click="cmdCancel_Click">Отмена</Button>
         </StackPanel>
 
     </Grid>
