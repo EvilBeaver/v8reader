@@ -297,9 +297,14 @@ namespace CFReader
 
     public class V8DataElement
     {
-        internal V8DataElement(V8ItemHandle handle)
+        internal V8DataElement(V8ItemHandle handle) : this(handle, null)
+        {            
+        }
+
+        internal V8DataElement(V8ItemHandle handle, byte[] data)
         {
             m_handle = handle;
+            m_data = data;
         }
 
         public string Name
@@ -312,7 +317,15 @@ namespace CFReader
 
         public Stream GetDataStream()
         {
-            return m_handle.Container.GetDataStream(m_handle);
+            if (m_data == null)
+            {
+                return m_handle.Container.GetDataStream(m_handle);
+            }
+            else
+            {
+                return new MemoryStream(m_data);
+            }
+            
         }
 
         public override string ToString()
@@ -321,6 +334,7 @@ namespace CFReader
         }
 
         protected V8ItemHandle m_handle;
+        protected byte[] m_data;
 
         static internal V8DataElement Create(V8ItemHandle handle)
         {
@@ -340,12 +354,12 @@ namespace CFReader
                     if (ArrayStartsWith(data, signature))
                     {
                         // Это правильный заголовок блока, значит, данные - несжатый cf-файл.
-                        return new V8ContainerElement(handle);
+                        return new V8ContainerElement(handle, data);
                     }
                     else
                     {
                         // Это сырые данные
-                        return new V8DataElement(handle);
+                        return new V8DataElement(handle, data);
                     }
                 }
                 else
@@ -371,8 +385,11 @@ namespace CFReader
 
     public class V8ContainerElement : V8DataElement, IImageLister
     {
-        internal V8ContainerElement(V8ItemHandle handle)
-            : base(handle)
+        internal V8ContainerElement(V8ItemHandle handle) : this(handle, null)
+        {            
+        }
+
+        internal V8ContainerElement(V8ItemHandle handle, byte[] data) : base(handle, data)
         {
             m_ParentContainer = handle.Container;
             m_FoldedImage = new V8Image(m_ParentContainer.GetDataStream(handle));
