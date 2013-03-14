@@ -1,11 +1,11 @@
 ﻿<Window x:Class="V8Reader.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Настройки" Loaded="Window_Loaded" ShowInTaskbar="False" TextOptions.TextFormattingMode="Display" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="401" Width="494">
+        Title="Настройки" Loaded="Window_Loaded" ShowInTaskbar="False" TextOptions.TextFormattingMode="Display" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Height="424" Width="494">
 
     <Grid Margin="5">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
@@ -61,20 +61,26 @@
             </GroupBox>
             
             <GroupBox Header="Файловые ассоциации (Требуются права администратора)" Grid.Row="3" >
-                <StackPanel Margin="0,4,0,0">
-                    <CheckBox x:Name="epfAssociation" Content="Связать расширение файла epf с программой «V8 Viewer»"></CheckBox>
+                <StackPanel Margin="0,4,0,0" VerticalAlignment="Center">
+                    <CheckBox x:Name="epfAssociation" Content="Открывать внешние обработки программой «V8 Viewer»"></CheckBox>
+                    <CheckBox x:Name="erfAssociation" Content="Открывать внешние отчеты программой «V8 Viewer»" Margin="0,4"></CheckBox>
                 </StackPanel>
             </GroupBox>
 
         </Grid>
 
-        <Label Grid.Row="1" HorizontalAlignment="Left"><Hyperlink x:Name="VersionLbl" Click="Hyperlink_Click_1"></Hyperlink></Label>
-        
-        <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Grid.Row="1" HorizontalAlignment="Right">
-            <Button x:Name="cmdОК" IsDefault="True" Width="93" Height="22" Click="cmdОК_Click">ОК</Button>
-            <Button x:Name="cmdCancel" IsCancel="True" Margin="5,0,0,0" Width="93" Height="22" Click="cmdCancel_Click">Отмена</Button>
-        </StackPanel>
+        <DockPanel Grid.Row="1">
+            <Label DockPanel.Dock="Left" HorizontalAlignment="Left">
+                <Hyperlink x:Name="VersionLbl" Click="Hyperlink_Click_1"></Hyperlink>
+            </Label>
 
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Right">
+                <Button x:Name="cmdОК" IsDefault="True" Width="93" Height="22" Click="cmdОК_Click">ОК</Button>
+                <Button x:Name="cmdCancel" IsCancel="True" Margin="5,0,0,0" Width="93" Height="22" Click="cmdCancel_Click">Отмена</Button>
+            </StackPanel>
+
+        </DockPanel>
+        
     </Grid>
     
 </Window>

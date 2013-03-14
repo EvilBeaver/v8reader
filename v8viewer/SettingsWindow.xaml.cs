@@ -22,6 +22,17 @@ namespace V8Reader
         public SettingsWindow()
         {
             InitializeComponent();
+
+            _ProcessingAssociation = new FileAssociation();
+            _ProcessingAssociation.Extension = ".epf";
+            _ProcessingAssociation.ProgID = "V8Viewer.DataProcessor";
+            _ProcessingAssociation.IconIndex = "0";
+
+            _ReportAssociation = new FileAssociation();
+            _ReportAssociation.Extension = ".erf";
+            _ReportAssociation.ProgID = "V8Viewer.Report";
+            _ReportAssociation.IconIndex = "1";
+
         }
 
         private void btnBrowseWorkshop_Click(object sender, RoutedEventArgs e)
@@ -35,6 +46,8 @@ namespace V8Reader
             }
         }
 
+        
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             txtDiffCmdLine.Text = V8Reader.Properties.Settings.Default.DiffCmdLine;
@@ -42,7 +55,8 @@ namespace V8Reader
             txtFileWorkshopPath.Text = V8Reader.Properties.Settings.Default.PathToFileWorkshop;
             txtFileWorkshopPath.Focus();
 
-            epfAssociation.IsChecked = Utils.FileAssociation.IsAssociated(".epf", "V8Viewer.DataProcessor");
+            epfAssociation.IsChecked = ReadAssociation(_ProcessingAssociation);
+            erfAssociation.IsChecked = ReadAssociation(_ReportAssociation);
 
             VersionLbl.Inlines.Add("Версия: " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
@@ -58,7 +72,8 @@ namespace V8Reader
                 V8Reader.Properties.Settings.Default.PathToFileWorkshop = txtFileWorkshopPath.Text;
                 V8Reader.Properties.Settings.Default.DiffCmdLine = txtDiffCmdLine.Text;
                 V8Reader.Properties.Settings.Default.Save();
-                HandleAssociation(".epf", epfAssociation);
+                WriteAssociation(_ProcessingAssociation, epfAssociation);
+                WriteAssociation(_ReportAssociation, erfAssociation);
             }
             catch (System.Security.SecurityException)
             {
@@ -99,7 +114,12 @@ namespace V8Reader
 
         }
 
-        private void HandleAssociation(String extension, CheckBox checkBox)
+        private bool ReadAssociation(FileAssociation assoc)
+        {
+            return Utils.FileAssociation.IsAssociated(assoc.Extension, assoc.ProgID);
+        }
+
+        private void WriteAssociation(FileAssociation assoc, CheckBox checkBox)
         {
             if ((bool)checkBox.IsChecked)
             {
@@ -109,15 +129,18 @@ namespace V8Reader
 
                 String exeName = sb.ToString();
 
-                Utils.FileAssociation.Associate(extension, FileAssociationProgID, "Внешняя обработка 1С", exeName + ",0", exeName);
+                string Value = String.Format("{0},{1}", exeName, assoc.IconIndex);
+
+                Utils.FileAssociation.Associate(assoc.Extension, assoc.ProgID, "Внешняя обработка 1С", Value, exeName);
             }
             else
             {
-                Utils.FileAssociation.RemoveAssociation(extension, FileAssociationProgID);
+                Utils.FileAssociation.RemoveAssociation(assoc.Extension, assoc.ProgID);
             }
         }
 
-        private const String FileAssociationProgID = "V8Viewer.DataProcessor";
+        private FileAssociation _ProcessingAssociation;
+        private FileAssociation _ReportAssociation;
 
         private void btnBrowseDiff_Click(object sender, RoutedEventArgs e)
         {
@@ -181,6 +204,13 @@ namespace V8Reader
             {
                 Utils.UIHelper.DefaultErrHandling(exc);
             }
+        }
+
+        private struct FileAssociation
+        {
+            public string ProgID;
+            public string Extension;
+            public string IconIndex;
         }
 
     }

@@ -73,8 +73,10 @@
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
-    <Win32Resource>E:\My documents\Programs\C#\epf viewer\v8viewer\Resources\NativeRes.res</Win32Resource>
+    <Win32Resource>C:\Users\Ovsyankin\Documents\dev_bin\EPFViewer\trunk\v8viewer\Resources\NativeRes.res</Win32Resource>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="ICSharpCode.AvalonEdit, Version=4.2.0.8783, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -350,8 +352,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>$(TargetDir)\..\build\prebuild.cmd "$(ProjectDir)\Properties\AssemblyInfo.cs" $(ConfigurationName)</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
