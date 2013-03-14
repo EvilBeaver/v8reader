@@ -102,6 +102,8 @@ namespace V8Reader.Utils
                 m_RegisteredKeys.Remove(window);
             }
 
+            window.Closed -= window_Closed;
+
         }
         
         public static void Store()

@@ -23,6 +23,9 @@ namespace V8Reader.Comparison
         {
             InitializeComponent();
 
+            //LeftName = "Первый файл";
+            //RightName = "Второй файл";
+
             Utils.FormsSettingsManager.Register(this, "ComparisonTree");
         }
 
@@ -59,6 +62,67 @@ namespace V8Reader.Comparison
         IComparisonPerformer m_Engine;
 
 
+
+        public string LeftName
+        {
+            get { return (string)GetValue(LeftNameProperty); }
+            set { SetValue(LeftNameProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for LeftName.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty LeftNameProperty =
+            DependencyProperty.Register("LeftName", typeof(string), typeof(CompareTreeWnd), new PropertyMetadata("Первый файл"), NameValidation);
+
+
+
+        public string RightName
+        {
+            get { return (string)GetValue(RightNameProperty); }
+            set { SetValue(RightNameProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for RightName.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty RightNameProperty =
+            DependencyProperty.Register("RightName", typeof(string), typeof(CompareTreeWnd), new PropertyMetadata("Второй файл"), NameValidation);
+
+        private static ValidateValueCallback NameValidation = new ValidateValueCallback((o)=>
+                {
+                    return o != null;
+                });
+
+        //public string LeftName 
+        //{
+        //    get
+        //    {
+        //        return _leftName;
+        //    }
+
+        //    set
+        //    {
+        //        if (value != null)
+        //        {
+        //            _leftName = value;
+        //        }
+        //    }
+        //}
+        //public string RightName 
+        //{
+        //    get
+        //    {
+        //        return _rightName;
+        //    }
+
+        //    set
+        //    {
+        //        if (value != null)
+        //        {
+        //            _rightName = value;
+        //        }
+        //    } 
+        //}
+
+        //private string _leftName;
+        //private string _rightName;
 
         private void ExpandTopLevel()
         {

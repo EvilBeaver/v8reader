@@ -186,9 +186,40 @@ namespace V8Reader
             }
             else
             {
-                if (args[0] == "-diff" && args.Length == 3)
+                if (args[0] == "-diff")
                 {
-                    Diff(args[1], args[2]);
+                    string file1 = null;
+                    string name1 = null;
+                    string name2 = null;
+                    string file2 = null;
+
+                    short tokenLen = 6;
+
+                    for (int i = 1; i < args.Length; i++)
+                    {
+                        if (args[i].StartsWith("-name1"))
+                        {
+                            name1 = args[i].Substring(tokenLen);
+                        }
+                        else if (args[i].StartsWith("-name2"))
+                        {
+                            name2 = args[i].Substring(tokenLen);
+                        }
+                        else
+                        {
+                            if (file1 == null)
+                            {
+                                file1 = args[i];
+                            }
+
+                            if (file2 == null)
+                            {
+                                file2 = args[i];
+                            }
+                        }
+                    }
+
+                    Diff(file1, file2, name1, name2);
                 }
                 else if (args.Length==2 && args[0] == "-browse" && System.IO.File.Exists(args[1]))
                 {
@@ -243,20 +274,38 @@ namespace V8Reader
                 });
         }
 
-        private static void Diff(String File1, String File2)
+        private static void Diff(string File1, string File2, string Name1, string Name2)
         {
+            if (!(CheckExistence(File1) && CheckExistence(File2)))
+            {
+                return;
+            }
+            
             using (FileComparisonPerformer Comparator = new FileComparisonPerformer(File1, File2))
             {
                 SafeMessageLoop(() =>
                 {
                     App WPFApp = new App();
                     var TreeWnd = new CompareTreeWnd();
+                    TreeWnd.LeftName = Name1;
+                    TreeWnd.RightName = Name2;
                     TreeWnd.PrintResult(Comparator);
                     WPFApp.MainWindow = TreeWnd;
                     WPFApp.ShutdownMode = ShutdownMode.OnMainWindowClose;
                     WPFApp.Run(TreeWnd);
                 });
             }
+        }
+
+        private static bool CheckExistence(string Filename)
+        {
+            if (!System.IO.File.Exists(Filename))
+            {
+                Console.WriteLine("File not found {0}", Filename);
+                return false;
+            }
+
+            return true;
         }
 
         private static void SafeMessageLoop(Action DoMessageLoop)
