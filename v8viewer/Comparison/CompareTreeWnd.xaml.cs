@@ -23,9 +23,6 @@ namespace V8Reader.Comparison
         {
             InitializeComponent();
 
-            //LeftName = "Первый файл";
-            //RightName = "Второй файл";
-
             Utils.FormsSettingsManager.Register(this, "ComparisonTree");
         }
 
@@ -90,40 +87,7 @@ namespace V8Reader.Comparison
                     return o != null;
                 });
 
-        //public string LeftName 
-        //{
-        //    get
-        //    {
-        //        return _leftName;
-        //    }
-
-        //    set
-        //    {
-        //        if (value != null)
-        //        {
-        //            _leftName = value;
-        //        }
-        //    }
-        //}
-        //public string RightName 
-        //{
-        //    get
-        //    {
-        //        return _rightName;
-        //    }
-
-        //    set
-        //    {
-        //        if (value != null)
-        //        {
-        //            _rightName = value;
-        //        }
-        //    } 
-        //}
-
-        //private string _leftName;
-        //private string _rightName;
-
+        
         private void ExpandTopLevel()
         {
             TreeViewItem root = (TreeViewItem)twTree.ItemContainerGenerator.ContainerFromIndex(0);
@@ -230,7 +194,7 @@ namespace V8Reader.Comparison
                                     var viewer = LeftVal.GetDifferenceViewer(RightVal);
                                     if (viewer != null)
                                     {
-                                        viewer.ShowDifference();
+                                        viewer.ShowDifference(LeftName, RightName);
                                     }
                                 }));
 
@@ -246,7 +210,7 @@ namespace V8Reader.Comparison
                                     var viewer = LeftVal.GetDifferenceViewer(RightVal);
                                     if (viewer != null)
                                     {
-                                        viewer.ShowDifference();
+                                        viewer.ShowDifference(LeftName, RightName);
                                     }
                                 }));
 
@@ -262,7 +226,7 @@ namespace V8Reader.Comparison
                                     var viewer = new Comparison.ExternalTextDiffViewer(LeftVal.ToString(), RightVal.ToString());
                                     if (viewer != null)
                                     {
-                                        viewer.ShowDifference();
+                                        viewer.ShowDifference(LeftName, RightName);
                                     }
                                 }));
 

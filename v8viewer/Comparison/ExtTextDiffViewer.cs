@@ -26,6 +26,11 @@ namespace V8Reader.Comparison
 
         public void ShowDifference()
         {
+            ShowDifference("", "");
+        }
+
+        public void ShowDifference(string NameCurrent, string NameComparand)
+        {
             EnsureExistence(m_LeftFile, m_LeftContent);
             EnsureExistence(m_RightFile, m_RightContent);
 
@@ -71,6 +76,8 @@ namespace V8Reader.Comparison
                 System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo();
                 bldr.Replace("%1", m_LeftFile);
                 bldr.Replace("%2", m_RightFile);
+                bldr.Replace("%name1", DefaultTitle(m_LeftFile, NameCurrent));
+                bldr.Replace("%name2", DefaultTitle(m_RightFile, NameComparand));
 
                 string[] args = CommandLineToArgs(bldr.ToString());
                 info.FileName = args[0];
@@ -94,6 +101,18 @@ namespace V8Reader.Comparison
                 Utils.UIHelper.DefaultErrHandling(exc);
             }
 
+        }
+
+        private string DefaultTitle(string Filename, string Title)
+        {
+            if (Title != null && Title != String.Empty)
+            {
+                return Title;
+            }
+            else
+            {
+                return System.IO.Path.GetFileName(Filename);
+            }
         }
 
         [DllImport("shell32.dll", SetLastError = true)]

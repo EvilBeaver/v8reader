@@ -24,6 +24,11 @@ namespace V8Reader.Comparison
 
         public void ShowDifference()
         {
+            ShowDifference("", "");
+        }
+
+        public void ShowDifference(string NameCurrent, string NameComparand)
+        {
             
             string exeName = null;
             if (!Utils.UIHelper.AskForFileWorkshop(out exeName, null))

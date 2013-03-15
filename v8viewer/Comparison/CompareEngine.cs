@@ -21,6 +21,7 @@ namespace V8Reader.Comparison
     interface IDiffViewer
     {
         void ShowDifference();
+        void ShowDifference(string NameCurrent, string NameComparand);
     }
 
     class ComparisonPerformer : IComparisonPerformer
