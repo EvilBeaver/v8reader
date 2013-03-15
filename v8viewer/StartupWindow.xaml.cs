@@ -72,6 +72,8 @@ namespace V8Reader
                     
                     var TreeWnd = new CompareTreeWnd();
 
+                    TreeWnd.LeftName = System.IO.Path.GetFileName(file1);
+                    TreeWnd.RightName = System.IO.Path.GetFileName(file2);
                     TreeWnd.PrintResult(Comparator);
                     TreeWnd.Show();
                     

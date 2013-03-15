@@ -34,11 +34,9 @@ namespace V8Reader
             {
                 dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
                 dispatcherTimer.Tick += dispatcherTimer_Tick;
-				#if DEBUG
-                dispatcherTimer.Interval = TimeSpan.FromMinutes(0.2);
-				#else
-                dispatcherTimer.Interval = TimeSpan.FromMinutes(1);
-				#endif
+				
+                dispatcherTimer.Interval = TimeSpan.FromSeconds(3);
+				
                 dispatcherTimer.Start();
             }
 
@@ -190,8 +188,8 @@ namespace V8Reader
                 {
                     string file1 = null;
                     string name1 = null;
-                    string name2 = null;
                     string file2 = null;
+                    string name2 = null;
 
                     short tokenLen = 6;
 
@@ -211,8 +209,7 @@ namespace V8Reader
                             {
                                 file1 = args[i];
                             }
-
-                            if (file2 == null)
+                            else
                             {
                                 file2 = args[i];
                             }
@@ -287,13 +284,25 @@ namespace V8Reader
                 {
                     App WPFApp = new App();
                     var TreeWnd = new CompareTreeWnd();
-                    TreeWnd.LeftName = Name1;
-                    TreeWnd.RightName = Name2;
+                    TreeWnd.LeftName = GenerateFileTitle(File1, Name1);
+                    TreeWnd.RightName = GenerateFileTitle(File2, Name2);
                     TreeWnd.PrintResult(Comparator);
                     WPFApp.MainWindow = TreeWnd;
                     WPFApp.ShutdownMode = ShutdownMode.OnMainWindowClose;
                     WPFApp.Run(TreeWnd);
                 });
+            }
+        }
+
+        private static string GenerateFileTitle(string filename, string title)
+        {
+            if (title != null)
+            {
+                return title;
+            }
+            else
+            {
+                return System.IO.Path.GetFileName(filename);
             }
         }
 
