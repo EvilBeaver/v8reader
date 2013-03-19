@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace V8Reader.Comparison
 {
 
-    class ExternalTextDiffViewer : IDiffViewer, IDisposable
+    class ExternalTextDiffViewer : IDiffViewer
     {
 
         public ExternalTextDiffViewer(string left, string right)
@@ -21,6 +21,9 @@ namespace V8Reader.Comparison
 
             m_RightFile = Path.GetTempFileName();
             WriteFileContent(m_RightFile, m_RightContent);
+
+            Utils.TempFileCleanup.RegisterTempFile(m_LeftFile);
+            Utils.TempFileCleanup.RegisterTempFile(m_RightFile);
 
         }
 
@@ -166,40 +169,5 @@ namespace V8Reader.Comparison
         private string m_LeftContent;
         private string m_RightContent;
 
-
-        #region IDisposable Members
-
-        public void Dispose()
-        {
-            Cleanup();
-            GC.SuppressFinalize(this);
-        }
-
-        ~ExternalTextDiffViewer()
-        {
-            Cleanup();
-        }
-
-        protected void Cleanup()
-        {
-            RemoveTempFile(m_LeftFile);
-            RemoveTempFile(m_RightFile);
-        }
-
-        private void RemoveTempFile(string path)
-        {
-            if (File.Exists(path))
-            {
-                try
-                {
-                    File.Delete(path);
-                }
-                catch
-                {
-                }
-            }
-        }
-
-        #endregion
     }
 }
