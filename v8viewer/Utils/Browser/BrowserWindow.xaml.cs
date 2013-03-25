@@ -196,11 +196,6 @@ namespace V8Reader.Utils.Browser
             }
         }
 
-        private void tbGC_Click(object sender, RoutedEventArgs e)
-        {
-            GC.Collect(2);
-        }
-
     }
 
     class FileTreeItem
