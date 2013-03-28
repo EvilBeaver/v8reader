@@ -72,6 +72,9 @@ namespace V8Reader.Utils
         {
             Init();
 
+            if (m_Storage == null)
+                return;
+
             FormSettings value;
             if (m_Storage.TryGetValue(WindowKey, out value))
             {
@@ -112,25 +115,21 @@ namespace V8Reader.Utils
                 return;
 
             var storage = IsolatedStorageFile.GetUserStoreForAssembly();
-            using (var writeMutex = new System.Threading.Mutex(true, ctWriteMtxName))
+
+            using (var Guard = new MutexGuard(ctWriteMtxName))
             {
-                try
+                if (!Guard.Lock(2000))
                 {
-                    using (var readMtx = System.Threading.Mutex.OpenExisting(ctReadMtxName, System.Security.AccessControl.MutexRights.Synchronize))
-                    {
-                        readMtx.WaitOne();
-                    }
-                }
-                catch (System.Threading.WaitHandleCannotBeOpenedException)
-                {
+                    return;
                 }
 
+                // теперь настройки доступны только нам
                 using (var fs = storage.OpenFile(ctFileName, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     DataContractSerializer serializer = new DataContractSerializer(typeof(SettingsList));
                     serializer.WriteObject(fs, m_Storage);
                 }
-            }
+            }   
 
         }
 
@@ -144,17 +143,11 @@ namespace V8Reader.Utils
                 if (storage.FileExists(ctFileName))
                 {
 
-                    using (var readMutex = new System.Threading.Mutex(true, ctReadMtxName))
+                    using (var Guard = new MutexGuard(ctWriteMtxName))
                     {
-                        try
+                        if (!Guard.Lock(2000))
                         {
-                            using (var writeMtx = System.Threading.Mutex.OpenExisting(ctWriteMtxName, System.Security.AccessControl.MutexRights.Synchronize))
-                            {
-                                writeMtx.WaitOne();
-                            }
-                        }
-                        catch (System.Threading.WaitHandleCannotBeOpenedException)
-                        {
+                            return;
                         }
 
                         using (var fs = storage.OpenFile(ctFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -189,8 +182,7 @@ namespace V8Reader.Utils
         private static Dictionary<Window, string> m_RegisteredKeys = new Dictionary<Window,string>();
 
         private const string ctFileName = "FormsSettings.xml";
-        private const string ctWriteMtxName = "v8reader_settingswrite_mutex";
-        private const string ctReadMtxName = "v8reader_settingsread_mutex";
+        private const string ctWriteMtxName = "v8reader_settingslock_mutex";
 
     }
 

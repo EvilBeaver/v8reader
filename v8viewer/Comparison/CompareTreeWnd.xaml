@@ -171,7 +171,8 @@
 
                 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0" Height="23">
-                    <Button x:Name="btnRefresh" Click="btnRefresh_Click" Width="100">Обновить</Button>
+                    <Button x:Name="btnSettings" Margin="5,0,0,0" Width="100" Click="Button_Click_2">Настройки</Button>
+                    <Button x:Name="btnRefresh" Click="btnRefresh_Click" Width="100" Margin="5,0,0,0">Обновить</Button>
                     <Button Margin="5,0,0,0" Width="100" Click="Button_Click_1">Закрыть</Button>
                 </StackPanel>
                 

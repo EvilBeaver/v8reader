@@ -11,7 +11,7 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <ics:TextEditor SyntaxHighlighting="1CV8" FontFamily="Courier New" FontSize="13" Name="editor" Background="{x:Null}" Foreground="Blue"/>
+        <ics:TextEditor SyntaxHighlighting="1CV8" FontFamily="Courier New" FontSize="13" Name="editor" Background="White" Foreground="Blue"/>
         <StatusBar Grid.Row="1" HorizontalContentAlignment="Left">
             <StatusBarItem HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">

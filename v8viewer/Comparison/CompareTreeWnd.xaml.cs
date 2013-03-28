@@ -399,6 +399,13 @@ namespace V8Reader.Comparison
             e.Handled = true;
         }
 
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            var frmSettings = new SettingsWindow();
+            frmSettings.Owner = this;
+            frmSettings.Show();
+        }
+
     }
 
 

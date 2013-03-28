@@ -82,7 +82,21 @@ namespace V8Reader.Comparison
                 bldr.Replace("%name1", DefaultTitle(m_LeftFile, NameCurrent));
                 bldr.Replace("%name2", DefaultTitle(m_RightFile, NameComparand));
 
-                string[] args = CommandLineToArgs(bldr.ToString());
+                string[] args;
+                try
+                {
+                    args = CommandLineToArgs(bldr.ToString());
+                }
+                catch (System.ComponentModel.Win32Exception)
+                {
+                    System.Windows.MessageBox.Show("Не удалось разобрать параметры командной строки запуска внешней программы. Проверьте корректность командной строки",
+                        "V8 Viewer",
+                        System.Windows.MessageBoxButton.OK,
+                        System.Windows.MessageBoxImage.Exclamation);
+                    
+                    return;
+                }
+
                 info.FileName = args[0];
 
                 bldr.Clear();

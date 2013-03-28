@@ -177,6 +177,7 @@
     <Compile Include="DiffFilesSelect.xaml.cs">
       <DependentUpon>DiffFilesSelect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\MutexGuard.cs" />
     <Compile Include="Utils\UpdateChecker.cs" />
     <Compile Include="Utils\UpdatesWnd.xaml.cs">
       <DependentUpon>UpdatesWnd.xaml</DependentUpon>
