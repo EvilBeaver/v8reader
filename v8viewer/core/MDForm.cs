@@ -72,9 +72,11 @@ namespace V8Reader.Core
             var internalProps = base.PropHolder;
 
             internalProps.Add(PropDef.Create("Dialog", "Форма", DialogDef, new Comparison.ToStringComparator()));
-            internalProps.Add(PropDef.Create("Module", "Модуль", new V8ModuleProcessor(Module, Name)));
-
             internalProps.Properties["Dialog"].ValueVisualizer = new DialogVisualizer(DialogDef);
+
+            var moduleProp = PropDef.Create("Module", "Модуль", new V8ModuleProcessor(Module, Name));
+            moduleProp.ValueVisualizer = new V8ModulePropVisualizer((V8ModuleProcessor)moduleProp.Value);
+            internalProps.Add(moduleProp);
 
         }
 

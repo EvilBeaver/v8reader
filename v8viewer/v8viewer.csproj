@@ -171,6 +171,7 @@
     <Compile Include="Utils\Browser\BrowserWindow.xaml.cs">
       <DependentUpon>BrowserWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\CollapsibleSection.cs" />
     <Compile Include="Utils\FileAssociator.cs" />
     <Compile Include="Utils\FormSettings.cs" />
     <Compile Include="Utils\MiscUtils.cs" />

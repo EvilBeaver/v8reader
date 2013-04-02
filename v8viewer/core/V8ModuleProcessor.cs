@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Documents;
 
 namespace V8Reader.Core
 {
@@ -74,4 +75,44 @@ namespace V8Reader.Core
         }
 
     }
+
+
+    #region Module visualizer
+
+    class V8ModulePropVisualizer : IValueVisualizer
+    {
+
+        private V8ModuleProcessor _module;
+
+        public V8ModulePropVisualizer(V8ModuleProcessor Module)
+        {
+            _module = Module;
+        }
+
+        public System.Windows.Documents.Block FlowContent
+        {
+            get 
+            {
+
+                Utils.CollapsibleSection section = new Utils.CollapsibleSection();
+                section.Header.Inlines.Add(new Run(_module.ModuleName));
+                section.CollapsibleBlocks.Add(
+                    new Paragraph(new Run(_module.Text)) { Margin = new System.Windows.Thickness(0) }
+                    );
+
+                section.Invalidate();
+
+                return section;
+            }
+        }
+
+        public string StringContent
+        {
+            get { return _module.Text; }
+        }
+
+    }
+
+    #endregion
+
 }
