@@ -109,6 +109,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Comparison\EditableObjectSection.cs" />
     <Compile Include="Comparison\ExtTextDiffViewer.cs" />
     <Compile Include="Comparison\FlowDocViewer.xaml.cs">
       <DependentUpon>FlowDocViewer.xaml</DependentUpon>
@@ -171,7 +172,6 @@
     <Compile Include="Utils\Browser\BrowserWindow.xaml.cs">
       <DependentUpon>BrowserWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils\CollapsibleSection.cs" />
     <Compile Include="Utils\FileAssociator.cs" />
     <Compile Include="Utils\FormSettings.cs" />
     <Compile Include="Utils\MiscUtils.cs" />

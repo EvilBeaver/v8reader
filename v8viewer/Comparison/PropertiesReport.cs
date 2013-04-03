@@ -170,8 +170,8 @@ namespace V8Reader.Comparison
             FlowDocument doc = new FlowDocument();
 
             Paragraph Header = new Paragraph(Formatter.Header1("Отчет о сравнении объектов"));
-
             Paragraph legend = new Paragraph();
+
             legend.Inlines.Add(Formatter.MainText("-> свойства первого объекта"));
             legend.Inlines.Add(new LineBreak());
             legend.Inlines.Add(Formatter.MainText("<- свойства второго объекта"));
@@ -200,16 +200,28 @@ namespace V8Reader.Comparison
                 p.Margin = new System.Windows.Thickness(0, 2, 0, 1);
 
                 propSection.Blocks.Add(p);
-                
-                var lp = new Paragraph(new Run("->")){Margin = new System.Windows.Thickness(0)};
-                propSection.Blocks.Add(lp);
-                propSection.Blocks.Add(PropDef.ValueVisualizer.FlowContent);
 
-                var rightProp = _right.Properties[PropDef.Key];
+                Table tab = new Table();
+                tab.Margin = new System.Windows.Thickness(0);
+                tab.Columns.Add(new TableColumn());
+                tab.Columns.Add(new TableColumn());
+                tab.Columns[0].Width = new System.Windows.GridLength(25);
+                tab.Columns[1].Width = System.Windows.GridLength.Auto;
 
-                var rp = new Paragraph(new Run("<-")) { Margin = new System.Windows.Thickness(0) };
-                propSection.Blocks.Add(rp);
-                propSection.Blocks.Add(rightProp.ValueVisualizer.FlowContent);
+                TableRowGroup rows = new TableRowGroup();
+
+                var leftObjRow = new TableRow();
+                leftObjRow.Cells.Add(new TableCell(new Paragraph(new Run("->")){Margin = new System.Windows.Thickness(0)}));
+                leftObjRow.Cells.Add(new TableCell(PropDef.ValueVisualizer.FlowContent));
+                rows.Rows.Add(leftObjRow);
+
+                var rightObjRow = new TableRow();
+                rightObjRow.Cells.Add(new TableCell(new Paragraph(new Run("<-")) { Margin = new System.Windows.Thickness(0) }));
+                rightObjRow.Cells.Add(new TableCell(_right.Properties[PropDef.Key].ValueVisualizer.FlowContent));
+                rows.Rows.Add(rightObjRow);
+
+                tab.RowGroups.Add(rows);
+                propSection.Blocks.Add(tab);
 
                 content.Blocks.Add(propSection);
 

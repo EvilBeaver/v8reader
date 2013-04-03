@@ -93,14 +93,7 @@ namespace V8Reader.Core
         {
             get 
             {
-
-                Utils.CollapsibleSection section = new Utils.CollapsibleSection();
-                section.Header.Inlines.Add(new Run(_module.ModuleName));
-                section.CollapsibleBlocks.Add(
-                    new Paragraph(new Run(_module.Text)) { Margin = new System.Windows.Thickness(0) }
-                    );
-
-                section.Invalidate();
+                Comparison.EditableObjectSection section = new Comparison.EditableObjectSection(_module, new Run(_module.ModuleName));
 
                 return section;
             }
