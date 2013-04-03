@@ -30,7 +30,10 @@ namespace V8Reader.Core
 
     abstract class MDTypeDeclarator : MDClassBase
     {
-
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     abstract class MDObjectClass : MDTypeDeclarator, IHelpProvider

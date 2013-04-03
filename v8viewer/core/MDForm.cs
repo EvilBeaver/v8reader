@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using V8Reader.Comparison;
 
 namespace V8Reader.Core
 {

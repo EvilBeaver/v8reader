@@ -109,6 +109,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Comparison\ComplexPropertyVisualizer.cs" />
     <Compile Include="Comparison\EditableObjectSection.cs" />
     <Compile Include="Comparison\ExtTextDiffViewer.cs" />
     <Compile Include="Comparison\FlowDocViewer.xaml.cs">
@@ -120,7 +121,7 @@
     <Compile Include="Comparison\StreamComparator.cs" />
     <Compile Include="Comparison\ValueConverters.cs" />
     <Compile Include="Core\FWOpenableDocument.cs" />
-    <Compile Include="Core\IValueVisualizer.cs" />
+    <Compile Include="Comparison\IValueVisualizer.cs" />
     <Compile Include="Core\MDClasses.cs" />
     <Compile Include="Core\MDObjectsCollection.cs" />
     <Compile Include="Core\MDReport.cs" />

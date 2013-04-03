@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Documents;
 
-namespace V8Reader.Core
+namespace V8Reader.Comparison
 {
     interface IValueVisualizer
     {

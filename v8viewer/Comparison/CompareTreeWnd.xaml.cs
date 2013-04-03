@@ -248,14 +248,17 @@ namespace V8Reader.Comparison
                 {
 
                     PropertiesReport repGenerator;
+                    string windowTitle;
 
                     if (cmpItem.Left.Object != null && cmpItem.Right.Object != null)
                     {
                         repGenerator = new PropertiesReportCompare(cmpItem.Left.Object as IMDPropertyProvider, cmpItem.Right.Object as IMDPropertyProvider);
+                        windowTitle = String.Format("Отчет по свойствам: {0}/{1}", cmpItem.Left.Object.ToString(), cmpItem.Right.Object.ToString());
                     }
                     else
                     {
                         repGenerator = new PropertiesReportSingle((IMDPropertyProvider)srcObject);
+                        windowTitle = srcObject.ToString();
                     }
 
                     Dispatcher.BeginInvoke(new Action(() =>

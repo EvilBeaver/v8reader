@@ -76,36 +76,4 @@ namespace V8Reader.Core
 
     }
 
-
-    #region Module visualizer
-
-    class V8ModulePropVisualizer : IValueVisualizer
-    {
-
-        private V8ModuleProcessor _module;
-
-        public V8ModulePropVisualizer(V8ModuleProcessor Module)
-        {
-            _module = Module;
-        }
-
-        public System.Windows.Documents.Block FlowContent
-        {
-            get 
-            {
-                Comparison.EditableObjectSection section = new Comparison.EditableObjectSection(_module, new Run(_module.ModuleName));
-
-                return section;
-            }
-        }
-
-        public string StringContent
-        {
-            get { return _module.Text; }
-        }
-
-    }
-
-    #endregion
-
 }

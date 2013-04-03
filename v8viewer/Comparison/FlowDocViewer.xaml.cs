@@ -21,6 +21,7 @@ namespace V8Reader.Comparison
         public FlowDocViewer()
         {
             InitializeComponent();
+            Utils.FormsSettingsManager.Register(this, "PropertyReport");
         }
 
         public FlowDocument Document 
