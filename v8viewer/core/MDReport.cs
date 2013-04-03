@@ -92,7 +92,7 @@ namespace V8Reader.Core
 
         public AbstractImage Icon
         {
-            get { return IconCollections.MDObjects["DataProcessor"]; }
+            get { return IconCollections.MDObjects["Report"]; }
         }
 
         public bool HasChildren()

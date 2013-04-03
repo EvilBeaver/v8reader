@@ -25,6 +25,7 @@ namespace V8Reader.Core
         {
             MDObjects = new NamedIcons(new WPFImageArray(new Uri("pack://application:,,,/Resources/MD_Pictures.png"), 16, 16));
 
+            MDObjects.NameIndexMap.Add("Report", 63);
             MDObjects.NameIndexMap.Add("DataProcessor", 64);
             MDObjects.NameIndexMap.Add("Attribute", 80);
             MDObjects.NameIndexMap.Add("AttributesCollection", 80);
