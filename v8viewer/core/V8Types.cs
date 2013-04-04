@@ -41,6 +41,18 @@ namespace V8Reader.Core
             Variable,
             Fixed
         }
+
+        public override string ToString()
+        {
+            if (AvailableLength == AvailableLengthType.Fixed)
+            {
+                return String.Format("str({0},fixed)", Lenght.ToString());
+            }
+            else
+            {
+                return String.Format("str({0})", Lenght.ToString());
+            }
+        }
     }
 
     sealed class V8NumberQualifier
@@ -56,6 +68,11 @@ namespace V8Reader.Core
         public int IntegerDigits { get; private set; }
         public int FractionDigits { get; private set; }
         public bool NonNegative { get; private set; }
+
+        public override string ToString()
+        {
+            return String.Format("num({0},{1})", IntegerDigits, FractionDigits);
+        }
     }
 
     sealed class V8DateQualifier
@@ -73,6 +90,19 @@ namespace V8Reader.Core
             DateAndTime,
             Date,
             Time
+        }
+
+        public override string ToString()
+        {
+            switch (DateFractions)
+            {
+                case DateFractionsType.Date:
+                    return "date()";
+                case DateFractionsType.Time:
+                    return "time()";
+                default:
+                    return ""; // datetime не требует доп. пояснений
+            }
         }
     }
 
@@ -101,26 +131,46 @@ namespace V8Reader.Core
         public override string ToString()
         {
 
-            if (m_types.Length == 1)
-            {
-                return m_types[0].ToString();
-            }
-            else if (m_types.Length > 1)
-            {
-                StringBuilder sb = new StringBuilder();
-                
-                sb.Append(m_types[0].ToString());
-                sb.Append(", ");
-                sb.Append(m_types[1].ToString());
-                sb.Append(", ...");
+            StringBuilder sb = new StringBuilder();
 
-                return sb.ToString();
+            if (m_types.Length > 0)
+            {                
+                for (int i = 0; i < m_types.Length; i++)
+                {
+                    sb.Append(',');
+                    sb.Append(m_types[i].ToString());
+                }
                 
             }
             else
             {
                 return "";
             }
+
+            if (NumberQualifier != null)
+            {
+                sb.Append(',');
+                sb.Append(NumberQualifier.ToString());
+            }
+
+            if (StringQualifier != null)
+            {
+                sb.Append(',');
+                sb.Append(StringQualifier.ToString());
+            }
+
+            if (DateQualifier != null)
+            {
+                var qs = StringQualifier.ToString();
+                if (qs != "")
+                {
+                    sb.Append(',');
+                    sb.Append(qs);
+                }
+            }
+
+            sb.Remove(0, 1);
+            return sb.ToString();
 
         }
 

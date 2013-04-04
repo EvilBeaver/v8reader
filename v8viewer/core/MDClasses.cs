@@ -98,9 +98,58 @@ namespace V8Reader.Core
             }
         }
 
+        protected struct StaticMDIdentifiers
+        {
+            public string AttributesCollection;
+            public string TablesCollection;
+            public string FormsCollection;
+            public string TemplatesCollection;
+        }
+
+        protected static void ReadFromStream(MDObjectClass NewMDObject, SerializedList ProcData, StaticMDIdentifiers ids)
+        {
+            SerializedList Content = ProcData.DrillDown(3);
+
+            NewMDObject.ReadStringsBlock(Content.DrillDown(3));
+
+            const int start = 3;
+            int ChildCount = Int32.Parse(Content.Items[2].ToString());
+
+            for (int i = 0; i < ChildCount; ++i)
+            {
+                SerializedList Collection = (SerializedList)Content.Items[start + i];
+
+                String CollectionID = Collection.Items[0].ToString();
+                int ItemsCount = Int32.Parse(Collection.Items[1].ToString());
+
+                for (int itemIndex = 2; itemIndex < (2 + ItemsCount); ++itemIndex)
+                {
+                    if (CollectionID == ids.AttributesCollection)
+                    {
+                        NewMDObject.Attributes.Add(new MDAttribute((SerializedList)Collection.Items[itemIndex]));
+                    }
+                    else if (CollectionID == ids.TablesCollection)
+                    {
+                        NewMDObject.Tables.Add(new MDTable((SerializedList)Collection.Items[itemIndex]));
+                    }
+                    else if (CollectionID == ids.FormsCollection)
+                    {
+                        NewMDObject.Forms.Add(MDForm.Create(NewMDObject.Container, Collection.Items[itemIndex].ToString()));
+                    }
+                    else if (CollectionID == ids.TemplatesCollection)
+                    {
+                        NewMDObject.Templates.Add(new MDTemplate(NewMDObject.Container, Collection.Items[itemIndex].ToString()));
+                    }
+
+                }
+
+            }
+        }
 
         abstract protected string ObjectModuleFile();
         abstract protected string HelpFile();
+
+        
 
         private HelpProviderImpl _Help = null;
         private MDObjectsCollection<MDAttribute> _Attributes = new MDObjectsCollection<MDAttribute>();

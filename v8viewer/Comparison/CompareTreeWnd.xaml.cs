@@ -264,7 +264,7 @@ namespace V8Reader.Comparison
                     Dispatcher.BeginInvoke(new Action(() =>
                         {
                             FlowDocViewer fdViewer = new FlowDocViewer();
-                            fdViewer.Title = srcObject.ToString();
+                            fdViewer.Title = windowTitle;
                             fdViewer.Document = repGenerator.GenerateReport();
                             fdViewer.Show();
                         }));

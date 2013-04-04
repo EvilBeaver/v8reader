@@ -94,22 +94,32 @@ namespace V8Reader.Core
         {
             m_RawContent = attrDestription;
 
-            var test = attrDestription.Items[0].Items[1].Items[0].ToString();
+            var attrObj = (SerializedList)(attrDestription.Items[0].Items[1]);
+            var test = attrObj.Items[0].ToString();
+
             SerializedList StringsBlock;
+            SerializedList Pattern;
             
             if (test == "2")
             {
-                StringsBlock = attrDestription.DrillDown(3);
+                StringsBlock = (SerializedList)attrObj.Items[1];
+                Pattern = (SerializedList)attrObj.Items[2];
             }
             else
             {
-                StringsBlock = attrDestription.DrillDown(4);
+                StringsBlock = (SerializedList)(attrObj.Items[1].Items[1]);
+                Pattern = (SerializedList)(attrObj.Items[1].Items[2]);
             }
             
             ReadStringsBlock(StringsBlock);
+            m_typeDef = V8TypeDescription.ReadFromList(Pattern);
+
+
         }
 
         private SerializedList m_RawContent;
+
+        private V8TypeDescription m_typeDef;
 
         #region IMDTreeItem
 
@@ -159,6 +169,17 @@ namespace V8Reader.Core
         }
 
         #endregion
+
+        protected override void DeclareProperties()
+        {
+            base.DeclareProperties();
+            var internalProps = base.PropHolder;
+
+            var typeProp = PropDef.Create("TypeDef", "Тип", m_typeDef);
+            internalProps.Add(typeProp);
+
+        }
+
     }
 
     class MDTable : MDObjectBase, IMDTreeItem

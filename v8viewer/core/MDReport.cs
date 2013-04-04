@@ -18,52 +18,15 @@ namespace V8Reader.Core
             MDReport NewReport = new MDReport();
             NewReport.Container = Container;
 
-            ReadFromStream(NewReport, Content);
+            StaticMDIdentifiers ids = new StaticMDIdentifiers();
+            ids.AttributesCollection = "7e7123e0-29e2-11d6-a3c7-0050bae0a776";
+            ids.TablesCollection     = "b077d780-29e2-11d6-a3c7-0050bae0a776";
+            ids.FormsCollection      = "a3b368c0-29e2-11d6-a3c7-0050bae0a776";
+            ids.TemplatesCollection  = "3daea016-69b7-4ed4-9453-127911372fe6";
+
+            ReadFromStream(NewReport, Content, ids);
 
             return NewReport;
-        }
-
-        private static void ReadFromStream(MDReport NewMDObject, SerializedList ProcData)
-        {
-            const String AttributeCollection = "7e7123e0-29e2-11d6-a3c7-0050bae0a776";
-            const String TablesCollection = "b077d780-29e2-11d6-a3c7-0050bae0a776";
-            const String FormCollection = "a3b368c0-29e2-11d6-a3c7-0050bae0a776";
-            const String TemplatesCollection = "3daea016-69b7-4ed4-9453-127911372fe6";
-
-            SerializedList Content = ProcData.DrillDown(3);
-
-            NewMDObject.ReadStringsBlock(Content.DrillDown(3));
-
-            const int start = 3;
-            int ChildCount = Int32.Parse(Content.Items[2].ToString());
-
-            for (int i = 0; i < ChildCount; ++i)
-            {
-                SerializedList Collection = (SerializedList)Content.Items[start + i];
-
-                String CollectionID = Collection.Items[0].ToString();
-                int ItemsCount = Int32.Parse(Collection.Items[1].ToString());
-
-                for (int itemIndex = 2; itemIndex < (2 + ItemsCount); ++itemIndex)
-                {
-                    switch (CollectionID)
-                    {
-                        case AttributeCollection:
-                            NewMDObject.Attributes.Add(new MDAttribute((SerializedList)Collection.Items[itemIndex]));
-                            break;
-                        case TablesCollection:
-                            NewMDObject.Tables.Add(new MDTable((SerializedList)Collection.Items[itemIndex]));
-                            break;
-                        case FormCollection:
-                            NewMDObject.Forms.Add(MDForm.Create(NewMDObject.Container, Collection.Items[itemIndex].ToString()));
-                            break;
-                        case TemplatesCollection:
-                            NewMDObject.Templates.Add(new MDTemplate(NewMDObject.Container, Collection.Items[itemIndex].ToString()));
-                            break;
-                    }
-                }
-
-            }
         }
 
         protected override string ObjectModuleFile()
