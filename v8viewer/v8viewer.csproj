@@ -356,6 +356,9 @@
   <ItemGroup>
     <Resource Include="Resources\rep_icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\module_icons.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>"$(SolutionDir)build\prebuild.cmd" "$(ProjectDir)\Properties\AssemblyInfo.cs" $(ConfigurationName)</PreBuildEvent>

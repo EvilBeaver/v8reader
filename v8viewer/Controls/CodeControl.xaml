@@ -4,15 +4,48 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:ics="http://icsharpcode.net/sharpdevelop/avalonedit"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" Focusable="True" IsTabStop="True" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType">
+             xmlns:v8r="clr-namespace:V8Reader.Core"
+             mc:Ignorable="d" Focusable="True" IsTabStop="True" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" d:DesignWidth="477" d:DesignHeight="285">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <ics:TextEditor SyntaxHighlighting="1CV8" FontFamily="Courier New" FontSize="13" Name="editor" Background="White" Foreground="Blue"/>
-        <StatusBar Grid.Row="1" HorizontalContentAlignment="Left">
+        
+        <ToolBar Grid.Row="0">
+            
+            <ToolBar.Resources>
+                <v8r:IconSet ImageUri="pack://application:,,,/Resources/module_icons.png" x:Key="tbIcons"/>
+                <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="0" x:Key="saveIcon"/>
+                <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="1" x:Key="procListIcon"/>
+                <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="2" x:Key="collapseIcon"/>
+                <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="3" x:Key="expandIcon"/>
+            </ToolBar.Resources>
+            
+            <Button x:Name="btnSaveAs">
+                <StackPanel Orientation="Horizontal">
+                    <Image Height="16" Width="16" Source="{Binding Source={StaticResource saveIcon}, Path=Item}"/>
+                    <TextBlock Margin="3,0,0,0">Сохранить</TextBlock>
+                </StackPanel>
+            </Button>
+            <Separator/>
+            <Button x:Name="btnCollapseNodes">
+                <Image Height="16" Width="16" Source="{Binding Source={StaticResource collapseIcon}, Path=Item}" ToolTip="Свернуть блоки"/>
+            </Button>
+            <Button x:Name="btnExpandNodes">
+                <Image Height="16" Width="16" Source="{Binding Source={StaticResource expandIcon}, Path=Item}" ToolTip="Развернуть блоки"/>
+            </Button>
+            <Separator/>
+            <Button x:Name="btnProcList">
+                <Image Height="16" Width="16" Source="{Binding Source={StaticResource procListIcon}, Path=Item}" ToolTip="Список процедур"/>
+            </Button>
+            <ComboBox x:Name="cbProcList" Width="254" IsReadOnly="True" Margin="0"></ComboBox>
+        </ToolBar>
+        
+        <ics:TextEditor Grid.Row="1" SyntaxHighlighting="1CV8" FontFamily="Courier New" FontSize="13" Name="editor" Background="White" Foreground="Blue"/>
+        
+        <StatusBar Grid.Row="2" HorizontalContentAlignment="Left">
             <StatusBarItem HorizontalAlignment="Right">
                 <StackPanel Orientation="Horizontal">
 

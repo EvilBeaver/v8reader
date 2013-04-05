@@ -43,8 +43,12 @@ namespace V8Reader.Utils
 
         private void CheckUpdatesAsync(UpdateCheckerResultHandler ResultHandler)
         {
-            string url = @"http://sourceforge.net/projects/v8reader/files/update.xml/download";
-
+            #if DEBUG
+			string url = @"https://dl.dropbox.com/u/79336477/update.xml";
+			#else
+			string url = @"http://sourceforge.net/projects/v8reader/files/update.xml/download";
+			#endif
+			
             HttpWebRequest client = (HttpWebRequest)HttpWebRequest.Create(url);
             client.AllowAutoRedirect = true;
             client.Proxy = WebRequest.DefaultWebProxy;

@@ -7,7 +7,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBox IsReadOnly="True" x:Name="txtData" Grid.Row="0" Padding="4">
+        <TextBox IsReadOnly="True" x:Name="txtData" Grid.Row="0" Padding="4" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             
         </TextBox>
         

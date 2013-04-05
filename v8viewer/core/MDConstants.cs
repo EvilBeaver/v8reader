@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -93,6 +94,52 @@ namespace V8Reader.Core
         }
 
         protected object m_Image;
+    }
+
+    class IconSet
+    {
+        private WPFImageArray _arr;
+        private Uri _uri;
+
+        public Uri ImageUri
+        {
+            get
+            {
+                return _uri;
+            }
+
+            set
+            {
+                _uri = value;
+                _arr = new WPFImageArray(value, 16, 16);
+            }
+        }
+
+        public ImageSource this[int index]
+        {
+            get
+            {
+                return _arr[index];
+            }
+        }
+
+    }
+    
+    class IconSetItem
+    {
+
+        public IconSet Icons { get; set; }
+        
+        public int Index { get; set; }
+
+        public ImageSource Item 
+        {
+            get
+            {
+                return Icons[Index];
+            }
+        }
+
     }
 
     class Image<TImage> : AbstractImage
