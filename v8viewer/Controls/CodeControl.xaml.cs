@@ -69,20 +69,7 @@ namespace V8Reader.Controls
             if (_procList != null && _procList.Count > 0)
             {
                 int curLine = editor.TextArea.Caret.Line;
-                int halfIdx = _procList.Count / 2;
-                int pos = _procList[halfIdx].Line;
-
-                if (curLine > pos)
-                {
-
-                }
-                else if (curLine < pos)
-                {
-
-                }
-                else
-                {
-                }
+                
             }
         }
 
@@ -134,7 +121,8 @@ namespace V8Reader.Controls
 
     struct ProcListItem
     {
-        public int Line;
+        public int StartLine;
+        public int EndLine;
         public int ListIndex;
         public string Name;
     }
@@ -196,6 +184,7 @@ namespace V8Reader.Controls
 
             string FullText = document.Text;
             int DocLine = 0;
+            int MethodStart = 0;
 
             const string kProcStart = "ПРОЦЕДУРА";
             const string kProcEnd = "КОНЕЦПРОЦЕДУРЫ";
@@ -241,12 +230,14 @@ namespace V8Reader.Controls
                         MethodIsOpen = true;
                         MethodName = ScanForParamList(FullText, prev_start+kProcStart.Length);
                         EndToken = kProcEnd;
+                        MethodStart = DocLine;
                     }
                     else if(LineIsKeyword(lineText, kFuncStart))
                     {
                         MethodIsOpen = true;
                         MethodName = ScanForParamList(FullText, prev_start + kFuncStart.Length);
                         EndToken = kFuncEnd;
+                        MethodStart = DocLine;
                     }
 
                     if (MethodIsOpen)
@@ -275,7 +266,8 @@ namespace V8Reader.Controls
                     {
                         ProcListItem pli = new ProcListItem();
                         pli.Name = MethodName;
-                        pli.Line = DocLine;
+                        pli.StartLine = DocLine;
+                        pli.EndLine = 
                         pli.ListIndex = _procList.Count;
 
                         _procList.Add(pli);
