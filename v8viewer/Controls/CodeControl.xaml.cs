@@ -55,12 +55,35 @@ namespace V8Reader.Controls
             editor.TextArea.Options.EnableVirtualSpace = true;
             editor.TextArea.Options.EnableRectangularSelection = true;
             editor.TextArea.SelectionCornerRadius = 0;
+            editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
             
             foldingUpdateTimer = new DispatcherTimer();
             foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
             foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
             foldingUpdateTimer.Start();
 
+        }
+
+        void Caret_PositionChanged(object sender, EventArgs e)
+        {
+            if (_procList != null && _procList.Count > 0)
+            {
+                int curLine = editor.TextArea.Caret.Line;
+                int halfIdx = _procList.Count / 2;
+                int pos = _procList[halfIdx].Line;
+
+                if (curLine > pos)
+                {
+
+                }
+                else if (curLine < pos)
+                {
+
+                }
+                else
+                {
+                }
+            }
         }
 
         void editor_TextChanged(object sender, EventArgs e)
@@ -74,8 +97,18 @@ namespace V8Reader.Controls
 
         void foldingUpdateTimer_Tick(object sender, EventArgs e)
         {
-            foldingStrategy.UpdateFoldings(foldingManager, editor.Document);
             ((DispatcherTimer)sender).Stop();
+            foldingStrategy.UpdateFoldings(foldingManager, editor.Document);
+            _procList = ((V8ModuleFoldingStrategy)foldingStrategy).ProcedureList;
+
+            if (_procList != null)
+            {
+                cbProcList.Items.Clear();
+
+                var Names = from lst in _procList select lst.Name;
+                cbProcList.ItemsSource = Names.ToList<string>();
+            }
+
             //m_ModifyFlag = false;
         }
 
@@ -95,6 +128,15 @@ namespace V8Reader.Controls
         AbstractFoldingStrategy foldingStrategy = new V8ModuleFoldingStrategy();
         //bool m_ModifyFlag;
         DispatcherTimer foldingUpdateTimer;
+        List<ProcListItem> _procList;
+
+    }
+
+    struct ProcListItem
+    {
+        public int Line;
+        public int ListIndex;
+        public string Name;
     }
 
     class V8ModuleFoldingStrategy : AbstractFoldingStrategy
@@ -124,10 +166,20 @@ namespace V8Reader.Controls
             public int len;
         }
 
+        private List<ProcListItem> _procList;
+
+        public List<ProcListItem> ProcedureList
+        {
+            get
+            {
+                return _procList;
+            }
+        }
 
 		public IEnumerable<NewFolding> CreateNewFoldings(ITextSource document)
 		{
 			List<NewFolding> newFoldings = new List<NewFolding>();
+            _procList = new List<ProcListItem>();
 
             int startPos = 0;
             int len = document.TextLength;
@@ -135,6 +187,7 @@ namespace V8Reader.Controls
             int currentStart = 0;
 
             bool MethodIsOpen = false;
+            string MethodName ="";
             string EndToken = null;
 
             int PreCommentStart = -1;
@@ -142,11 +195,19 @@ namespace V8Reader.Controls
             //var Reader = document.CreateReader();
 
             string FullText = document.Text;
+            int DocLine = 0;
+
+            const string kProcStart = "ПРОЦЕДУРА";
+            const string kProcEnd = "КОНЕЦПРОЦЕДУРЫ";
+            const string kFuncStart = "ФУНКЦИЯ";
+            const string kFuncEnd = "КОНЕЦПРОЦЕДУРЫ";
 
             do
             {
                 int prev_start = startPos;
                 string lineText = ReadLine(FullText, ref startPos);
+                
+                DocLine++;
 
                 if (lineText == null)
                 {
@@ -175,15 +236,17 @@ namespace V8Reader.Controls
                         CommentBreak = true;
                     }
                     
-                    if (lineText.StartsWith("ПРОЦЕДУРА", StringComparison.OrdinalIgnoreCase))
+                    if (LineIsKeyword(lineText, kProcStart))
                     {
                         MethodIsOpen = true;
-                        EndToken = "КОНЕЦПРОЦЕДУРЫ";
+                        MethodName = ScanForParamList(FullText, prev_start+kProcStart.Length);
+                        EndToken = kProcEnd;
                     }
-                    else if(lineText.StartsWith("ФУНКЦИЯ", StringComparison.OrdinalIgnoreCase))
+                    else if(LineIsKeyword(lineText, kFuncStart))
                     {
                         MethodIsOpen = true;
-                        EndToken = "КОНЕЦФУНКЦИИ";
+                        MethodName = ScanForParamList(FullText, prev_start + kFuncStart.Length);
+                        EndToken = kFuncEnd;
                     }
 
                     if (MethodIsOpen)
@@ -203,10 +266,20 @@ namespace V8Reader.Controls
                     }
                     
                 }
-                else if (lineText.StartsWith(EndToken, StringComparison.OrdinalIgnoreCase))
+                else if (LineIsKeyword(lineText, EndToken))
                 {
                     var Folding = new NewFolding(currentStart, tf.offset + tf.len);
                     newFoldings.Add(Folding);
+
+                    if (MethodName != "")
+                    {
+                        ProcListItem pli = new ProcListItem();
+                        pli.Name = MethodName;
+                        pli.Line = DocLine;
+                        pli.ListIndex = _procList.Count;
+
+                        _procList.Add(pli);
+                    }
 
                     MethodIsOpen = false;
                 }
@@ -216,6 +289,52 @@ namespace V8Reader.Controls
 
 			return newFoldings;
 		}
+
+        private string ScanForParamList(string FullText, int Start)
+        {
+            int nameLen = 0;
+            int i = Start;
+            bool found = false;
+
+            while (i < FullText.Length)
+            {
+                nameLen++;
+                if (FullText[i++] == '(')
+                {
+                    found = true;
+                    nameLen--;
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                return FullText.Substring(Start, nameLen).Trim();
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        bool LineIsKeyword(string Line, string Keyword)
+        {
+            if (Line.StartsWith(Keyword, StringComparison.OrdinalIgnoreCase))
+            {
+                if (Line.Length > Keyword.Length)
+                {
+                    return (Char.IsWhiteSpace(Line[Keyword.Length]));
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         string ReadLine(string Content, ref int Position)
         {
@@ -251,6 +370,10 @@ namespace V8Reader.Controls
             return result;
 
         }
+
+        
+
+
 
 	}
 
