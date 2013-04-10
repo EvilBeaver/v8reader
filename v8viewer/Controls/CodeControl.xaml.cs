@@ -57,7 +57,7 @@ namespace V8Reader.Controls
             editor.TextArea.SelectionCornerRadius = 0;
             editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
             
-            foldingUpdateTimer = new DispatcherTimer();
+            foldingUpdateTimer = new DispatcherTimer(DispatcherPriority.ContextIdle);
             foldingUpdateTimer.Interval = TimeSpan.FromSeconds(2);
             foldingUpdateTimer.Tick += foldingUpdateTimer_Tick;
             foldingUpdateTimer.Start();
@@ -65,6 +65,11 @@ namespace V8Reader.Controls
         }
 
         void Caret_PositionChanged(object sender, EventArgs e)
+        {
+            UpdateCurrentProc();
+        }
+
+        private void UpdateCurrentProc()
         {
             if (_procList != null && _procList.Count > 0 && editor.SelectionLength == 0)
             {
@@ -162,7 +167,12 @@ namespace V8Reader.Controls
                 cbProcList.Items.Clear();
 
                 var Names = from lst in _procList select lst.Name;
-                cbProcList.ItemsSource = Names.ToList<string>();
+                foreach (var item in Names)
+                {
+                    cbProcList.Items.Add(item);
+                }
+                
+                UpdateCurrentProc();
             }
 
             //m_ModifyFlag = false;
@@ -343,7 +353,7 @@ namespace V8Reader.Controls
                         MethodStart = DocLine;
                     }
 
-                    if (MethodIsOpen)
+                    if (MethodIsOpen && MethodName != "")
                     {
                         currentStart = tf.offset + tf.len;
 
@@ -351,6 +361,7 @@ namespace V8Reader.Controls
                         {
                             var Folding = new NewFolding(PreCommentStart, tf.offset - 2);
                             newFoldings.Add(Folding);
+                            MethodName = "";
                             PreCommentStart = -1;
                         }
                     }
@@ -390,16 +401,32 @@ namespace V8Reader.Controls
             int nameLen = 0;
             int i = Start;
             bool found = false;
+            bool ltrFound = false;
 
             while (i < FullText.Length)
             {
                 nameLen++;
-                if (FullText[i++] == '(')
+                char currentLtr = FullText[i++];
+
+                if (!Char.IsLetterOrDigit(currentLtr))
+                {
+                    if (ltrFound && !Char.IsWhiteSpace(currentLtr) && currentLtr != '(')
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    ltrFound = true;
+                }
+
+                if (currentLtr == '(')
                 {
                     found = true;
                     nameLen--;
                     break;
                 }
+
             }
 
             if (found)
