@@ -40,7 +40,7 @@
             <Button x:Name="btnProcList">
                 <Image Height="16" Width="16" Source="{Binding Source={StaticResource procListIcon}, Path=Item}" ToolTip="Список процедур"/>
             </Button>
-            <ComboBox x:Name="cbProcList" Width="254" IsReadOnly="True" Margin="0"></ComboBox>
+            <ComboBox x:Name="cbProcList" Width="254" IsReadOnly="True" Margin="0" SelectionChanged="cbProcList_SelectionChanged"></ComboBox>
         </ToolBar>
         
         <ics:TextEditor Grid.Row="1" SyntaxHighlighting="1CV8" FontFamily="Courier New" FontSize="13" Name="editor" Background="White" Foreground="Blue"/>

@@ -66,11 +66,80 @@ namespace V8Reader.Controls
 
         void Caret_PositionChanged(object sender, EventArgs e)
         {
-            if (_procList != null && _procList.Count > 0)
+            if (_procList != null && _procList.Count > 0 && editor.SelectionLength == 0)
             {
                 int curLine = editor.TextArea.Caret.Line;
-                
+                int selectedIndex = GetCurrentProcIndex(curLine);
+
+                cbProcList.SelectionChanged -= cbProcList_SelectionChanged;
+                cbProcList.SelectedIndex = selectedIndex;
+                cbProcList.SelectionChanged += cbProcList_SelectionChanged;
             }
+        }
+
+        private int GetCurrentProcIndex(int curLine)
+        {
+
+            int chunkStart = 0;
+            int chunkEnd = _procList.Count-1;
+            
+            return FindInChunk(curLine, chunkStart, chunkEnd);
+
+        }
+
+        private int FindInChunk(int curLine, int chunkStart, int chunkEnd)
+        {
+            int chunkLen = chunkEnd - chunkStart;
+
+            if (chunkLen <= 0)
+            {
+                return -1;
+            }
+            else if (chunkLen == 1)
+            {
+                for (int i = chunkStart; i <= chunkEnd; i++)
+                {
+                    var li = _procList[i];
+                    if (curLine >= li.StartLine && curLine <= li.EndLine)
+                    {
+                        return li.ListIndex;
+                    }
+                }
+
+                return -1;
+            }
+
+            int middle = chunkLen / 2;
+            if (middle == 0)
+            {
+                return -1;
+            }
+
+            int middleIdx = chunkStart + middle;
+
+            if (middleIdx < 0 || middleIdx >= _procList.Count)
+            {
+                return -1;
+            }
+
+            var item = _procList[middleIdx];
+            if (curLine < item.StartLine)
+            {
+                return FindInChunk(curLine, chunkStart, middleIdx);
+            }
+            else if (curLine > item.EndLine)
+            {
+                return FindInChunk(curLine, middleIdx, chunkEnd);
+            }
+            else if (curLine >= item.StartLine && curLine <= item.EndLine)
+            {
+                return item.ListIndex;
+            }
+            else
+            {
+                return -1;
+            }
+
         }
 
         void editor_TextChanged(object sender, EventArgs e)
@@ -115,7 +184,41 @@ namespace V8Reader.Controls
         AbstractFoldingStrategy foldingStrategy = new V8ModuleFoldingStrategy();
         //bool m_ModifyFlag;
         DispatcherTimer foldingUpdateTimer;
+        DispatcherTimer _procListSelectTimer;
         List<ProcListItem> _procList;
+
+        private void cbProcList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_procListSelectTimer != null)
+            {
+                _procListSelectTimer.Stop();
+            }
+            else
+            {
+                _procListSelectTimer = new DispatcherTimer(DispatcherPriority.Background);
+                _procListSelectTimer.Interval = TimeSpan.FromMilliseconds(100);
+                _procListSelectTimer.Tick += _procListSelectTimer_Tick;
+            }
+
+            _procListSelectTimer.Start();
+
+        }
+
+        void _procListSelectTimer_Tick(object sender, EventArgs e)
+        {
+            _procListSelectTimer.Stop();
+            int si = cbProcList.SelectedIndex;
+            if (si >= 0 && si < _procList.Count)
+            {
+                var item = _procList[si];
+                if (item.StartLine <= editor.LineCount)
+                {
+                    editor.Focus();
+                    editor.ScrollToLine(item.StartLine);
+                }
+            }
+
+        }
 
     }
 
@@ -189,7 +292,7 @@ namespace V8Reader.Controls
             const string kProcStart = "ПРОЦЕДУРА";
             const string kProcEnd = "КОНЕЦПРОЦЕДУРЫ";
             const string kFuncStart = "ФУНКЦИЯ";
-            const string kFuncEnd = "КОНЕЦПРОЦЕДУРЫ";
+            const string kFuncEnd = "КОНЕЦФУНКЦИИ";
 
             do
             {
@@ -266,8 +369,8 @@ namespace V8Reader.Controls
                     {
                         ProcListItem pli = new ProcListItem();
                         pli.Name = MethodName;
-                        pli.StartLine = DocLine;
-                        pli.EndLine = 
+                        pli.StartLine = MethodStart;
+                        pli.EndLine = DocLine;
                         pli.ListIndex = _procList.Count;
 
                         _procList.Add(pli);
