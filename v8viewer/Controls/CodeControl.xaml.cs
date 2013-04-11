@@ -230,14 +230,30 @@ namespace V8Reader.Controls
 
         }
 
+        private void btnProcList_Click(object sender, RoutedEventArgs e)
+        {
+            if (_procList != null && _procList.Count > 0)
+            {
+                var wnd = new ProcedureListWnd(_procList);
+                wnd.Owner = Window.GetWindow(this);
+                wnd.ShowDialog();
+
+            }
+        }
+
     }
 
-    struct ProcListItem
+    class ProcListItem
     {
         public int StartLine;
         public int EndLine;
         public int ListIndex;
         public string Name;
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     class V8ModuleFoldingStrategy : AbstractFoldingStrategy
@@ -353,7 +369,7 @@ namespace V8Reader.Controls
                         MethodStart = DocLine;
                     }
 
-                    if (MethodIsOpen && MethodName != "")
+                    if (MethodIsOpen)
                     {
                         currentStart = tf.offset + tf.len;
 
@@ -361,7 +377,6 @@ namespace V8Reader.Controls
                         {
                             var Folding = new NewFolding(PreCommentStart, tf.offset - 2);
                             newFoldings.Add(Folding);
-                            MethodName = "";
                             PreCommentStart = -1;
                         }
                     }
@@ -385,6 +400,8 @@ namespace V8Reader.Controls
                         pli.ListIndex = _procList.Count;
 
                         _procList.Add(pli);
+                        
+                        MethodName = "";
                     }
 
                     MethodIsOpen = false;

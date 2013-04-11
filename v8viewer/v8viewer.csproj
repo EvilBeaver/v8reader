@@ -120,6 +120,9 @@
     <Compile Include="Comparison\SimpleComparators.cs" />
     <Compile Include="Comparison\StreamComparator.cs" />
     <Compile Include="Comparison\ValueConverters.cs" />
+    <Compile Include="Controls\ProcedureListWnd.xaml.cs">
+      <DependentUpon>ProcedureListWnd.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\FWOpenableDocument.cs" />
     <Compile Include="Comparison\IValueVisualizer.cs" />
     <Compile Include="Core\MDClasses.cs" />
@@ -190,6 +193,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Comparison\FlowDocViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ProcedureListWnd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
