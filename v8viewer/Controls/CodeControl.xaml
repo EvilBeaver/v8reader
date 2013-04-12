@@ -18,7 +18,8 @@
             <ToolBar.Resources>
                 <v8r:IconSet ImageUri="pack://application:,,,/Resources/module_icons.png" x:Key="tbIcons"/>
                 <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="0" x:Key="saveIcon"/>
-                <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="1" x:Key="procListIcon"/>
+                <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="1" x:Key="procIcon"/>
+                <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="4" x:Key="procListIcon"/>
                 <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="2" x:Key="collapseIcon"/>
                 <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="3" x:Key="expandIcon"/>
             </ToolBar.Resources>
@@ -40,7 +41,16 @@
             <Button x:Name="btnProcList" Click="btnProcList_Click">
                 <Image Height="16" Width="16" Source="{Binding Source={StaticResource procListIcon}, Path=Item}" ToolTip="Список процедур"/>
             </Button>
-            <ComboBox x:Name="cbProcList" Width="254" IsReadOnly="True" Margin="0" SelectionChanged="cbProcList_SelectionChanged"></ComboBox>
+            <ComboBox x:Name="cbProcList" Width="254" IsReadOnly="True" Margin="3,0,0,0" SelectionChanged="cbProcList_SelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Height="16" Width="16" Source="{Binding Source={StaticResource procIcon}, Path=Item}"/>
+                            <TextBlock Text="{Binding}" Margin="2,0,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </ToolBar>
         
         <ics:TextEditor Grid.Row="1" SyntaxHighlighting="1CV8" FontFamily="Courier New" FontSize="13" Name="editor" Background="White" Foreground="Blue"/>
