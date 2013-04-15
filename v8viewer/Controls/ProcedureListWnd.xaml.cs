@@ -22,11 +22,7 @@ namespace V8Reader.Controls
         {
             InitializeComponent();
 
-            _procList = ProcList;
-
-            //_cw = new CollectionViewSource();
-            //_cw.Source = _procList;
-            //lbProcList.ItemsSource = _cw.View;
+            _procList = ProcList.Select<ProcListItem, ProcListItem>(x=>x).ToList<ProcListItem>();
 
             lbProcList.ItemsSource = _procList;
         }
@@ -52,7 +48,6 @@ namespace V8Reader.Controls
                 });
             
             lbProcList.Items.Filter = FilterPredicate;
-            //_cw.View.Filter = FilterPredicate;
 
         }
 
@@ -66,12 +61,15 @@ namespace V8Reader.Controls
 
         private void lbProcList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            
+            MessageBox.Show(String.Format("DblClick, {0}",e.Source.GetType().ToString()));
         }
 
         private void lbProcList_KeyDown(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Return && lbProcList.SelectedIndex >= 0)
+            {
+                PerformSelection((ProcListItem)lbProcList.SelectedItem);
+            }
         }
 
         private void chkSort_Click(object sender, RoutedEventArgs e)
@@ -91,14 +89,31 @@ namespace V8Reader.Controls
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-
+            DialogResult = false;
+            Close();
         }
 
         private void btnGo_Click(object sender, RoutedEventArgs e)
         {
+            if (lbProcList.SelectedIndex >= 0)
+            {
+                PerformSelection((ProcListItem)lbProcList.SelectedItem);
+            }
 
         }
 
+        private void PerformSelection(ProcListItem src)
+        {
+            SelectedItem = src;
+            DialogResult = true;
+            Close();
+        }
+
+        internal ProcListItem SelectedItem
+        {
+            get;
+            private set;
+        }
 
         class itemsComparer : System.Collections.IComparer
         {
