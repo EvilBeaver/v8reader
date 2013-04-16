@@ -41,7 +41,7 @@
             <Button x:Name="btnProcList" Click="btnProcList_Click">
                 <Image Height="16" Width="16" Source="{Binding Source={StaticResource procListIcon}, Path=Item}" ToolTip="Список процедур"/>
             </Button>
-            <ComboBox x:Name="cbProcList" Width="254" IsReadOnly="True" Margin="3,0,0,0" SelectionChanged="cbProcList_SelectionChanged">
+            <ComboBox x:Name="cbProcList" Width="254" IsReadOnly="True" Margin="3,0,0,0" SelectionChanged="cbProcList_SelectionChanged" PreviewMouseWheel="cbProcList_PreviewMouseWheel" PreviewKeyDown="cbProcList_PreviewKeyDown">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" PreviewMouseLeftButtonUp="Method_MouseClick">

@@ -25,6 +25,9 @@ namespace V8Reader.Controls
             _procList = ProcList.Select<ProcListItem, ProcListItem>(x=>x).ToList<ProcListItem>();
 
             lbProcList.ItemsSource = _procList;
+
+            chkSort.IsChecked = V8Reader.Properties.Settings.Default.CodeEditor_SortMethods;
+            SortMethodsByCheckbox();
         }
 
         private IList<ProcListItem> _procList;
@@ -81,12 +84,20 @@ namespace V8Reader.Controls
 
         private void chkSort_Click(object sender, RoutedEventArgs e)
         {
+            SortMethodsByCheckbox();
+
+            Properties.Settings.Default.CodeEditor_SortMethods = (bool)chkSort.IsChecked;
+
+        }
+
+        private void SortMethodsByCheckbox()
+        {
             if (chkSort.IsChecked == true)
             {
 
                 var sorted = from lst in _procList orderby lst.Name select lst;
                 lbProcList.ItemsSource = sorted.ToList<ProcListItem>();
-                
+
             }
             else
             {

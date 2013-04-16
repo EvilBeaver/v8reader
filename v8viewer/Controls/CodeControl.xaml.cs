@@ -256,12 +256,23 @@ namespace V8Reader.Controls
 
         private void btnCollapseNodes_Click(object sender, RoutedEventArgs e)
         {
-
+            PerformNodeFolding(true);
         }
 
         private void btnExpandNodes_Click(object sender, RoutedEventArgs e)
         {
+            PerformNodeFolding(false);
+        }
 
+        private void PerformNodeFolding(bool SetCollapsed)
+        {
+            if (foldingManager != null)
+            {
+                foreach (var folding in foldingManager.AllFoldings)
+                {
+                    folding.IsFolded = SetCollapsed;
+                }
+            }
         }
 
         private void cbProcList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -271,6 +282,16 @@ namespace V8Reader.Controls
                 _userMethodSelect = false;
                 OnMethodSelected();
             }
+        }
+
+        private void cbProcList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void cbProcList_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
         }
 
     }
