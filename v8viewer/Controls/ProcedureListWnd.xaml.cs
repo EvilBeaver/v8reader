@@ -59,9 +59,16 @@ namespace V8Reader.Controls
             }
         }
 
-        private void lbProcList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Elements_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            MessageBox.Show(String.Format("DblClick, {0}",e.Source.GetType().ToString()));
+            ListBoxItem lb = sender as ListBoxItem;
+            if (lb == null || !(lb.Content is ProcListItem))
+                return;
+
+            Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    PerformSelection(lb.Content as ProcListItem);
+                }));
         }
 
         private void lbProcList_KeyDown(object sender, KeyEventArgs e)

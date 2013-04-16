@@ -223,8 +223,7 @@ namespace V8Reader.Controls
                 var item = _procList[si];
                 if (item.StartLine <= editor.LineCount)
                 {
-                    editor.Focus();
-                    editor.ScrollToLine(item.StartLine);
+                    SetCurrentMethod(item);
                 }
             }
 
@@ -236,9 +235,45 @@ namespace V8Reader.Controls
             {
                 var wnd = new ProcedureListWnd(_procList);
                 wnd.Owner = Window.GetWindow(this);
-                wnd.ShowDialog();
+                var answer = wnd.ShowDialog();
+                if (answer == true)
+                {
+                    var item = wnd.SelectedItem;
+                    SetCurrentMethod(item);
+                }
 
             }
+        }
+
+        private void SetCurrentMethod(ProcListItem item)
+        {
+            editor.Focus();
+            editor.ScrollToLine(item.StartLine);
+            editor.TextArea.Caret.Line = item.StartLine;
+            editor.TextArea.Caret.Column = 0;
+        }
+
+        private void btnSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.Filter = "Текстовый файл|*.txt";
+            if (dlg.ShowDialog() == true)
+            {
+                using (var fs = new System.IO.StreamWriter(dlg.FileName))
+                {
+                    fs.Write(editor.Text);
+                }
+            }
+        }
+
+        private void btnCollapseNodes_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnExpandNodes_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
     }

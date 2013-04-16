@@ -24,17 +24,17 @@
                 <v8r:IconSetItem Icons="{StaticResource tbIcons}" Index="3" x:Key="expandIcon"/>
             </ToolBar.Resources>
             
-            <Button x:Name="btnSaveAs">
+            <Button x:Name="btnSaveAs" Click="btnSaveAs_Click">
                 <StackPanel Orientation="Horizontal">
                     <Image Height="16" Width="16" Source="{Binding Source={StaticResource saveIcon}, Path=Item}"/>
                     <TextBlock Margin="3,0,0,0">Сохранить</TextBlock>
                 </StackPanel>
             </Button>
             <Separator/>
-            <Button x:Name="btnCollapseNodes">
+            <Button x:Name="btnCollapseNodes" Click="btnCollapseNodes_Click">
                 <Image Height="16" Width="16" Source="{Binding Source={StaticResource collapseIcon}, Path=Item}" ToolTip="Свернуть блоки"/>
             </Button>
-            <Button x:Name="btnExpandNodes">
+            <Button x:Name="btnExpandNodes" Click="btnExpandNodes_Click">
                 <Image Height="16" Width="16" Source="{Binding Source={StaticResource expandIcon}, Path=Item}" ToolTip="Развернуть блоки"/>
             </Button>
             <Separator/>
