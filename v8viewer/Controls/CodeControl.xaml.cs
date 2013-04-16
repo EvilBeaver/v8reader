@@ -76,9 +76,9 @@ namespace V8Reader.Controls
                 int curLine = editor.TextArea.Caret.Line;
                 int selectedIndex = GetCurrentProcIndex(curLine);
 
-                cbProcList.SelectionChanged -= cbProcList_SelectionChanged;
+                //cbProcList.SelectionChanged -= cbProcList_SelectionChanged;
                 cbProcList.SelectedIndex = selectedIndex;
-                cbProcList.SelectionChanged += cbProcList_SelectionChanged;
+                //cbProcList.SelectionChanged += cbProcList_SelectionChanged;
             }
         }
 
@@ -194,29 +194,12 @@ namespace V8Reader.Controls
         AbstractFoldingStrategy foldingStrategy = new V8ModuleFoldingStrategy();
         //bool m_ModifyFlag;
         DispatcherTimer foldingUpdateTimer;
-        DispatcherTimer _procListSelectTimer;
         List<ProcListItem> _procList;
 
-        private void cbProcList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        bool _userMethodSelect = false;
+
+        void OnMethodSelected()
         {
-            if (_procListSelectTimer != null)
-            {
-                _procListSelectTimer.Stop();
-            }
-            else
-            {
-                _procListSelectTimer = new DispatcherTimer(DispatcherPriority.Background);
-                _procListSelectTimer.Interval = TimeSpan.FromMilliseconds(100);
-                _procListSelectTimer.Tick += _procListSelectTimer_Tick;
-            }
-
-            _procListSelectTimer.Start();
-
-        }
-
-        void _procListSelectTimer_Tick(object sender, EventArgs e)
-        {
-            _procListSelectTimer.Stop();
             int si = cbProcList.SelectedIndex;
             if (si >= 0 && si < _procList.Count)
             {
@@ -227,6 +210,11 @@ namespace V8Reader.Controls
                 }
             }
 
+        }
+
+        private void Method_MouseClick(object sender, MouseButtonEventArgs e)
+        {
+            _userMethodSelect = true;
         }
 
         private void btnProcList_Click(object sender, RoutedEventArgs e)
@@ -274,6 +262,15 @@ namespace V8Reader.Controls
         private void btnExpandNodes_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void cbProcList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_userMethodSelect)
+            {
+                _userMethodSelect = false;
+                OnMethodSelected();
+            }
         }
 
     }
@@ -491,7 +488,7 @@ namespace V8Reader.Controls
             }
         }
 
-        bool LineIsKeyword(string Line, string Keyword)
+        private bool LineIsKeyword(string Line, string Keyword)
         {
             if (Line.StartsWith(Keyword, StringComparison.OrdinalIgnoreCase))
             {
@@ -510,7 +507,7 @@ namespace V8Reader.Controls
             }
         }
 
-        string ReadLine(string Content, ref int Position)
+        private string ReadLine(string Content, ref int Position)
         {
             if (Position >= Content.Length)
             {
