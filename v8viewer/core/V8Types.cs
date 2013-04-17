@@ -5,13 +5,90 @@ using System.Text;
 
 namespace V8Reader.Core
 {
-    sealed class V8Type
+
+    class SimpleEquatable<T>
+    {
+        protected SimpleEquatable()
+        {
+            _Equality = o => base.Equals(0);
+            _HashFunc = () => base.GetHashCode();
+        }
+
+        protected SimpleEquatable(Func<T,bool> Equality, Func<int> HashFunc)
+        {
+            _Equality = Equality;
+            _HashFunc = HashFunc;
+        }
+
+        protected Func<T, bool> _Equality;
+        protected Func<int> _HashFunc;
+
+        public override bool Equals(object obj)
+        {
+            return Equals((T)obj);
+        }
+
+        public bool Equals(T obj)
+        {
+            if (obj == null)
+                return false;
+
+            return _Equality(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return _HashFunc();
+        }
+
+        public static bool operator ==(SimpleEquatable<T> type1, T type2)
+        {
+            if (Object.ReferenceEquals(type1,null))
+            {
+                return Object.ReferenceEquals(type2, null);
+            }
+            else if (Object.ReferenceEquals(type2, null))
+            {
+                return false;
+            }
+            else
+            {
+                return type1.Equals(type2);
+            }
+        }
+
+        public static bool operator !=(SimpleEquatable<T> type1, T type2)
+        {
+            if (Object.ReferenceEquals(type1, null))
+            {
+                return !Object.ReferenceEquals(type2, null);
+            }
+            else if (Object.ReferenceEquals(type2, null))
+            {
+                return true;
+            }
+            else
+            {
+                return !type1.Equals(type2);
+            }
+
+        }
+
+
+    }
+    
+    sealed class V8Type : SimpleEquatable<V8Type>
     {
 
-        public V8Type(String name, String id)
+        public V8Type(String name, String id) : base()
         {
             Name = name;
             ID = id;
+
+            _Equality = (o) => 
+                ID == o.ID;
+            _HashFunc = () => ID.GetHashCode();
+
         }
 
         public override string ToString()
@@ -22,15 +99,20 @@ namespace V8Reader.Core
         public String Name { get; private set; }
         public String ID { get; private set; }
 
+        
+
     }
 
-    sealed class V8StringQualifier
+    sealed class V8StringQualifier : SimpleEquatable<V8StringQualifier>
     {
 
-        public V8StringQualifier(int len, AvailableLengthType lenType = V8StringQualifier.AvailableLengthType.Variable)
+        public V8StringQualifier(int len, AvailableLengthType lenType = V8StringQualifier.AvailableLengthType.Variable) : base()
         {
             Lenght = len;
             AvailableLength = lenType;
+
+            _Equality = (o) => Lenght == o.Lenght && AvailableLength == o.AvailableLength;
+            _HashFunc = () => ToString().GetHashCode();
         }
         
         public int Lenght { get; private set; }
@@ -53,16 +135,21 @@ namespace V8Reader.Core
                 return String.Format("str({0})", Lenght.ToString());
             }
         }
+
     }
 
-    sealed class V8NumberQualifier
+    sealed class V8NumberQualifier : SimpleEquatable<V8NumberQualifier>
     {
 
-        public V8NumberQualifier(int IntegerPart, int Fraction = 0, bool NonNeg = false)
+        public V8NumberQualifier(int IntegerPart, int Fraction = 0, bool NonNeg = false) : base()
         {
             IntegerDigits = IntegerPart;
             FractionDigits = Fraction;
             NonNegative = NonNeg;
+
+            _Equality = (o) => IntegerDigits == o.IntegerDigits && FractionDigits == o.FractionDigits && NonNegative == o.NonNegative;
+            _HashFunc = () => ToString().GetHashCode();
+
         }
         
         public int IntegerDigits { get; private set; }
@@ -71,16 +158,35 @@ namespace V8Reader.Core
 
         public override string ToString()
         {
-            return String.Format("num({0},{1})", IntegerDigits, FractionDigits);
+            if(NonNegative)
+                return String.Format("num({0},{1},non-negative)", IntegerDigits, FractionDigits);
+            else
+                return String.Format("num({0},{1})", IntegerDigits, FractionDigits);
         }
+
     }
 
-    sealed class V8DateQualifier
+    sealed class V8DateQualifier : SimpleEquatable<V8DateQualifier>
     {
 
-        public V8DateQualifier(DateFractionsType dateFractions)
+        public V8DateQualifier(DateFractionsType dateFractions) : base()
         {
             DateFractions = dateFractions;
+
+            _Equality = (o) => DateFractions == o.DateFractions;
+            _HashFunc = () =>
+                {
+                    switch (DateFractions)
+                    {
+                        case DateFractionsType.Date:
+                            return 2;
+                        case DateFractionsType.Time:
+                            return 1;
+                        default:
+                            return 0;
+                    }
+                };
+
         }
 
         public DateFractionsType DateFractions { get; private set; }
@@ -104,9 +210,24 @@ namespace V8Reader.Core
                     return ""; // datetime не требует доп. пояснений
             }
         }
+
+        public override bool Equals(object obj)
+        {
+            var typedObj = (V8DateQualifier)obj;
+            return Equals(typedObj);
+        }
+
+        public bool Equals(V8DateQualifier typedObj)
+        {
+            if (typedObj == null)
+                return false;
+
+            return DateFractions == typedObj.DateFractions;
+        }
+
     }
 
-    sealed class V8TypeDescription
+    sealed class V8TypeDescription : Comparison.IComparableItem
     {
 
         public V8TypeDescription(V8Type[] types, V8NumberQualifier numberQualifier = null, V8StringQualifier stringQualifier = null, V8DateQualifier dateQualifier = null)
@@ -269,6 +390,33 @@ namespace V8Reader.Core
 
         #endregion
 
+
+        #region IComparableItem Members
+
+        public bool CompareTo(object Comparand)
+        {
+            if (Comparand == null)
+            {
+                return false;
+            }
+
+            var typedObj = (V8TypeDescription)Comparand;
+
+            var Comparator = new Utils.ArrayComparator<V8Type>();
+
+            return Comparator.Compare(Types(), typedObj.Types())
+                && NumberQualifier == typedObj.NumberQualifier
+                && StringQualifier == typedObj.StringQualifier
+                && DateQualifier == typedObj.DateQualifier;
+
+        }
+
+        public Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
+        {
+            return null;
+        }
+
+        #endregion
     }
 
     static class V8BasicTypes

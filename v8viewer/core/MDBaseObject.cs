@@ -88,7 +88,7 @@ namespace V8Reader.Core
         #endregion
     }
     
-    class MDAttribute : MDObjectBase, IMDTreeItem, Comparison.IComparableItem
+    class MDAttribute : MDObjectBase, IMDTreeItem//, Comparison.IComparableItem
     {
         public MDAttribute(SerializedList attrDestription)
         {
@@ -153,20 +153,20 @@ namespace V8Reader.Core
 
         #region IComparableItem Members
 
-        public bool CompareTo(object Comparand)
-        {
-            var Attrib = Comparand as MDAttribute;
-            if (Attrib == null)
-                return false;
+        //public bool CompareTo(object Comparand)
+        //{
+        //    var Attrib = Comparand as MDAttribute;
+        //    if (Attrib == null)
+        //        return false;
 
-            return m_RawContent.ToString() == Attrib.m_RawContent.ToString();
+        //    return m_RawContent.ToString() == Attrib.m_RawContent.ToString();
 
-        }
+        //}
 
-        public Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
-        {
-            return null;
-        }
+        //public Comparison.IDiffViewer GetDifferenceViewer(object Comparand)
+        //{
+        //    return null;
+        //}
 
         #endregion
 
@@ -177,6 +177,9 @@ namespace V8Reader.Core
 
             var typeProp = PropDef.Create("TypeDef", "Тип", m_typeDef);
             internalProps.Add(typeProp);
+
+            //typeProp = PropDef.Create("RawContent", "Внутреннее представление", m_RawContent, Comparison.ToStringComparator.ComparatorObject);
+            //internalProps.Add(typeProp);
 
         }
 

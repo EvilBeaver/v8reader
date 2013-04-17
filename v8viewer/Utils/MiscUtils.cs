@@ -9,9 +9,13 @@ namespace V8Reader.Utils
     {
         public static void DefaultErrHandling(Exception exc)
         {
+#if DEBUG
+                throw exc;
+#else
             ExceptionWindow wnd = new ExceptionWindow();
             wnd.excText.Text = exc.ToString();
             wnd.ShowDialog();
+#endif
         }
 
         public static T FindLogicalParent<T>(DependencyObject childElement) where T : DependencyObject
@@ -138,6 +142,31 @@ namespace V8Reader.Utils
 
         private static HashSet<string> RegisteredFiles = new HashSet<string>();
 
+    }
+
+    class ArrayComparator<T>
+    {
+        public bool Compare(T[] Compared, T[] Comparand)
+        {
+            if (Compared.Length != Comparand.Length)
+            {
+                return false;
+            }
+
+            bool match = true;
+
+            for (int i = 0; i < Compared.Length; i++)
+            {
+                if (!Compared[i].Equals(Comparand[i]))
+                {
+                    match = false;
+                    break;
+                }
+            }
+
+            return match;
+
+        }
     }
 
 }

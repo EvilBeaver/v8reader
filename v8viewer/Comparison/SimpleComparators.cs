@@ -24,6 +24,10 @@ namespace V8Reader.Comparison
     class ToStringComparator : IComparator
     {
 
+        private ToStringComparator()
+        {
+        }
+
         #region IComparator Members
 
         public bool CompareObjects(object Compared, object Comparand)
@@ -35,6 +39,16 @@ namespace V8Reader.Comparison
                 return false;
 
             return Compared.ToString() == Comparand.ToString();
+        }
+
+        private static readonly ToStringComparator _comparatorObject = new ToStringComparator();
+
+        public static ToStringComparator ComparatorObject
+        {
+            get
+            {
+                return _comparatorObject;
+            }
         }
 
         #endregion

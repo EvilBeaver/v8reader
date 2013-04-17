@@ -76,107 +76,7 @@ namespace V8Reader.Comparison
             }
             else if (Left is MDObjectsCollection<MDObjectBase> || Left is StaticTreeNode)
             {
-                IEnumerable<IMDTreeItem> LeftItems;
-                IEnumerable<IMDTreeItem> RightItems;
-                if (m_CurrentMode == MatchingMode.ByID)
-                {
-                    LeftItems = from item in Left.ChildItems orderby item.Key, item.Text select item;
-                    RightItems = from item in Right.ChildItems orderby item.Key, item.Text select item;
-                }
-                else
-                {
-                    LeftItems = from item in Left.ChildItems orderby item.Text, item.Text select item;
-                    RightItems = from item in Right.ChildItems orderby item.Text, item.Text select item;
-                }
-
-                var LeftList = LeftItems.ToArray<IMDTreeItem>();
-                var RightList = RightItems.ToArray<IMDTreeItem>();
-
-                int leftIdx = 0;
-                int rightIdx = 0;
-                int leftCount = LeftList.Length-1;
-                int rightCount = RightList.Length-1;
-                
-                bool Modified = false;
-
-                while (true)
-                {
-                    if (leftIdx > leftCount)
-                    {
-                        rightIdx++;
-                        if (rightIdx > rightCount)
-                        {
-                            break;
-                        }
-
-                        var Item = RightList[rightIdx];
-                        AddAndFillNewNode(null, Item, node);
-                        continue;
-
-                    }
-
-                    if (rightIdx > rightCount)
-                    {
-                        leftIdx++;
-                        if (leftIdx > leftCount)
-                        {
-                            break;
-                        }
-
-                        var Item = LeftList[leftIdx];
-                        AddAndFillNewNode(Item, null, node);
-                        continue;
-
-                    }
-
-                    var LeftItem = LeftList[leftIdx];
-                    var RightItem = RightList[rightIdx];
-
-                    int? comparisonResult = CompareObjects(LeftItem, RightItem);
-
-                    if (comparisonResult == 0)
-                    {
-                        var addedNode = AddAndFillNewNode(LeftItem, RightItem, node);
-                        if (addedNode != null)
-                        {
-                            Modified = Modified || addedNode.IsDiffer;
-                        }
-
-                        leftIdx++;
-                        rightIdx++;
-
-                    }
-                    else if (comparisonResult < 0)
-                    {
-                        AddAndFillNewNode(LeftItem, null, node);
-                        Modified = true;
-                        leftIdx++;
-                    }
-                    else if (comparisonResult > 0)
-                    {
-                        AddAndFillNewNode(null, RightItem, node);
-                        Modified = true;
-                        rightIdx++;
-                    }
-                    else
-                    {
-                        AddAndFillNewNode(LeftItem, null, node);
-                        AddAndFillNewNode(null, RightItem, node);
-
-                        leftIdx++;
-                        rightIdx++;
-
-                        Modified = true;
-
-                    }
-
-                }
-
-                if (Modified)
-                {
-                    node.IsDiffer = true;
-                }
-
+                MapAndCompareCollections(Left, Right, node);
             }
             else if( Left.HasChildren() )
             {
@@ -214,6 +114,112 @@ namespace V8Reader.Comparison
 
             }
 
+        }
+
+        private void MapAndCompareCollections(IMDTreeItem Left, IMDTreeItem Right, ComparisonItem node)
+        {
+            IEnumerable<IMDTreeItem> LeftItems;
+            IEnumerable<IMDTreeItem> RightItems;
+            if (m_CurrentMode == MatchingMode.ByID)
+            {
+                LeftItems = from item in Left.ChildItems orderby item.Key, item.Text select item;
+                RightItems = from item in Right.ChildItems orderby item.Key, item.Text select item;
+            }
+            else
+            {
+                LeftItems = from item in Left.ChildItems orderby item.Text, item.Text select item;
+                RightItems = from item in Right.ChildItems orderby item.Text, item.Text select item;
+            }
+
+            var LeftList = LeftItems.ToArray<IMDTreeItem>();
+            var RightList = RightItems.ToArray<IMDTreeItem>();
+
+            int leftIdx = 0;
+            int rightIdx = 0;
+            int leftCount = LeftList.Length - 1;
+            int rightCount = RightList.Length - 1;
+
+            bool Modified = false;
+
+            while (true)
+            {
+                if (leftIdx > leftCount)
+                {
+                    rightIdx++;
+                    if (rightIdx > rightCount)
+                    {
+                        break;
+                    }
+
+                    var Item = RightList[rightIdx];
+                    AddAndFillNewNode(null, Item, node);
+                    Modified = true;
+                    continue;
+
+                }
+
+                if (rightIdx > rightCount)
+                {
+                    leftIdx++;
+                    if (leftIdx > leftCount)
+                    {
+                        break;
+                    }
+
+                    var Item = LeftList[leftIdx];
+                    AddAndFillNewNode(Item, null, node);
+                    Modified = true;
+                    continue;
+
+                }
+
+                var LeftItem = LeftList[leftIdx];
+                var RightItem = RightList[rightIdx];
+
+                int? comparisonResult = CompareObjects(LeftItem, RightItem);
+
+                if (comparisonResult == 0)
+                {
+                    var addedNode = AddAndFillNewNode(LeftItem, RightItem, node);
+                    if (addedNode != null)
+                    {
+                        Modified = Modified || addedNode.IsDiffer;
+                    }
+
+                    leftIdx++;
+                    rightIdx++;
+
+                }
+                else if (comparisonResult < 0)
+                {
+                    AddAndFillNewNode(LeftItem, null, node);
+                    Modified = true;
+                    leftIdx++;
+                }
+                else if (comparisonResult > 0)
+                {
+                    AddAndFillNewNode(null, RightItem, node);
+                    Modified = true;
+                    rightIdx++;
+                }
+                else
+                {
+                    AddAndFillNewNode(LeftItem, null, node);
+                    AddAndFillNewNode(null, RightItem, node);
+
+                    leftIdx++;
+                    rightIdx++;
+
+                    Modified = true;
+
+                }
+
+            }
+
+            if (Modified)
+            {
+                node.IsDiffer = true;
+            }
         }
 
         private int? CompareObjects(IMDTreeItem left, IMDTreeItem right)
