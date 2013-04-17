@@ -92,59 +92,146 @@ namespace V8Reader.Comparison
                 var LeftList = LeftItems.ToArray<IMDTreeItem>();
                 var RightList = RightItems.ToArray<IMDTreeItem>();
 
+                int leftIdx = 0;
                 int rightIdx = 0;
-                bool WalkRight = true;
+                int leftCount = LeftList.Length-1;
+                int rightCount = RightList.Length-1;
+                
                 bool Modified = false;
 
-                for (int i = 0; i < LeftList.Length; i++)
+                while (true)
                 {
-                    if (rightIdx < RightList.Length)
+                    if (leftIdx > leftCount)
                     {
-                        var LeftObj = LeftList[i];
-                        var RightObj = RightList[rightIdx];
-
-                        if (ItsASameObjects(LeftObj, RightObj))
+                        rightIdx++;
+                        if (rightIdx > rightCount)
                         {
-                            // это один и тот же объект.
-                            var addedNode = AddAndFillNewNode(LeftObj, RightObj, node);
-                            if (addedNode != null)
-                            {
-                                Modified = Modified || addedNode.IsDiffer;
-                            }
-                            // дальнейший траверс в штатном режиме
-                            WalkRight = true;
+                            break;
                         }
-                        else
-                        {
-                            // это разные объекты
-                            // значит, левый объект точно отсутствует справа
-                            AddAndFillNewNode(LeftObj, null, node);
-                            // при следующей итерации правый объект не двигаем.
-                            WalkRight = false;
-                            Modified = true;
 
+                        var Item = RightList[rightIdx];
+                        AddAndFillNewNode(null, Item, node);
+                        continue;
+
+                    }
+
+                    if (rightIdx > rightCount)
+                    {
+                        leftIdx++;
+                        if (leftIdx > leftCount)
+                        {
+                            break;
                         }
+
+                        var Item = LeftList[leftIdx];
+                        AddAndFillNewNode(Item, null, node);
+                        continue;
+
+                    }
+
+                    var LeftItem = LeftList[leftIdx];
+                    var RightItem = RightList[rightIdx];
+
+                    int? comparisonResult = CompareObjects(LeftItem, RightItem);
+
+                    if (comparisonResult == 0)
+                    {
+                        var addedNode = AddAndFillNewNode(LeftItem, LeftItem, node);
+                        if (addedNode != null)
+                        {
+                            Modified = Modified || addedNode.IsDiffer;
+                        }
+
+                        leftIdx++;
+                        rightIdx++;
+
+                    }
+                    else if (comparisonResult < 0)
+                    {
+                        AddAndFillNewNode(LeftItem, null, node);
+                        Modified = true;
+                        leftIdx++;
+                    }
+                    else if (comparisonResult > 0)
+                    {
+                        AddAndFillNewNode(null, RightItem, node);
+                        Modified = true;
+                        rightIdx++;
                     }
                     else
                     {
-                        // справа элементы закончились
-                        AddAndFillNewNode(LeftList[i], null, node);
-                        Modified = true;
-                    }
+                        AddAndFillNewNode(LeftItem, null, node);
+                        AddAndFillNewNode(null, RightItem, node);
 
-                    if (WalkRight)
-                    {
+                        leftIdx++;
                         rightIdx++;
+
+                        Modified = true;
+
                     }
 
                 }
 
-                // Слева элементов больше нет
-                for (int i = rightIdx; i < RightList.Length; i++)
-                {
-                    AddAndFillNewNode(null, RightList[i], node);
-                    Modified = true;
-                }
+
+                //bool WalkRight = true;
+                //bool Modified = false;
+                
+                //for (int i = 0; i < LeftList.Length; i++)
+                //{
+                //    if (rightIdx < RightList.Length)
+                //    {
+                //        var LeftObj = LeftList[i];
+                //        var RightObj = RightList[rightIdx];
+
+                //        if (ItsASameObjects(LeftObj, RightObj))
+                //        {
+                //            // это один и тот же объект.
+                //            var addedNode = AddAndFillNewNode(LeftObj, RightObj, node);
+                //            if (addedNode != null)
+                //            {
+                //                Modified = Modified || addedNode.IsDiffer;
+                //            }
+                //            // дальнейший траверс в штатном режиме
+                //            WalkRight = true;
+                
+                //        }
+                //        else
+                //        {
+                //            // это разные объекты
+                //            // значит, левый объект точно отсутствует справа
+                //            AddAndFillNewNode(LeftObj, null, node);
+                            
+                //            // При следующей итерации возможны ситуации:
+                //            // 1. Новый левый объект будет соответствовать текущему правому
+                //            //    -- не двигать правый индекс
+                //            // 2. Новый левый объект будет соответствовать новому правому
+                //            //    -- двигать правый индекс
+                
+                //            WalkRight = false;
+                //            Modified = true;
+
+                //        }
+                //    }
+                //    else
+                //    {
+                //        // справа элементы закончились
+                //        AddAndFillNewNode(LeftList[i], null, node);
+                //        Modified = true;
+                //    }
+
+                //    if (WalkRight)
+                //    {
+                //        rightIdx++;
+                //    }
+
+                //}
+
+                //// Слева элементов больше нет
+                //for (int i = rightIdx; i < RightList.Length; i++)
+                //{
+                //    AddAndFillNewNode(null, RightList[i], node);
+                //    Modified = true;
+                //}
 
                 if (Modified)
                 {
@@ -190,22 +277,22 @@ namespace V8Reader.Comparison
 
         }
 
-        private bool ItsASameObjects(IMDTreeItem left, IMDTreeItem right)
+        private int? CompareObjects(IMDTreeItem left, IMDTreeItem right)
         {
             if (left.GetType() == right.GetType())
             {
                 if (m_CurrentMode == MatchingMode.ByID)
                 {
-                    return left.Key == right.Key;
+                    return String.CompareOrdinal(left.Key, right.Key);
                 }
                 else
                 {
-                    return left.Text == right.Text;
+                    return String.CompareOrdinal(left.Text, right.Text);
                 }
             }
             else
             {
-                return false;
+                return null;
             }
         }
 

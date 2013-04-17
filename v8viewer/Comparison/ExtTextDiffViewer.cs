@@ -74,18 +74,10 @@ namespace V8Reader.Comparison
 
             try
             {
-                var bldr = new StringBuilder(diffPath);
-
-                System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo();
-                bldr.Replace("%1", m_LeftFile);
-                bldr.Replace("%2", m_RightFile);
-                bldr.Replace("%name1", DefaultTitle(m_LeftFile, NameCurrent));
-                bldr.Replace("%name2", DefaultTitle(m_RightFile, NameComparand));
-
                 string[] args;
                 try
                 {
-                    args = CommandLineToArgs(bldr.ToString());
+                    args = CommandLineToArgs(diffPath);
                 }
                 catch (System.ComponentModel.Win32Exception)
                 {
@@ -97,14 +89,23 @@ namespace V8Reader.Comparison
                     return;
                 }
 
+                var info = new System.Diagnostics.ProcessStartInfo();
                 info.FileName = args[0];
 
-                bldr.Clear();
+                var bldr = new StringBuilder(diffPath);
+                bldr.Replace(args[0], String.Empty);
+                bldr.Replace("%1", Quote(m_LeftFile));
+                bldr.Replace("%2", Quote(m_RightFile));
+                bldr.Replace("%name1", Quote(DefaultTitle(m_LeftFile, NameCurrent)));
+                bldr.Replace("%name2", Quote(DefaultTitle(m_RightFile, NameComparand)));
+                
+                /*bldr.Clear();
                 for (int i = 1; i < args.Length; i++)
                 {
                     bldr.Append(' ');
                     bldr.Append(args[i]);
-                }
+                }*/
+
                 info.Arguments = bldr.ToString();
 
                 using (var proc = new System.Diagnostics.Process())
@@ -118,6 +119,16 @@ namespace V8Reader.Comparison
                 Utils.UIHelper.DefaultErrHandling(exc);
             }
 
+        }
+
+        private string Quote(string src)
+        {
+            if (src == null || src == string.Empty)
+            {
+                return "";
+            }
+
+            return String.Format("\"{0}\"", src);
         }
 
         private string DefaultTitle(string Filename, string Title)
