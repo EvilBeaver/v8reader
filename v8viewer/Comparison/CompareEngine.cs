@@ -172,67 +172,6 @@ namespace V8Reader.Comparison
 
                 }
 
-
-                //bool WalkRight = true;
-                //bool Modified = false;
-                
-                //for (int i = 0; i < LeftList.Length; i++)
-                //{
-                //    if (rightIdx < RightList.Length)
-                //    {
-                //        var LeftObj = LeftList[i];
-                //        var RightObj = RightList[rightIdx];
-
-                //        if (ItsASameObjects(LeftObj, RightObj))
-                //        {
-                //            // это один и тот же объект.
-                //            var addedNode = AddAndFillNewNode(LeftObj, RightObj, node);
-                //            if (addedNode != null)
-                //            {
-                //                Modified = Modified || addedNode.IsDiffer;
-                //            }
-                //            // дальнейший траверс в штатном режиме
-                //            WalkRight = true;
-                
-                //        }
-                //        else
-                //        {
-                //            // это разные объекты
-                //            // значит, левый объект точно отсутствует справа
-                //            AddAndFillNewNode(LeftObj, null, node);
-                            
-                //            // При следующей итерации возможны ситуации:
-                //            // 1. Новый левый объект будет соответствовать текущему правому
-                //            //    -- не двигать правый индекс
-                //            // 2. Новый левый объект будет соответствовать новому правому
-                //            //    -- двигать правый индекс
-                
-                //            WalkRight = false;
-                //            Modified = true;
-
-                //        }
-                //    }
-                //    else
-                //    {
-                //        // справа элементы закончились
-                //        AddAndFillNewNode(LeftList[i], null, node);
-                //        Modified = true;
-                //    }
-
-                //    if (WalkRight)
-                //    {
-                //        rightIdx++;
-                //    }
-
-                //}
-
-                //// Слева элементов больше нет
-                //for (int i = rightIdx; i < RightList.Length; i++)
-                //{
-                //    AddAndFillNewNode(null, RightList[i], node);
-                //    Modified = true;
-                //}
-
                 if (Modified)
                 {
                     node.IsDiffer = true;

@@ -123,6 +123,7 @@
                     <Style TargetType="TreeViewItem" BasedOn="{StaticResource DiffTreeItemStyle}">
                         <EventSetter Event="MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
                         <EventSetter Event="Expanded" Handler="TreeViewItem_Expanded"/>
+                        <EventSetter Event="MouseDoubleClick" Handler="TreeViewItem_DblClick"/>
                     </Style>
                 </TreeView.ItemContainerStyle>
                 

@@ -124,6 +124,11 @@ namespace V8Reader.Comparison
             e.Handled = true;
         }
 
+        private void TreeViewItem_DblClick(object sender, MouseEventArgs e)
+        {
+
+        }
+
         private void ShowCommandsPopup(List<UICommand> Commands)
         {
             if (Commands == null || Commands.Count == 0)
