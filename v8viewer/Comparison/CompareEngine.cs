@@ -136,7 +136,7 @@ namespace V8Reader.Comparison
 
                     if (comparisonResult == 0)
                     {
-                        var addedNode = AddAndFillNewNode(LeftItem, LeftItem, node);
+                        var addedNode = AddAndFillNewNode(LeftItem, RightItem, node);
                         if (addedNode != null)
                         {
                             Modified = Modified || addedNode.IsDiffer;
