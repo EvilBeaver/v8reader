@@ -373,6 +373,8 @@ namespace V8Reader.Controls
             const string kFuncStart = "ФУНКЦИЯ";
             const string kFuncEnd = "КОНЕЦФУНКЦИИ";
 
+            char[] trimArr = new char[]{' ','\t'};
+
             do
             {
                 int prev_start = startPos;
@@ -407,14 +409,14 @@ namespace V8Reader.Controls
                         CommentBreak = true;
                     }
                     
-                    if (LineIsKeyword(lineText, kProcStart))
+                    if (LineIsKeyword(lineText.TrimStart(trimArr), kProcStart))
                     {
                         MethodIsOpen = true;
                         MethodName = ScanForParamList(FullText, prev_start+kProcStart.Length);
                         EndToken = kProcEnd;
                         MethodStart = DocLine;
                     }
-                    else if(LineIsKeyword(lineText, kFuncStart))
+                    else if(LineIsKeyword(lineText.TrimStart(trimArr), kFuncStart))
                     {
                         MethodIsOpen = true;
                         MethodName = ScanForParamList(FullText, prev_start + kFuncStart.Length);
@@ -439,7 +441,7 @@ namespace V8Reader.Controls
                     }
                     
                 }
-                else if (LineIsKeyword(lineText, EndToken))
+                else if (LineIsKeyword(lineText.TrimStart(trimArr), EndToken))
                 {
                     var Folding = new NewFolding(currentStart, tf.offset + tf.len);
                     newFoldings.Add(Folding);

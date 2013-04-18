@@ -75,6 +75,9 @@
       <Word>Сред</Word>
       <Word>Число</Word>
       <Word>Дата</Word>
+      <Word>и</Word>
+      <Word>или</Word>
+      <Word>не</Word>
     </Keywords>
 
     <!-- Mark previous rule
