@@ -659,7 +659,7 @@ namespace V8Reader.Core
         {
             String Name = childAttr.Items[3].ToString();
             String Syn = null;
-            if (childAttr.Items[4].Items[2].ToString() == "0")
+            if (childAttr.Items[4].Items.Count < 3 || childAttr.Items[4].Items[2].ToString() == "0")
             {
                 Syn = Name;
             }
