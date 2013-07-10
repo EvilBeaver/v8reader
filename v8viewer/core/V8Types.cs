@@ -28,7 +28,7 @@ namespace V8Reader.Core
             return Equals((T)obj);
         }
 
-        public bool Equals(T obj)
+        public virtual bool Equals(T obj)
         {
             if (obj == null)
                 return false;
@@ -209,20 +209,6 @@ namespace V8Reader.Core
                 default:
                     return ""; // datetime не требует доп. пояснений
             }
-        }
-
-        public override bool Equals(object obj)
-        {
-            var typedObj = (V8DateQualifier)obj;
-            return Equals(typedObj);
-        }
-
-        public bool Equals(V8DateQualifier typedObj)
-        {
-            if (typedObj == null)
-                return false;
-
-            return DateFractions == typedObj.DateFractions;
         }
 
     }

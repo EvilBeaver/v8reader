@@ -81,6 +81,12 @@ namespace V8Reader
 
         private void PerformSelection()
         {
+            if (tbFirstFile.Text == String.Empty || tbSecondFile.Text == String.Empty)
+            {
+                MessageBox.Show("Укажите файлы для сравнения.","V8 Reader",MessageBoxButton.OK,MessageBoxImage.Exclamation);
+                return;
+            }
+
             DialogResult = true;
             this.Close();
         }
