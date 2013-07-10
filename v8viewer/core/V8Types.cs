@@ -28,7 +28,7 @@ namespace V8Reader.Core
             return Equals((T)obj);
         }
 
-        public virtual bool Equals(T obj)
+        public bool Equals(T obj)
         {
             if (obj == null)
                 return false;
