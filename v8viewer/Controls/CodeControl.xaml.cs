@@ -96,11 +96,11 @@ namespace V8Reader.Controls
         {
             int chunkLen = chunkEnd - chunkStart;
 
-            if (chunkLen <= 0)
+            if (chunkLen < 0)
             {
                 return -1;
             }
-            else if (chunkLen == 1)
+            else if (chunkLen == 1 || chunkLen == 0)
             {
                 for (int i = chunkStart; i <= chunkEnd; i++)
                 {
