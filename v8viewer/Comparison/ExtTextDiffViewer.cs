@@ -102,10 +102,13 @@ namespace V8Reader.Comparison
                 bldr.Clear();
                 for (int i = 1; i < args.Length; i++)
                 {
-                    if(i > 1)
+                    if (i > 1)
+                    {
                         bldr.Append(' ');
+                    }
 
-                    bldr.Append(Quote(args[i]));
+                    bldr.Append(args[i]);
+
                 }
 
                 info.Arguments = bldr.ToString();
