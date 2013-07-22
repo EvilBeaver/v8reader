@@ -74,10 +74,17 @@ namespace V8Reader.Comparison
 
             try
             {
+                
+                var bldr = new StringBuilder(diffPath);
+                bldr.Replace("%1", Quote(m_LeftFile));
+                bldr.Replace("%2", Quote(m_RightFile));
+                bldr.Replace("%name1", Quote(DefaultTitle(m_LeftFile, NameCurrent)));
+                bldr.Replace("%name2", Quote(DefaultTitle(m_RightFile, NameComparand)));
+
                 string[] args;
                 try
                 {
-                    args = CommandLineToArgs(diffPath);
+                    args = CommandLineToArgs(bldr.ToString());
                 }
                 catch (System.ComponentModel.Win32Exception)
                 {
@@ -85,26 +92,21 @@ namespace V8Reader.Comparison
                         "V8 Viewer",
                         System.Windows.MessageBoxButton.OK,
                         System.Windows.MessageBoxImage.Exclamation);
-                    
+
                     return;
                 }
 
                 var info = new System.Diagnostics.ProcessStartInfo();
-                info.FileName = args[0];
+                info.FileName = Quote(args[0]);
 
-                var bldr = new StringBuilder(diffPath);
-                bldr.Replace(args[0], String.Empty);
-                bldr.Replace("%1", Quote(m_LeftFile));
-                bldr.Replace("%2", Quote(m_RightFile));
-                bldr.Replace("%name1", Quote(DefaultTitle(m_LeftFile, NameCurrent)));
-                bldr.Replace("%name2", Quote(DefaultTitle(m_RightFile, NameComparand)));
-                
-                /*bldr.Clear();
+                bldr.Clear();
                 for (int i = 1; i < args.Length; i++)
                 {
-                    bldr.Append(' ');
-                    bldr.Append(args[i]);
-                }*/
+                    if(i > 1)
+                        bldr.Append(' ');
+
+                    bldr.Append(Quote(args[i]));
+                }
 
                 info.Arguments = bldr.ToString();
 
